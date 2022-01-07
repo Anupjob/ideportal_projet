@@ -23,6 +23,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import CountryList from './CountryList';
 import _ from "underscore";
 import Modal from '@material-ui/core/Modal';
+import { AccordionDetails } from '@material-ui/core'
 
 
 //import Modal from 'react-modal';
@@ -101,13 +102,24 @@ const orText = {
 const phoneBtn = {
   textTransform: 'none',
   lineHeight: "3",
-  margin: "30px auto 0 auto",
+  margin: "0px auto 0 auto",
   background: "url(./phone_icon.png)",
   backgroundSize: "25px",
   backgroundRepeat: "no-repeat",
   backgroundPosition: "10px",
   width: "222px",
   display: "block"
+}
+const googleBtn = {
+  textTransform: 'none',
+  lineHeight: "3",
+  marginTop: "30px",
+  background: "url(./phone_icon.png)",
+  backgroundSize: "25px",
+  backgroundRepeat: "no-repeat",
+  backgroundPosition: "100px",
+  justifyContent:'center',
+  
 }
 
 
@@ -165,20 +177,13 @@ class Login extends React.Component {
       }
     })
 
-    // window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier("recaptcha-container",
-    //   {
-    //     size: "invisible",
-    //     callback: () => { console.log('Callback!'); },
-    //     // other options
-    //   })
-    // window.recaptchaVerifier = new RecaptchaVerifier('recaptcha-container', {
-    //   'size': 'invisible',
-    //   'callback': (response) => {
-    //     // reCAPTCHA solved, allow signInWithPhoneNumber.
-    //     // onSignInSubmit();
-    //     console.log("====The response is====",response)
-    //   }
-    // }, auth);
+    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier("recaptcha-container",
+      {
+        size: "invisible",
+        callback: () => { console.log('Callback!'); },
+        // other options
+      })
+    
   }
 
   onSelected = (data, dataOne, dataTwo) => {
@@ -210,6 +215,36 @@ class Login extends React.Component {
       }
     })
     this.setState({ newArr: newArray });
+  }
+  handle = (event) => {
+    this.setState({ v: event.target.value })
+  }
+  login = () => {
+    const { confirmResult, phone, selectedItem } = this.state;
+
+    confirmResult.confirm(this.state.v).then(function (result) {
+      var fullPhoneNumber = '+' + selectedItem.phoneNumber + phone;
+      // firebase.database().ref('users/' + result.user.uid).update({
+      var obj = {
+        userId: result.user.uid,
+        firstName: '',
+        lastName: '',
+        email: '',
+        code: '',
+        phoneNumber: fullPhoneNumber,
+      }
+      // });
+
+      firebase.firestore().collection("users").doc(result.user.uid)
+        .set(obj).then(function () {
+          console.log("Document successfully updated!");
+
+        });
+
+    }).catch(error => {
+      this.setState({ error: 'Enter Code is Incorrect!' })
+      console.log("error", error);
+    });
   }
   handleChange = (panel) => (event, isExpanded) => {
     //var setExpanded = '';
@@ -247,12 +282,15 @@ class Login extends React.Component {
     console.log("===phoneNumber:::", phoneNumber)
 
     //var testVerificationCode = "123456";
-    // const appVerifier = window.recaptchaVerifier;
-    var appVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container');
+    const appVerifier = window.recaptchaVerifier;
+    console.log("===appVerifier:::",appVerifier)
+
     firebase
       .auth()
       .signInWithPhoneNumber(phoneNumber, appVerifier)
       .then(confirmResult => {
+        console.log("===confirmResult:::",confirmResult)
+
         this.setState({ confirmResult, changeOne: true })
       })
       .catch(error => {
@@ -370,9 +408,9 @@ class Login extends React.Component {
           </div>
           <div style={{ display: 'flex', justifyContent: 'center' }}>
             <Button onClick={this.onClick}
-              style={{ display: 'flex', justifyContent: 'center', marginTop: 18, height: 30, borderRadius: 5, backgroundColor: '#04af86', color: 'white', fontSize: 12, fontWeight: 600 }}
+              style={{ display: 'flex',justifyContent: 'center', marginTop: 18, height: 30, borderRadius: 5, backgroundColor: '#04af86', color: 'white', fontSize: 12, fontWeight: 600 }}
             >
-              <p >Send Code</p>
+              <p style={{marginTop:10}} >Send Code</p>
             </Button>
           </div>
         </p>
@@ -396,7 +434,7 @@ class Login extends React.Component {
                 <Grid item xs={12} sm={1}>
                 </Grid>
                 <Grid item xs={12} sm={3}>
-                  <Button onClick={this.laare}
+                  <Button onClick={this.login}
                     style={{ marginTop: 18, height: 30, width: 100, borderRadius: 5, backgroundColor: '#04af86', color: 'white', fontSize: 12, fontWeight: 600 }}
                   >
                     <p>Sign In</p>
@@ -458,42 +496,41 @@ class Login extends React.Component {
                         <Button variant={"contained"} color={"primary"} fullWidth style={buttonStyle}
                           onClick={this.handleClick}
                         >Login</Button>
-                      </CInputGroup>
-                      <CRow>
-                        <CCol className="mb-4">
-                          <Link to="/register" style={{ color: "#2d333a" }}>
-                            {"Don't have an account? Sign Up"}
-                          </Link>
-                        </CCol>
-                      </CRow>
+                    </CInputGroup>
+                    <CRow>
+                      <CCol className="mb-4">
+                        <Link to="/register" style={{ color: "#2d333a" }}>
+                          {"Don't have an account? Sign Up"}
+                        </Link>
+                      </CCol>
+                    </CRow>
 
-                      <div style={divider}><div style={orText}>OR</div></div>
+                    <div style={divider}><div style={orText}>OR</div></div>
 
-                      <Button variant={"outlined"} fullWidth style={phoneBtn} onClick={this.phoneClick} >Sign In with Phone No</Button>
+                    <div style={{ paddingBottom: 20, paddingTop: 20 }}>
+                  <StyledFirebaseAuth
+                    uiConfig={this.uiConfig}
+                    firebaseAuth={firebase.auth()}
+                  />
+                </div>
+                    <Button id="recaptcha-container" variant={"outlined"} fullWidth style={phoneBtn} onClick={this.phoneClick} >Sign In with Phone No</Button>
 
+                    <Modal
+                    open={this.state.setOpen}
+                    onClose={this.handleClose}
+                    aria-labelledby="simple-modal-title"
+                    aria-describedby="simple-modal-description"
+                  >
+                    {body}
+                  </Modal>
+                  </CForm>
+                </CCardBody>
+              </CCard>
 
-                      <StyledFirebaseAuth
-                        uiConfig={this.uiConfig}
-                        firebaseAuth={firebase.auth()}
-                      />
-
-
-                      <Modal
-                        open={this.state.setOpen}
-                        onClose={this.handleClose}
-                        aria-labelledby="simple-modal-title"
-                        aria-describedby="simple-modal-description"
-                      >
-                        {body}
-                      </Modal>
-                    </CForm>
-                  </CCardBody>
-                </CCard>
-
-              </CCardGroup>
-            </CCol>
-          </CRow>
-        </CContainer>
+            </CCardGroup>
+          </CCol>
+        </CRow>
+      </CContainer>
       </CContainer>
 
     )

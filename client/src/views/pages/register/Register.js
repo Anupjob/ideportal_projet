@@ -12,6 +12,10 @@ import {
 } from '@coreui/react'
 import TextField from "@material-ui/core/TextField"
 import Button from "@material-ui/core/Button/Button"
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/storage';
+import 'firebase/compat/auth';
+import 'firebase/compat/firestore';
 
 
 
@@ -62,7 +66,95 @@ const pageDescList = {
   backgroundPosition: "0 5px"
 }
 
-const Register = () => {
+
+class Register extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      firstName: '',
+      lastName: '',
+      email: '',
+      password: ''
+    }
+  }
+
+
+  sign = () => {
+
+    this.props.history.push('/Login');
+
+
+  }
+
+  handleClickEmail = (e) => {
+
+    this.setState({ email: e.target.value });
+
+  }
+
+  handleClickPwd = (e) => {
+
+    this.setState({ password: e.target.value });
+
+  }
+
+  handleClickFirst = (e) => {
+
+    this.setState({ firstName: e.target.value });
+
+  }
+
+  handleClickLast = (e) => {
+
+    this.setState({ lastName: e.target.value });
+
+  }
+
+  handleClickSignUp = () => {
+
+
+    firebase
+      .auth()
+      .createUserWithEmailAndPassword(this.state.email, this.state.password)
+      .then(async (res) => {
+
+        console.log("res", res);
+
+        var obj = {
+
+          userId: res.user.uid,
+          firstName: this.state.firstName,
+          email: this.state.email,
+          code: this.state.password,
+
+        }
+
+        firebase.firestore().collection("users").doc(res.user.uid)
+          .set(obj).then(function () {
+            console.log("Document successfully updated!");
+
+          });
+
+        // firebase.database().ref('users/' + res.user.uid).update({
+        //   userId: res.user.uid,
+        //   firstName: this.state.firstName,
+        //   lastName: this.state.lastName,
+        //   email: this.state.email,
+        //   code: this.state.password,
+        // });
+
+        this.props.history.push('/');
+
+      })
+
+
+
+  }
+
+  render() {
+
+    console.log("this.state", this.state);
   return (
 
     <CContainer fluid style={bgColor}>
@@ -87,19 +179,27 @@ const Register = () => {
                   <CForm>
                     <h1 style={formTitle} className="mb-4">Register Here</h1>
                     <CInputGroup className="mb-4">
-                      <TextField id="outlined-basic" label="Name" variant="outlined" style={{ width: "100%" }} />
+                      <TextField id="outlined-basic" label="Name" variant="outlined" style={{ width: "100%" }} 
+                    onChange={this.handleClickFirst}
+                    />
                     </CInputGroup>
                     <CInputGroup className="mb-4">
-                      <TextField id="outlined-basic" label="Email" variant="outlined" style={{ width: "100%" }} />
+                      <TextField id="outlined-basic" label="Email" variant="outlined" style={{ width: "100%" }} 
+                    onChange={this.handleClickEmail}
+                    />
                     </CInputGroup>
                     <CInputGroup className="mb-4">
-                      <TextField id="outlined-basic" label="Password" type="password" variant="outlined" style={{ width: "100%" }} />
+                      <TextField id="outlined-basic" label="Password" type="password" variant="outlined" style={{ width: "100%" }} 
+                    onChange={this.handleClickPwd}
+                    />
                     </CInputGroup>
                     <CInputGroup className="mb-4">
                       <TextField id="outlined-basic" label="Confirm Password" type="password" variant="outlined" style={{ width: "100%" }} />
                     </CInputGroup>
                     <CInputGroup className="mb-4">
-                      <Button variant={"contained"} color={"primary"} fullWidth style={buttonStyle}>Sign Up</Button>
+                      <Button variant={"contained"} color={"primary"} fullWidth style={buttonStyle}
+                    onClick={this.handleClickSignUp}
+                    >Sign Up</Button>
                     </CInputGroup>
                     <CRow>
                       <CCol className="mb-4">
@@ -120,6 +220,7 @@ const Register = () => {
     </CContainer>
 
   )
+  }
 }
 
 export default Register
