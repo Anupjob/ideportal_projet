@@ -36,13 +36,14 @@ const auth = getAuth();
 
 const bgColor = {
   background: "rgb(131,73,191)",
-  // background: "linear-gradient(200deg, rgba(131,73,191,1) 0%, rgba(25,229,246,1) 100%)",
+  background: "linear-gradient(200deg, rgba(131,73,191,1) 16%, rgba(25,229,246,1) 84%)",
   position: "fixed",
   top: 0,
   left: 0,
   right: 0,
   bottom: 0,
-  width: "100%"
+  width: "100%",
+  overflowY: "auto"
 }
 const buttonStyle = {
   textTransform: 'none',
@@ -62,6 +63,23 @@ const pageTitle = {
   backgroundSize: "110px",
   padding: "15px 0 15px 140px"
 }
+
+const pageDesc = {
+  color: "#fff",
+  fontSize: "1.2em",
+  margin: "35px 0"
+}
+
+const pageDescList = {
+  color: "#fff",
+  fontSize: "1.2em",
+  margin: "35px 0",
+  background: "url(./list_icon.png) no-repeat",
+  backgroundSize: "30px",
+  padding: "0px 0px 20px 50px",
+  backgroundPosition: "0 5px"
+}
+
 const formDesc = {
   color: "#2d333a",
   fontSize: "21px",
@@ -80,14 +98,16 @@ const orText = {
   padding: "20px",
   color: "#707070"
 }
-const googleBtn = {
+const phoneBtn = {
   textTransform: 'none',
   lineHeight: "3",
-  marginTop: "30px",
+  margin: "30px auto 0 auto",
   background: "url(./phone_icon.png)",
   backgroundSize: "25px",
   backgroundRepeat: "no-repeat",
-  backgroundPosition: "100px"
+  backgroundPosition: "10px",
+  width: "222px",
+  display: "block"
 }
 
 
@@ -135,7 +155,7 @@ class Login extends React.Component {
 
     }
   }
-   
+
 
   componentDidMount = () => {
     firebase.auth().onAuthStateChanged(user => {
@@ -160,7 +180,7 @@ class Login extends React.Component {
     //   }
     // }, auth);
   }
-  
+
   onSelected = (data, dataOne, dataTwo) => {
     console.log("selected", data, dataOne, dataTwo, this.state);
     this.state.selectedItem.phoneNumber = data;
@@ -224,7 +244,7 @@ class Login extends React.Component {
   onClick = () => {
     //const phoneNumber = '+918607151081';
     const phoneNumber = '+' + this.state.selectedItem.phoneNumber + this.state.phone;
-    console.log("===phoneNumber:::",phoneNumber)
+    console.log("===phoneNumber:::", phoneNumber)
 
     //var testVerificationCode = "123456";
     // const appVerifier = window.recaptchaVerifier;
@@ -259,10 +279,10 @@ class Login extends React.Component {
               id="panel1bh-header"
             >
               <Typography>Select Phone Number Country </Typography>
-           &nbsp;
+              &nbsp;
 
 
-        </ExpansionPanelSummary>
+            </ExpansionPanelSummary>
 
             <div style={{ height: 200, overflowY: 'scroll' }}>
 
@@ -287,12 +307,12 @@ class Login extends React.Component {
                       <Typography onClick={() => this.onSelected(dataOne.phoneNumber, dataOne.flag, dataOne.Name.toLocaleUpperCase())}>
 
                         <img src={dataOne.flag} />
-   &nbsp;&nbsp;
-   {dataOne.Name.toLocaleUpperCase()}
-   &nbsp;&nbsp;
-   ( + {dataOne.phoneNumber} )
+                        &nbsp;&nbsp;
+                        {dataOne.Name.toLocaleUpperCase()}
+                        &nbsp;&nbsp;
+                        ( + {dataOne.phoneNumber} )
 
-        </Typography>
+                      </Typography>
                     </ExpansionPanelDetails>
                   ))}
 
@@ -307,12 +327,12 @@ class Login extends React.Component {
                       <Typography onClick={() => this.onSelected(dataOn.phoneNumber, dataOn.flag, dataOn.Name.toLocaleUpperCase())}>
 
                         <img src={dataOn.flag} />
-   &nbsp;&nbsp;
-   {dataOn.Name.toLocaleUpperCase()}
-   &nbsp;&nbsp;
-   ( + {dataOn.phoneNumber} )
+                        &nbsp;&nbsp;
+                        {dataOn.Name.toLocaleUpperCase()}
+                        &nbsp;&nbsp;
+                        ( + {dataOn.phoneNumber} )
 
-        </Typography>
+                      </Typography>
                     </ExpansionPanelDetails>
                   ))}
 
@@ -361,7 +381,7 @@ class Login extends React.Component {
           <p id="simple-modal-description">
             <div style={{ display: 'flex', justifyContent: 'center' }}>
               A verification code sent to this phone number.
-</div>
+            </div>
 
             <div style={{ marginTop: 20, display: 'flex', justifyContent: 'center' }}>
               <Grid container >
@@ -401,72 +421,82 @@ class Login extends React.Component {
       </div>
     );
 
-  return (
+    return (
 
-    <CContainer fluid style={bgColor}>
-      <CContainer style={{ paddingTop: "70px",overflowY:'scroll' ,height:'700px'}}>
-        <CRow>
-          <CCol md="7">
-            <h1 style={pageTitle}>WELCOME TO <br />IMAGE DATA EXTRACT</h1>
-            <p>From single printed documents to millions of digital documents processed Digital Glyde's Digital Image Data Extract can help you easily etract specific data seamlessly out of any printed document or digital file format.</p>
-          </CCol>
-          <CCol md="5">
-            <CCardGroup>
-              <CCard className="p-4">
-                <CCardBody>
-                  <CForm>
-                    <h1 style={formTitle}>Let's Get Started!</h1>
-                    <p style={formDesc}>Sign in to your Image Data Extract Account</p>
-                    <CInputGroup className="mb-4">
-                      <TextField id="outlined-basic" label="Email" variant="outlined" style={{ width: "100%" }} onChange={this.handleClickEmail} />
-                    </CInputGroup>
-                    <CInputGroup className="mb-4">
+      <CContainer fluid style={bgColor}>
+        <CContainer style={{ padding: "70px 0" }}>
+          <CRow>
+            <CCol md="7">
+              <h1 style={pageTitle}>WELCOME TO <br />IMAGE DATA EXTRACT</h1>
+              <p style={pageDesc}>From single printed documents to millions of digital documents processed Digital Glyde's Digital Image Data Extract can help you easily etract specific data seamlessly out of any printed document or digital file format.</p>
 
-                      <TextField id="outlined-basic" label="Password" type="password" variant="outlined" style={{ width: "100%" }}
-                    onChange={this.handleClickPwd}
-                    />
-                    </CInputGroup>
-                    <CInputGroup className="mb-4">
-                      <Button variant={"contained"} color={"primary"} fullWidth style={buttonStyle}
-                        onClick={this.handleClick}
+              <p style={pageDescList}><strong><em>Data Extraction</em></strong> allow users to scan/scrape multiple data sources simultaneously.</p>
+
+              <p style={pageDescList}><strong><em>Data Aggregation and Preparation</em></strong> creates rules and workflows to cleanse the relevant data.</p>
+
+              <p style={pageDescList}><strong><em>Modeling and Deployement of Models</em></strong> uses analytics to determaine modules and predictions.</p>
+
+              <p style={pageDescList}><strong><em>Data Integration</em></strong> helps increase operational efficiency by bringing data together info a unified view.</p>
+            </CCol>
+            <CCol md="5">
+              <CCardGroup>
+                <CCard className="p-4">
+                  <CCardBody>
+                    <CForm>
+                      <h1 style={formTitle}>Let's Get Started!</h1>
+                      <p style={formDesc}>Sign in to your Image Data Extract Account</p>
+                      <CInputGroup className="mb-4">
+                        <TextField id="outlined-basic" label="Email" variant="outlined" style={{ width: "100%" }} onChange={this.handleClickEmail} />
+                      </CInputGroup>
+                      <CInputGroup className="mb-4">
+
+                        <TextField id="outlined-basic" label="Password" type="password" variant="outlined" style={{ width: "100%" }}
+                          onChange={this.handleClickPwd}
+                        />
+                      </CInputGroup>
+                      <CInputGroup className="mb-4">
+                        <Button variant={"contained"} color={"primary"} fullWidth style={buttonStyle}
+                          onClick={this.handleClick}
                         >Login</Button>
-                    </CInputGroup>
-                    <CRow>
-                      <CCol className="mb-4">
-                        <Link to="/register" style={{ color: "#2d333a" }}>
-                          {"Don't have an account? Sign Up"}
-                        </Link>
-                      </CCol>
-                    </CRow>
+                      </CInputGroup>
+                      <CRow>
+                        <CCol className="mb-4">
+                          <Link to="/register" style={{ color: "#2d333a" }}>
+                            {"Don't have an account? Sign Up"}
+                          </Link>
+                        </CCol>
+                      </CRow>
 
-                    <div style={divider}><div style={orText}>OR</div></div>
+                      <div style={divider}><div style={orText}>OR</div></div>
 
-                    <div style={{ paddingBottom: 20, paddingTop: 20 }}>
-                  <StyledFirebaseAuth
-                    uiConfig={this.uiConfig}
-                    firebaseAuth={firebase.auth()}
-                  />
-                </div>
-                    <Button variant={"outlined"} fullWidth style={googleBtn} onClick={this.phoneClick} >Sign In with Phone No</Button>
-                    <Modal
-                    open={this.state.setOpen}
-                    onClose={this.handleClose}
-                    aria-labelledby="simple-modal-title"
-                    aria-describedby="simple-modal-description"
-                  >
-                    {body}
-                  </Modal>
-                  </CForm>
-                </CCardBody>
-              </CCard>
+                      <Button variant={"outlined"} fullWidth style={phoneBtn} onClick={this.phoneClick} >Sign In with Phone No</Button>
 
-            </CCardGroup>
-          </CCol>
-        </CRow>
+
+                      <StyledFirebaseAuth
+                        uiConfig={this.uiConfig}
+                        firebaseAuth={firebase.auth()}
+                      />
+
+
+                      <Modal
+                        open={this.state.setOpen}
+                        onClose={this.handleClose}
+                        aria-labelledby="simple-modal-title"
+                        aria-describedby="simple-modal-description"
+                      >
+                        {body}
+                      </Modal>
+                    </CForm>
+                  </CCardBody>
+                </CCard>
+
+              </CCardGroup>
+            </CCol>
+          </CRow>
+        </CContainer>
       </CContainer>
-    </CContainer>
 
-  )
+    )
   }
 }
 

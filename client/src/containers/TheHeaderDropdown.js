@@ -14,11 +14,18 @@ import 'firebase/compat/storage';
 import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
 
+const userText = {
+  color: "#fff",
+  fontSize: "1.4em",
+  marginRight: "10px",
+}
+
 const TheHeaderDropdown = () => {
   const history = useHistory();
   return (
-    <CDropdown inNav className="c-header-nav-items mx-2" direction="down">
+    <CDropdown inNav className="c-header-nav-items mx-3" direction="down">
       <CDropdownToggle className="c-header-nav-link" caret={false}>
+        <div style={userText}>Varun Garg</div>
         <div className="c-avatar">
           <CImg
             src={"avatars/6.jpg"}
@@ -86,7 +93,7 @@ const TheHeaderDropdown = () => {
         </CDropdownItem>
         <CDropdownItem divider />
         <CDropdownItem
-          onClick={() => { 
+          onClick={() => {
             firebase.auth().signOut();
             history.push("/");
 
