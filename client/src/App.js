@@ -37,34 +37,34 @@ class App extends Component {
 
     // useEffect(() => {
 
-    let firebaseConfig = {
-      apiKey: "AIzaSyA2lABjNHoBIT59FBdExUsCERc5RJw74ps",
-      authDomain: "imagedataextract.firebaseapp.com",
-      databaseURL: "https://imagedataextract.firebaseio.com",
-      projectId: "imagedataextract",
-      storageBucket: "imagedataextract.appspot.com",
-      messagingSenderId: "685805190840",
-      appId: "1:685805190840:web:86b3c58797f8dcd5e57e4d",
-      measurementId: "G-2T0WHRW487"
-    }
+    // let firebaseConfig = {
+    //   apiKey: "AIzaSyA2lABjNHoBIT59FBdExUsCERc5RJw74ps",
+    //   authDomain: "imagedataextract.firebaseapp.com",
+    //   databaseURL: "https://imagedataextract.firebaseio.com",
+    //   projectId: "imagedataextract",
+    //   storageBucket: "imagedataextract.appspot.com",
+    //   messagingSenderId: "685805190840",
+    //   appId: "1:685805190840:web:86b3c58797f8dcd5e57e4d",
+    //   measurementId: "G-2T0WHRW487"
+    // }
 
 
-    let fireApp = firebase.initializeApp(firebaseConfig);
+    // let fireApp = firebase.initializeApp(firebaseConfig);
 
     // this.setState({ fireAppInitialized: fireApp })
-    setTimeout(() => {
-      let uid = null
-      firebase.auth().onAuthStateChanged(async (user) => {
-        console.log("this.firebaseConfig", user);
-        if (user && user.uid) {
-          uid = user.uid
-          this.setState({ uid: uid })
-        }
-      })
-      setTimeout(() => {
-        this.setState({ dataLoaded: true })
-      }, 2000);
-    }, 3000);
+    // setTimeout(() => {
+    //   let uid = null
+    //   firebase.auth().onAuthStateChanged(async (user) => {
+    //     console.log("this.firebaseConfig", user);
+    //     if (user && user.uid) {
+    //       uid = user.uid
+    //       this.setState({ uid: uid })
+    //     }
+    //   })
+    //   setTimeout(() => {
+    //     this.setState({ dataLoaded: true })
+    //   }, 2000);
+    // }, 3000);
   }
 
   render() {

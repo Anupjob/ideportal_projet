@@ -43,10 +43,10 @@ const Dashboard = () => {
 
             <TableRow>
               <TableCell style={table_content}><a href='#' style={{ color: "#ccc" }}><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></a></TableCell>
-              <TableCell style={table_content}><i class="fa fa-search-plus" aria-hidden="true" 
-              onClick={() => {
-            history.push("/details");
-            }}></i></TableCell>
+              <TableCell style={table_content}><i class="fa fa-search-plus" aria-hidden="true"
+                onClick={() => {
+                  history.push("/details");
+                }}></i></TableCell>
               <TableCell style={table_content}><strong>INCOMING</strong> </TableCell>
               <TableCell style={table_content}>CHECKS ENVERUS</TableCell>
               <TableCell style={table_content}>12/21/21 10:30 AM</TableCell>

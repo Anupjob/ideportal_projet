@@ -4,123 +4,163 @@ import {
   CRow,
   CCol,
   CCard,
+  CInput,
+  CInputGroup,
+  CButton,
   CCardHeader,
   CCardBody
 } from '@coreui/react'
+
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import Paper from '@material-ui/core/Paper';
+import { useHistory } from "react-router";
+
 import { rgbToHex } from '@coreui/utils'
 import { DocsLink } from 'src/reusable'
 
-
-const ThemeView = () => {
-  const [color, setColor] = useState('rgb(255, 255, 255)')
-  const ref = createRef()
-
-  useEffect(() => {
-    const el = ref.current.parentNode.firstChild
-    const varColor = window.getComputedStyle(el).getPropertyValue('background-color')
-    setColor(varColor)
-  }, [ref])
-
-  return (
-    <table className="table w-100" ref={ref}>
-      <tbody>
-      <tr>
-        <td className="text-muted">HEX:</td>
-        <td className="font-weight-bold">{ rgbToHex(color) }</td>
-      </tr>
-      <tr>
-        <td className="text-muted">RGB:</td>
-        <td className="font-weight-bold">{ color }</td>
-      </tr>
-      </tbody>
-    </table>
-  )
+const text_box = {
+  fontSize: "1.3em",
+  fontWeight: "bold"
+}
+const upload_file = {
+  width: "100%",
+  height: "150px",
+  textIndent: "-100px",
+  marginBottom: "20px",
+  backgroundColor: "#f2f2f2",
+  backgroundImage: "url(../upload.png)",
+  backgroundRepeat: "no-repeat",
+  backgroundPosition: "50%",
+  backgroundSize: "130px",
+  cursor: "pointer"
+}
+const table_header = {
+  borderBottom: "1px solid #ccc",
+  color: "#2352a2",
+  fontSize: "1.2em"
+}
+const table_content = {
+  borderBottom: "1px dashed #ccc",
+  color: "rgb(142, 142, 142)"
 }
 
-const ThemeColor = ({className, children}) => {
-  const classes = classNames(className, 'theme-color w-75 rounded mb-3')
-  return (
-    <CCol xl="2" md="4" sm="6" xs="12" className="mb-4">
-      <div className={classes} style={{paddingTop: '75%'}}></div>
-      {children}
-      <ThemeView/>
-    </CCol>
-  )
-}
 
 const Colors = () => {
+
+  const history = useHistory();
   return (
     <>
-      <CCard>
-        <CCardHeader>
-          Theme colors
-          <DocsLink href="https://coreui.io/docs/utilities/colors/"/>
-        </CCardHeader>
-        <CCardBody>
-          <CRow>
-            <ThemeColor className="bg-primary">
-              <h6>Brand Primary Color</h6>
-            </ThemeColor>
-            <ThemeColor className="bg-secondary">
-              <h6>Brand Secondary Color</h6>
-            </ThemeColor>
-            <ThemeColor className="bg-success">
-              <h6>Brand Success Color</h6>
-            </ThemeColor>
-            <ThemeColor className="bg-danger">
-              <h6>Brand Danger Color</h6>
-            </ThemeColor>
-            <ThemeColor className="bg-warning">
-              <h6>Brand Warning Color</h6>
-            </ThemeColor>
-            <ThemeColor className="bg-info">
-              <h6>Brand Info Color</h6>
-            </ThemeColor>
-            <ThemeColor className="bg-light">
-              <h6>Brand Light Color</h6>
-            </ThemeColor>
-            <ThemeColor className="bg-dark">
-              <h6>Brand Dark Color</h6>
-            </ThemeColor>
-          </CRow>
-        </CCardBody>
-      </CCard>
-      <CCard>
-        <CCardHeader>
-          Grays
-        </CCardHeader>
-        <CCardBody>
-          <CRow className="mb-3">
-            <ThemeColor className="bg-gray-100">
-              <h6>Gray 100 Color</h6>
-            </ThemeColor>
-            <ThemeColor className="bg-gray-200">
-              <h6>Gray 200 Color</h6>
-            </ThemeColor>
-            <ThemeColor className="bg-gray-300">
-              <h6>Gray 300 Color</h6>
-            </ThemeColor>
-            <ThemeColor className="bg-gray-400">
-              <h6>Gray 400 Color</h6>
-            </ThemeColor>
-            <ThemeColor className="bg-gray-500">
-              <h6>Gray 500 Color</h6>
-            </ThemeColor>
-            <ThemeColor className="bg-gray-600">
-              <h6>Gray 600 Color</h6>
-            </ThemeColor>
-            <ThemeColor className="bg-gray-700">
-              <h6>Gray 700 Color</h6>
-            </ThemeColor>
-            <ThemeColor className="bg-gray-800">
-              <h6>Gray 800 Color</h6>
-            </ThemeColor>
-            <ThemeColor className="bg-gray-900">
-              <h6>Gray 900 Color</h6>
-            </ThemeColor>
-          </CRow>
-        </CCardBody>
-      </CCard>
+      <CCard style={{ padding: "3em" }}>
+        <CRow>
+          <CCol md="9"><div style={{ fontSize: "1.3em", marginBottom: "30px" }}>Filter by any of these details</div>
+            <CRow style={{ marginBottom: "20px" }}>
+              <CCol xs="5" style={text_box}>DATA RANGE: </CCol>
+              <CCol xs="7">
+                <CInputGroup>
+                  <CInput type="text" />
+                  <div style={{ width: "40px", fontSize: "1.3em", textAlign: "center" }}>to</div>
+                  <CInput type="text" />
+                </CInputGroup>
+              </CCol>
+            </CRow>
+            <CRow style={{ marginBottom: "20px" }}>
+              <CCol xs="5" style={text_box}>STATUS: </CCol>
+              <CCol xs="7">
+                <CInputGroup>
+                  <CInput type="text" />
+                </CInputGroup>
+              </CCol>
+            </CRow>
+            <CRow style={{ marginBottom: "20px" }}>
+              <CCol xs="5" style={text_box}>TYPE OF DOCUMENTS: </CCol>
+              <CCol xs="7">
+                <CInputGroup>
+                  <CInput type="text" />
+                </CInputGroup>
+              </CCol>
+            </CRow>
+          </CCol>
+          <CCol md="3">
+            <CInput type="file" style={upload_file} />
+            <CButton type="submit" color="primary" style={{ width: "100%", background: "#4ea7d8", border: "#4ea7d8" }}>Search</CButton>
+          </CCol>
+        </CRow>
+      </CCard >
+
+      <TableContainer component={Paper} style={{ position: "relative", zIndex: "5" }}>
+        <Table aria-label="simple table">
+          <TableHead>
+            <TableRow>
+              <TableCell style={table_header}>Status</TableCell>
+              <TableCell style={table_header}>30 days</TableCell>
+              <TableCell style={table_header}>60 days</TableCell>
+              <TableCell style={table_header}>120 days</TableCell>
+              <TableCell style={table_header}>YTD </TableCell>
+              <TableCell style={table_header}>View</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+
+            <TableRow>
+
+              <TableCell style={table_content}>INCOMING </TableCell>
+              <TableCell style={table_content}>12,3434</TableCell>
+              <TableCell style={table_content}>13,2344</TableCell>
+              <TableCell style={table_content}>12,3434</TableCell>
+              <TableCell style={table_content}>13,2344</TableCell>
+              <TableCell style={table_content}><a href='#'><i class="fa fa-search" aria-hidden="true"></i>
+              </a></TableCell>
+            </TableRow>
+            <TableRow>
+
+              <TableCell style={table_content}>OUTGOING </TableCell>
+              <TableCell style={table_content}>12,3434</TableCell>
+              <TableCell style={table_content}>13,2344</TableCell>
+              <TableCell style={table_content}>12,3434</TableCell>
+              <TableCell style={table_content}>13,2344</TableCell>
+              <TableCell style={table_content}><a href='#'><i class="fa fa-search" aria-hidden="true"></i>
+              </a></TableCell>
+            </TableRow>
+            <TableRow>
+
+              <TableCell style={table_content}>INCOMING </TableCell>
+              <TableCell style={table_content}>12,3434</TableCell>
+              <TableCell style={table_content}>13,2344</TableCell>
+              <TableCell style={table_content}>12,3434</TableCell>
+              <TableCell style={table_content}>13,2344</TableCell>
+              <TableCell style={table_content}><a href='#'><i class="fa fa-search" aria-hidden="true"></i>
+              </a></TableCell>
+            </TableRow>
+            <TableRow>
+
+              <TableCell style={table_content}>OUTGOING </TableCell>
+              <TableCell style={table_content}>12,3434</TableCell>
+              <TableCell style={table_content}>13,2344</TableCell>
+              <TableCell style={table_content}>12,3434</TableCell>
+              <TableCell style={table_content}>13,2344</TableCell>
+              <TableCell style={table_content}><a href='#'><i class="fa fa-search" aria-hidden="true"></i>
+              </a></TableCell>
+            </TableRow>
+            <TableRow>
+
+              <TableCell style={table_content}>INCOMING </TableCell>
+              <TableCell style={table_content}>12,3434</TableCell>
+              <TableCell style={table_content}>13,2344</TableCell>
+              <TableCell style={table_content}>12,3434</TableCell>
+              <TableCell style={table_content}>13,2344</TableCell>
+              <TableCell style={table_content}><a href='#'><i class="fa fa-search" aria-hidden="true"></i>
+              </a></TableCell>
+            </TableRow>
+
+          </TableBody>
+        </Table>
+      </TableContainer>
+
     </>
   )
 }
