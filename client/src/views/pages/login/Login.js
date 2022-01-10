@@ -177,12 +177,12 @@ class Login extends React.Component {
       }
     })
 
-    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier("recaptcha-container",
-      {
-        size: "invisible",
-        callback: () => { console.log('Callback!'); },
-        // other options
-      })
+    // window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier("recaptcha-container",
+    //   {
+    //     size: "invisible",
+    //     callback: () => { console.log('Callback!'); },
+    //     // other options
+    //   })
 
   }
 

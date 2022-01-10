@@ -16,8 +16,9 @@ import 'firebase/compat/firestore';
 
 const userText = {
   color: "#fff",
-  fontSize: "1.4em",
-  marginRight: "10px",
+  fontSize: "1.2em",
+  marginRight: "20px",
+  whiteSpace: "nowrap"
 }
 
 const TheHeaderDropdown = () => {
@@ -31,6 +32,7 @@ const TheHeaderDropdown = () => {
             src={"avatars/6.jpg"}
             className="c-avatar-img"
             alt="admin@bootstrapmaster.com"
+            style={{ width: "50px", height: "50px" }}
           />
         </div>
       </CDropdownToggle>
