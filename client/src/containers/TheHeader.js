@@ -40,6 +40,12 @@ const useStyles = makeStyles(theme => ({
     top: 0,
     left: 0,
   },
+  header_bg1: {
+    background: "rgb(131,73,191)",
+    background: "linear-gradient(200deg, rgba(131,73,191,1) 16%, rgba(25,229,246,1) 84%)",
+    zIndex: "20",
+    border: "0", paddingRight: "20px", position: "fixed"
+  },
   logo_image: {
     whiteSpace: "nowrap",
     background: "url(./dg_logo.png) no-repeat",
@@ -120,7 +126,7 @@ const TheHeader = () => {
   return (
     <>
       <div className={classes.header_bg}></div>
-      <CHeader withSubheader style={{ background: "none", border: "0", paddingRight: "20px" }}>
+      <CHeader withSubheader className={classes.header_bg1}>
         <CToggler
           inHeader
           className="ml-md-3 d-lg-none"

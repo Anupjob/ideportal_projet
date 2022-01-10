@@ -261,13 +261,13 @@ class Login extends React.Component {
 
   handleClick = () => {
     //console.log("one");
-    firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password)
-      .then((res) => {
-        this.props.history.push('/dashboard');
-      }).catch((error) => {
-        console.log(error);
-        alert("Please Enter Right Email or Password !");
-      })
+    // firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password)
+    //   .then((res) => {
+    this.props.history.push('/incoming_list');
+    // }).catch((error) => {
+    //   console.log(error);
+    //   alert("Please Enter Right Email or Password !");
+    // })
   }
   handlePhone = (event) => {
     this.setState({ phone: event.target.value })
