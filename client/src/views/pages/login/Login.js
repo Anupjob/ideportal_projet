@@ -118,8 +118,8 @@ const googleBtn = {
   backgroundSize: "25px",
   backgroundRepeat: "no-repeat",
   backgroundPosition: "100px",
-  justifyContent:'center',
-  
+  justifyContent: 'center',
+
 }
 
 
@@ -183,7 +183,7 @@ class Login extends React.Component {
         callback: () => { console.log('Callback!'); },
         // other options
       })
-    
+
   }
 
   onSelected = (data, dataOne, dataTwo) => {
@@ -283,13 +283,13 @@ class Login extends React.Component {
 
     //var testVerificationCode = "123456";
     const appVerifier = window.recaptchaVerifier;
-    console.log("===appVerifier:::",appVerifier)
+    console.log("===appVerifier:::", appVerifier)
 
     firebase
       .auth()
       .signInWithPhoneNumber(phoneNumber, appVerifier)
       .then(confirmResult => {
-        console.log("===confirmResult:::",confirmResult)
+        console.log("===confirmResult:::", confirmResult)
 
         this.setState({ confirmResult, changeOne: true })
       })
@@ -408,9 +408,9 @@ class Login extends React.Component {
           </div>
           <div style={{ display: 'flex', justifyContent: 'center' }}>
             <Button onClick={this.onClick}
-              style={{ display: 'flex',justifyContent: 'center', marginTop: 18, height: 30, borderRadius: 5, backgroundColor: '#04af86', color: 'white', fontSize: 12, fontWeight: 600 }}
+              style={{ display: 'flex', justifyContent: 'center', marginTop: 18, height: 30, borderRadius: 5, backgroundColor: '#04af86', color: 'white', fontSize: 12, fontWeight: 600 }}
             >
-              <p style={{marginTop:10}} >Send Code</p>
+              <p style={{ marginTop: 10 }} >Send Code</p>
             </Button>
           </div>
         </p>
@@ -486,51 +486,52 @@ class Login extends React.Component {
                       <CInputGroup className="mb-4">
                         <TextField id="outlined-basic" label="Email" variant="outlined" style={{ width: "100%" }} onChange={this.handleClickEmail} />
                       </CInputGroup>
-                      <CInputGroup className="mb-4">
+                      {/* <CInputGroup className="mb-4">
 
-                        <TextField id="outlined-basic" label="Password" type="password" variant="outlined" style={{ width: "100%" }}
+                        <TextField id="outlined-basic" label="Enter OTP" type="text" variant="outlined" style={{ width: "100%" }}
                           onChange={this.handleClickPwd}
                         />
-                      </CInputGroup>
+                      </CInputGroup> */}
                       <CInputGroup className="mb-4">
                         <Button variant={"contained"} color={"primary"} fullWidth style={buttonStyle}
                           onClick={this.handleClick}
-                        >Login</Button>
-                    </CInputGroup>
-                    <CRow>
-                      <CCol className="mb-4">
-                        <Link to="/register" style={{ color: "#2d333a" }}>
-                          {"Don't have an account? Sign Up"}
-                        </Link>
-                      </CCol>
-                    </CRow>
+                        >Let's Go</Button>
+                      </CInputGroup>
+                      <CRow>
+                        <CCol className="mb-4">
+                          <Link to="/register" style={{ color: "#2d333a" }}>
+                            {"Don't have an account? Sign Up"}
+                          </Link>
+                        </CCol>
+                      </CRow>
 
-                    <div style={divider}><div style={orText}>OR</div></div>
+                      {/* <div style={divider}><div style={orText}>OR</div></div>
 
-                    <div style={{ paddingBottom: 20, paddingTop: 20 }}>
-                  <StyledFirebaseAuth
-                    uiConfig={this.uiConfig}
-                    firebaseAuth={firebase.auth()}
-                  />
-                </div>
-                    <Button id="recaptcha-container" variant={"outlined"} fullWidth style={phoneBtn} onClick={this.phoneClick} >Sign In with Phone No</Button>
+                      <Button variant={"outlined"} fullWidth style={phoneBtn} onClick={this.phoneClick} >Sign In with Phone No</Button>
 
-                    <Modal
-                    open={this.state.setOpen}
-                    onClose={this.handleClose}
-                    aria-labelledby="simple-modal-title"
-                    aria-describedby="simple-modal-description"
-                  >
-                    {body}
-                  </Modal>
-                  </CForm>
-                </CCardBody>
-              </CCard>
 
-            </CCardGroup>
-          </CCol>
-        </CRow>
-      </CContainer>
+                      <StyledFirebaseAuth
+                        uiConfig={this.uiConfig}
+                        firebaseAuth={firebase.auth()}
+                      />
+
+
+                      <Modal
+                        open={this.state.setOpen}
+                        onClose={this.handleClose}
+                        aria-labelledby="simple-modal-title"
+                        aria-describedby="simple-modal-description"
+                      >
+                        {body}
+                      </Modal> */}
+                    </CForm>
+                  </CCardBody>
+                </CCard>
+
+              </CCardGroup>
+            </CCol>
+          </CRow>
+        </CContainer>
       </CContainer>
 
     )
