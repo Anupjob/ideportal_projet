@@ -170,12 +170,12 @@ class Login extends React.Component {
 
 
   componentDidMount = () => {
-    firebase.auth().onAuthStateChanged(user => {
-      this.setState({ isSignedIn: !!user })
-      if (user) {
-        this.props.history.push('/dashboard');
-      }
-    })
+    // firebase.auth().onAuthStateChanged(user => {
+    //   this.setState({ isSignedIn: !!user })
+    //   if (user) {
+    //     this.props.history.push('/incoming_list');
+    //   }
+    // })
 
     // window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier("recaptcha-container",
     //   {

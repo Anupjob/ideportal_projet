@@ -7,6 +7,8 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
+import { useHistory } from "react-router";
+
 
 const table_header = {
   borderBottom: "1px solid #ccc",
@@ -19,6 +21,8 @@ const table_content = {
 }
 
 const Dashboard = () => {
+  const history = useHistory();
+
   return (
     <>
       <TableContainer component={Paper} style={{ position: "relative", zIndex: "5" }}>
@@ -39,7 +43,10 @@ const Dashboard = () => {
 
             <TableRow>
               <TableCell style={table_content}><a href='#' style={{ color: "#ccc" }}><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></a></TableCell>
-              <TableCell style={table_content}><a href='#' style={{ color: "#ccc" }}><i class="fa fa-search-plus" aria-hidden="true"></i></a></TableCell>
+              <TableCell style={table_content}><i class="fa fa-search-plus" aria-hidden="true" 
+              onClick={() => {
+            history.push("/details");
+            }}></i></TableCell>
               <TableCell style={table_content}><strong>INCOMING</strong> </TableCell>
               <TableCell style={table_content}>CHECKS ENVERUS</TableCell>
               <TableCell style={table_content}>12/21/21 10:30 AM</TableCell>
@@ -59,7 +66,7 @@ const Dashboard = () => {
             </TableRow>
             <TableRow>
               <TableCell style={table_content}><a href='#' style={{ color: "#ccc" }}><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></a></TableCell>
-              <TableCell style={table_content}><a href='#' style={{ color: "#ccc" }}><i class="fa fa-search-plus" aria-hidden="true"></i></a></TableCell>
+              <TableCell style={table_content}><a href='#' style={{ color: "#ccc" }}><i class="fa fa-search-plus" aria-hidden="true" ></i></a></TableCell>
               <TableCell style={table_content}><strong>INCOMING</strong> </TableCell>
               <TableCell style={table_content}>CHECKS ENVERUS</TableCell>
               <TableCell style={table_content}>12/21/21 10:30 AM</TableCell>
