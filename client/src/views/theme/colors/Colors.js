@@ -87,7 +87,7 @@ const Colors = () => {
           </CCol>
           <CCol md="3">
             <CInput type="file" style={upload_file} />
-            <CButton type="submit" color="primary" style={{ width: "100%", background: "#4ea7d8", border: "#4ea7d8" }}>Search</CButton>
+            <CButton type="submit" color="primary" style={{ width: "100%", background: "#4ea7d8", border: "#4ea7d8" }}> Search</CButton>
           </CCol>
         </CRow>
       </CCard >
