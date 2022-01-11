@@ -31,8 +31,8 @@ import firebase from 'firebase/compat/app';
 import 'firebase/compat/storage';
 import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
-import { getAuth, RecaptchaVerifier } from "firebase/auth";
-const auth = getAuth();
+// import { getAuth, RecaptchaVerifier } from "firebase/auth";
+// const auth = getAuth();
 
 
 const bgColor = {
@@ -87,40 +87,40 @@ const formDesc = {
   textAlign: "center",
   marginBottom: "40px"
 }
-const divider = {
-  lineHeight: "3px",
-  borderTop: "1px solid #707070",
-  marginTop: "20px"
-}
-const orText = {
-  background: "rgb(255, 255, 255)",
-  display: "table",
-  margin: "-23px auto",
-  padding: "20px",
-  color: "#707070"
-}
-const phoneBtn = {
-  textTransform: 'none',
-  lineHeight: "3",
-  margin: "0px auto 0 auto",
-  background: "url(./phone_icon.png)",
-  backgroundSize: "25px",
-  backgroundRepeat: "no-repeat",
-  backgroundPosition: "10px",
-  width: "222px",
-  display: "block"
-}
-const googleBtn = {
-  textTransform: 'none',
-  lineHeight: "3",
-  marginTop: "30px",
-  background: "url(./phone_icon.png)",
-  backgroundSize: "25px",
-  backgroundRepeat: "no-repeat",
-  backgroundPosition: "100px",
-  justifyContent: 'center',
+// const divider = {
+//   lineHeight: "3px",
+//   borderTop: "1px solid #707070",
+//   marginTop: "20px"
+// }
+// const orText = {
+//   background: "rgb(255, 255, 255)",
+//   display: "table",
+//   margin: "-23px auto",
+//   padding: "20px",
+//   color: "#707070"
+// }
+// const phoneBtn = {
+//   textTransform: 'none',
+//   lineHeight: "3",
+//   margin: "0px auto 0 auto",
+//   background: "url(./phone_icon.png)",
+//   backgroundSize: "25px",
+//   backgroundRepeat: "no-repeat",
+//   backgroundPosition: "10px",
+//   width: "222px",
+//   display: "block"
+// }
+// const googleBtn = {
+//   textTransform: 'none',
+//   lineHeight: "3",
+//   marginTop: "30px",
+//   background: "url(./phone_icon.png)",
+//   backgroundSize: "25px",
+//   backgroundRepeat: "no-repeat",
+//   backgroundPosition: "100px",
+//   justifyContent: 'center',
 
-}
+// }
 
 
 class Login extends React.Component {
@@ -154,19 +154,19 @@ class Login extends React.Component {
     }
   }
 
-  state = { isSignedIn: false }
-  uiConfig = {
-    signInFlow: "popup",
-    signInOptions: [
-      firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-      firebase.auth.FacebookAuthProvider.PROVIDER_ID,
-    ],
-    width: 240,
-    callbacks: {
-      signInSuccess: () => false
+  // state = { isSignedIn: false }
+  // uiConfig = {
+  //   signInFlow: "popup",
+  //   signInOptions: [
+  //     firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+  //     firebase.auth.FacebookAuthProvider.PROVIDER_ID,
+  //   ],
+  //   width: 240,
+  //   callbacks: {
+  //     signInSuccess: () => false
 
-    }
-  }
+  //   }
+  // }
 
 
   componentDidMount = () => {
