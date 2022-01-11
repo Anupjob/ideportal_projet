@@ -1,0 +1,7 @@
+fastapi==0.70.0
+uvicorn==0.15.0
+fastapi-utils==0.2.1
+PyJWT==1.7.1
+python-decouple==3.3
+#git+ssh://git@ssh.dev.azure.com:v3/digitalglyde/IDE/glyder
+#git+https://<personal_access_token>@github.com/varunwyest/glyder.git
