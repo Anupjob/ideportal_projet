@@ -263,7 +263,7 @@ class Login extends React.Component {
     //console.log("one");
     // firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password)
     //   .then((res) => {
-    this.props.history.push('/incoming_list');
+    this.props.history.push('/document_list');
     // }).catch((error) => {
     //   console.log(error);
     //   alert("Please Enter Right Email or Password !");
