@@ -37,6 +37,7 @@ const Dashboard = () => {
               <TableCell style={table_header}>DATE/TIME PROCESSED</TableCell>
               <TableCell style={table_header}># OF PAGES</TableCell>
               <TableCell style={table_header}>DOCUMENTS STATUS</TableCell>
+
             </TableRow>
           </TableHead>
           <TableBody>
