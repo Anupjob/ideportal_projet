@@ -23,7 +23,10 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import CountryList from './CountryList';
 import _ from "underscore";
 import Modal from '@material-ui/core/Modal';
-import { AccordionDetails } from '@material-ui/core'
+import { AccordionDetails } from '@material-ui/core';
+import CircularProgress from "@material-ui/core/CircularProgress";
+
+
 
 
 //import Modal from 'react-modal';
@@ -31,6 +34,8 @@ import firebase from 'firebase/compat/app';
 import 'firebase/compat/storage';
 import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
+import axios from "axios";
+
 // import { getAuth, RecaptchaVerifier } from "firebase/auth";
 // const auth = getAuth();
 
@@ -87,6 +92,25 @@ const formDesc = {
   textAlign: "center",
   marginBottom: "40px"
 }
+const otpText = {
+  color: "#2d333a",
+  fontSize: "18px",
+  textAlign: "center",
+  marginBottom: "40px"
+}
+
+const loader={
+  position: "fixed",
+  top:"0",
+  left:"0",
+  right:"0",
+  bottom:"0",
+  background: "rgba(255,255,255,0.4)",
+  zIndex: "100",
+  display:"table",
+  width:"100%",
+  height:"100%"
+}
 // const divider = {
 //   lineHeight: "3px",
 //   borderTop: "1px solid #707070",
@@ -138,6 +162,8 @@ class Login extends React.Component {
       newArr: [],
       confirmResult: null,
       change: false,
+      sendOtp: false,
+      isLoading:false,
       changeOne: false,
       phone: '',
       error: '',
@@ -263,11 +289,68 @@ class Login extends React.Component {
     //console.log("one");
     // firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password)
     //   .then((res) => {
-    this.props.history.push('/document_list');
+    // this.props.history.push('/document_list');
     // }).catch((error) => {
     //   console.log(error);
     //   alert("Please Enter Right Email or Password !");
     // })
+     if(this.state.email == '' || this.state.email == null || this.state.email == undefined){
+      // console.log("===Please Enter Email")
+      alert("Please Enter Email !");
+     }else{
+      console.log("===You are in else")
+      this.setState({isLoading:true})
+     const headers = {
+      "Content-Type": "application/json",
+      // Authorization: "Bearer " + logginUser.token,
+      // reqFrom: "ADMIN",
+    };
+    axios({
+      method: "POST",
+      url: "http://192.168.11.170:8081/user/login/",
+      data:JSON.stringify({email: this.state.email }),
+      headers,
+    }).then((response) => {
+      console.log("Respone from post ", response);
+      this.setState({ sendOtp: true,isLoading:false})
+
+    })
+  }
+  }
+  verifyOtpClick = () => {
+    if(this.state.email == '' || this.state.email == null || this.state.email == undefined){
+      // console.log("===Please Enter Email")
+      alert("Please Enter Email !");
+     }
+     else if(this.state.password == '' || this.state.password == null || this.state.password == undefined){
+      alert("Please Enter OTP !");
+     }
+     else{
+      this.setState({isLoading:true})
+
+    const headers = {
+      "Content-Type": "application/json",
+      // Authorization: "Bearer " + logginUser.token,
+      // reqFrom: "ADMIN",
+    };
+    axios({
+      method: "POST",
+      url: "http://192.168.11.170:8081/user/login/",
+      data:JSON.stringify({email: this.state.email,otp:this.state.password }),
+      headers,
+    }).then((response) => {
+      console.log("Respone from Verify otp ", response.data,response.data.err);
+      this.setState({isLoading:false})
+
+      if (response.data.err ){
+        alert(response.data.err);
+      }
+      if(response.data.result == "success"){
+        this.props.history.push('/document_list');
+      }
+
+    })
+  }
   }
   handlePhone = (event) => {
     this.setState({ phone: event.target.value })
@@ -298,6 +381,9 @@ class Login extends React.Component {
       });
   }
   render() {
+    const { sendOtp } = this.props;
+    console.log("===sendOtp in render:::",this.state.sendOtp)
+
 
     var contList = [];
     _.each(CountryList, (key, item) => {
@@ -461,6 +547,7 @@ class Login extends React.Component {
 
     return (
 
+
       <CContainer fluid style={bgColor}>
         <CContainer style={{ padding: "70px 0" }}>
           <CRow>
@@ -486,17 +573,24 @@ class Login extends React.Component {
                       <CInputGroup className="mb-4">
                         <TextField id="outlined-basic" label="Email" variant="outlined" style={{ width: "100%" }} onChange={this.handleClickEmail} />
                       </CInputGroup>
-                      {/* <CInputGroup className="mb-4">
+                      {this.state.sendOtp ? <CInputGroup className="mb-4">
 
                         <TextField id="outlined-basic" label="Enter OTP" type="text" variant="outlined" style={{ width: "100%" }}
                           onChange={this.handleClickPwd}
                         />
-                      </CInputGroup> */}
-                      <CInputGroup className="mb-4">
+                      </CInputGroup>:null}
+                      {this.state.sendOtp ?
+                      <p style={otpText}>The OTP is sent to given Email Id</p>
+                      :null}
+                      {this.state.sendOtp ? <CInputGroup className="mb-4">
+                        <Button variant={"contained"} color={"primary"} fullWidth style={buttonStyle}
+                          onClick={this.verifyOtpClick}
+                        >Verify OTP</Button>
+                      </CInputGroup>: <CInputGroup className="mb-4">
                         <Button variant={"contained"} color={"primary"} fullWidth style={buttonStyle}
                           onClick={this.handleClick}
                         >Let's Go</Button>
-                      </CInputGroup>
+                      </CInputGroup>}
                       <CRow>
                         <CCol className="mb-4">
                           <Link to="/register" style={{ color: "#2d333a" }}>
@@ -504,7 +598,13 @@ class Login extends React.Component {
                           </Link>
                         </CCol>
                       </CRow>
-
+                      {this.state.isLoading && (
+                        <div style={loader}>
+                     
+                      <CircularProgress style={{margin: "22% auto", display: "block"}} />
+                      
+                      </div>
+                      )}
                       {/* <div style={divider}><div style={orText}>OR</div></div>
 
                       <Button variant={"outlined"} fullWidth style={phoneBtn} onClick={this.phoneClick} >Sign In with Phone No</Button>
