@@ -1,5 +1,18 @@
-import React from 'react';
+
+import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import {
+  CRow,
+  CCol,
+  CCard,
+  CInput,
+  CInputGroup,
+  CButton,
+  CSelect,
+  CCardHeader,
+  CCardBody,
+  CForm
+} from '@coreui/react'
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -19,12 +32,122 @@ const table_content = {
   borderBottom: "1px dashed #ccc",
   color: "rgb(142, 142, 142)"
 }
-
+const text_box = {
+  fontSize: "1.3em",
+  fontWeight: "bold"
+}
+const upload_file = {
+  outline: "5px dashed #4ea7d8",
+  textIndent: "-200px",
+  padding: "50px 0",
+  borderRadius: "30px",
+  background: "none",
+  border: "none",
+}
 const Dashboard = () => {
+  // const [Sdate, setSdate] = useState();
+  // const [Edate, setEdate] = useState();
+  // const [Status, setStatus] = useState();
+  // const [Document, setDocument] = useState();
+
   const history = useHistory();
+  // const Sdate = (event) => {
+  //   console.log(event.target.value);
+  // }
+
+  // const Edate = (event) => {
+  //   console.log(event.target.value);
+  // }
+
+
+  // const Status = (event) => {
+  //   console.log(event.target.value);
+  // }
+
+  // const Document = (event) => {
+  //   console.log(event.target.value);
+  // }
+
 
   return (
     <>
+
+      <CCard style={{ padding: "3em" }}>
+        <CForm
+        // onSubmit={searchBtn}
+        >
+          <CRow>
+            <CCol><div style={{ fontSize: "1.3em", marginBottom: "30px" }}>Filter by any of these details</div>
+              <CRow style={{ marginBottom: "20px" }}>
+                <CCol xs="4" style={text_box}>DATA RANGE: </CCol>
+                <CCol xs="8">
+                  <CInputGroup>
+                    <CInput
+                      type="date"
+                      name='StartDate'
+                    // onChange={Sdate}
+                    />
+                    <div style={{ width: "40px", fontSize: "1.3em", textAlign: "center" }}>to</div>
+                    <CInput
+                      type="date"
+                      name='EndDate'
+                    // onChange={Edate}
+                    />
+                  </CInputGroup>
+                </CCol>
+              </CRow>
+              <CRow style={{ marginBottom: "20px" }}>
+                <CCol xs="4" style={text_box}>STATUS: </CCol>
+                <CCol xs="8">
+                  <CInputGroup>
+                    <CSelect aria-label="Default select example"
+                      name='Status'
+                    // onChange={Status}
+                    >
+                      <option>SELECT STATUS</option>
+                      <option value="PROCESSED">PROCESSED</option>
+                      <option value="PENDING">PENDING</option>
+                      <option value="ERROR">ERROR</option>
+                    </CSelect>
+                    {/* <CInput type="text" /> */}
+                  </CInputGroup>
+                </CCol>
+              </CRow>
+              <CRow style={{ marginBottom: "20px" }}>
+                <CCol xs="4" style={text_box}>TYPE OF DOCUMENTS: </CCol>
+                <CCol xs="8">
+                  <CInputGroup>
+                    <CInput
+                      type="text"
+                      name='Documents'
+                    // onChange={Document}
+                    />
+                  </CInputGroup>
+                </CCol>
+              </CRow>
+
+              <CRow>
+                <CCol md="9"></CCol>
+                <CCol md="3">
+                  <CButton
+                    // onClick={searchBtn} 
+                    color="primary"
+                    size="lg"
+                    style={{ width: "100%", background: "#4ea7d8", border: "#4ea7d8" }}
+                  >Search
+                  </CButton></CCol>
+              </CRow>
+
+            </CCol>
+
+          </CRow>
+        </CForm>
+      </CCard >
+
+
+
+
+
       <TableContainer component={Paper} style={{ position: "relative", zIndex: "5" }}>
         <Table aria-label="simple table">
           <TableHead>
@@ -103,4 +226,4 @@ const Dashboard = () => {
   )
 }
 
-export default Dashboard
+export default Dashboard;

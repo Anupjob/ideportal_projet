@@ -53,6 +53,7 @@ const useStyles = makeStyles(theme => ({
     padding: "60px 0px 60px 130px",
     backgroundPosition: "0 50%",
     color: "#fff",
+    marginLeft: "40px",
     "@media (max-width: 1200px)": {
       backgroundSize: "70px",
       padding: "40px 0px 40px 90px",
@@ -65,10 +66,10 @@ const useStyles = makeStyles(theme => ({
     margin: "0",
     "@media (max-width: 1200px)": {
       width: "100%",
-      margin: "-20px 0 20px 70px"
+      margin: "-20px 0 20px 40px"
     },
     "@media (max-width: 767px)": {
-      marginLeft: "50px",
+      // marginLeft: "50px",
 
     }
   },
@@ -77,10 +78,10 @@ const useStyles = makeStyles(theme => ({
   bottom_content: {
     background: "none",
     border: "none",
-    paddingLeft: "70px",
+    paddingLeft: "40px",
     display: "block",
     "@media (max-width: 767px)": {
-      paddingLeft: "50px",
+      // paddingLeft: "50px",
 
     }
   },
@@ -127,7 +128,7 @@ const TheHeader = () => {
     <>
       <div className={classes.header_bg}></div>
       <CHeader withSubheader className={classes.header_bg1}>
-        <CToggler
+        {/* <CToggler
           inHeader
           className="ml-md-3 d-lg-none"
           onClick={toggleSidebarMobile}
@@ -136,7 +137,7 @@ const TheHeader = () => {
           inHeader
           className="ml-3 d-md-down-none"
           onClick={toggleSidebar}
-        />
+        /> */}
 
         <CHeaderNav className="mr-auto">
           <CHeaderNavItem >

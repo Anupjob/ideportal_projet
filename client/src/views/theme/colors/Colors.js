@@ -7,8 +7,10 @@ import {
   CInput,
   CInputGroup,
   CButton,
+  CSelect,
   CCardHeader,
-  CCardBody
+  CCardBody,
+  CForm
 } from '@coreui/react'
 
 import Table from '@material-ui/core/Table';
@@ -28,16 +30,22 @@ const text_box = {
   fontWeight: "bold"
 }
 const upload_file = {
+  outline: "5px dashed #4ea7d8",
+  textIndent: "-200px",
+  padding: "50px 0",
+  borderRadius: "30px",
+  background: "none",
+  border: "none",
+  position: "relative",
+  zIndex: "1"
+}
+const upload_text = {
   width: "100%",
-  height: "150px",
-  textIndent: "-100px",
-  marginBottom: "20px",
-  backgroundColor: "#f2f2f2",
-  backgroundImage: "url(../upload.png)",
-  backgroundRepeat: "no-repeat",
-  backgroundPosition: "50%",
-  backgroundSize: "130px",
-  cursor: "pointer"
+  textAlign: "center",
+  fontSize: "1.4em",
+  marginTop: "-65px",
+  marginBottom: "35px",
+  color: "#b3b3b3"
 }
 const table_header = {
   borderBottom: "1px solid #ccc",
@@ -56,40 +64,17 @@ const Colors = () => {
   return (
     <>
       <CCard style={{ padding: "3em" }}>
-        <CRow>
-          <CCol md="9"><div style={{ fontSize: "1.3em", marginBottom: "30px" }}>Filter by any of these details</div>
-            <CRow style={{ marginBottom: "20px" }}>
-              <CCol xs="5" style={text_box}>DATA RANGE: </CCol>
-              <CCol xs="7">
-                <CInputGroup>
-                  <CInput type="text" />
-                  <div style={{ width: "40px", fontSize: "1.3em", textAlign: "center" }}>to</div>
-                  <CInput type="text" />
-                </CInputGroup>
-              </CCol>
-            </CRow>
-            <CRow style={{ marginBottom: "20px" }}>
-              <CCol xs="5" style={text_box}>STATUS: </CCol>
-              <CCol xs="7">
-                <CInputGroup>
-                  <CInput type="text" />
-                </CInputGroup>
-              </CCol>
-            </CRow>
-            <CRow style={{ marginBottom: "20px" }}>
-              <CCol xs="5" style={text_box}>TYPE OF DOCUMENTS: </CCol>
-              <CCol xs="7">
-                <CInputGroup>
-                  <CInput type="text" />
-                </CInputGroup>
-              </CCol>
-            </CRow>
-          </CCol>
-          <CCol md="3">
-            <CInput type="file" style={upload_file} />
-            <CButton type="submit" color="primary" style={{ width: "100%", background: "#4ea7d8", border: "#4ea7d8" }}> Search</CButton>
-          </CCol>
-        </CRow>
+        <CForm>
+          <CRow>
+            <CCol md="8">
+              <CInput type='file' style={upload_file} placeholder='sdsdfs' />
+              <div style={upload_text}>Drag or Upload files</div>
+            </CCol>
+            <CCol md="4">
+              <CButton color="primary" size="lg" style={{ width: "100%", background: "#4ea7d8", border: "#4ea7d8", marginTop: "25px" }}> Upload File</CButton>
+            </CCol>
+          </CRow>
+        </CForm>
       </CCard >
 
       <TableContainer component={Paper} style={{ position: "relative", zIndex: "5" }}>

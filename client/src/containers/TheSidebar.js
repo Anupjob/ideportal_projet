@@ -19,12 +19,13 @@ import navigation from './_nav'
 
 const TheSidebar = () => {
   const dispatch = useDispatch()
-  const show = useSelector(state => state.sidebarShow)
-  // const show = useSelector(state => false)
+  // const show = useSelector(state => state.sidebarShow)
+  const show = useSelector(state => false)
 
   return (
     <CSidebar
-      show={!show}
+      // show={!show}
+      show={false}
       onShowChange={(val) => dispatch({ type: 'set', sidebarShow: val })}
     >
       <CSidebarBrand className="d-md-down-none" to="/">
