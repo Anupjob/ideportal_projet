@@ -24,6 +24,12 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import { useHistory } from "react-router";
 import axios from "axios";
+import Dialog from "@material-ui/core/Dialog";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import Button from "@material-ui/core/Button";
 
 const loader = {
   position: "fixed",
@@ -67,6 +73,19 @@ const Dashboard = () => {
   const [Status, setStatus] = useState('');
   const [Document, setDocument] = useState('');
   const [IncomingArr, setIncomingArr] = useState([]);
+  const [open, setOpen] = React.useState(false);
+  const [errorMsg, setErrorMsg] = React.useState('');
+
+
+  const handleClickToOpen = (errMsg) => {
+    console.log("===errMsg===",errMsg)
+    setErrorMsg(errMsg);
+    setOpen(true);
+  };
+  
+  const handleToClose = () => {
+    setOpen(false);
+  };
 
 
   const history = useHistory();
@@ -230,8 +249,28 @@ const Dashboard = () => {
             <TableBody>
               {IncomingArr.length > 0 && IncomingArr.map((data) => (
                 <TableRow>
-                  <TableCell style={table_content}><a href='#' style={{ color: "#ccc" }}><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></a></TableCell>
-                  <TableCell style={table_content}><i class="fa fa-search-plus" aria-hidden="true"
+                 
+                  <TableCell style={table_content}>
+                  {data.docStatus.toLowerCase() == 'error' && 
+                    <a style={{ color: "#00f" }} onClick = {()=>handleClickToOpen(data.errMsg)}>
+                      {console.log("==data error msg::",data)}
+                     <i class="fa fa-exclamation-triangle" aria-hidden="true" >
+                      </i>
+                    </a>
+                    }
+                  </TableCell>
+                  <Dialog open={open} onClose={handleToClose}>
+               <DialogTitle>Error</DialogTitle>
+                <DialogContent style={{minWidth:500}}>
+                 <DialogContentText>
+                {errorMsg}
+               </DialogContentText>
+              </DialogContent>
+              <DialogActions>
+              <Button style={{backgroundColor:'#4EA7D8',fontSize:14,color:'white'}} onClick={handleToClose}>Close</Button>
+              </DialogActions>
+              </Dialog>
+                      <TableCell style={table_content}><i class="fa fa-search-plus" aria-hidden="true"
                     onClick={() => {
                       history.push("/details");
                     }}></i></TableCell>
