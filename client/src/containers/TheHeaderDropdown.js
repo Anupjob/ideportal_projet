@@ -26,7 +26,7 @@ const TheHeaderDropdown = () => {
   return (
     <CDropdown inNav className="c-header-nav-items mx-3" direction="down">
       <CDropdownToggle className="c-header-nav-link" caret={false}>
-        <div style={userText}>Varun Garg</div>
+        <div style={userText}>John Doe</div>
         <div className="c-avatar">
           <CImg
             src={"avatars/6.jpg"}
@@ -37,7 +37,7 @@ const TheHeaderDropdown = () => {
         </div>
       </CDropdownToggle>
       <CDropdownMenu className="pt-0" placement="bottom-end">
-        <CDropdownItem header tag="div" color="light" className="text-center">
+        {/* <CDropdownItem header tag="div" color="light" className="text-center">
           <strong>Account</strong>
         </CDropdownItem>
         <CDropdownItem>
@@ -74,35 +74,39 @@ const TheHeaderDropdown = () => {
         <CDropdownItem>
           <CIcon name="cil-user" className="mfe-2" />
           Profile
-        </CDropdownItem>
-        <CDropdownItem>
+        </CDropdownItem> */}
+        {/* <CDropdownItem>
           <CIcon name="cil-settings" className="mfe-2" />
           Settings
-        </CDropdownItem>
-        <CDropdownItem>
+        </CDropdownItem> */}
+        {/* <CDropdownItem>
           <CIcon name="cil-credit-card" className="mfe-2" />
           Payments
           <CBadge color="secondary" className="mfs-auto">
             42
           </CBadge>
-        </CDropdownItem>
-        <CDropdownItem>
+        </CDropdownItem> */}
+        {/* <CDropdownItem>
           <CIcon name="cil-file" className="mfe-2" />
           Projects
           <CBadge color="primary" className="mfs-auto">
             42
           </CBadge>
-        </CDropdownItem>
+        </CDropdownItem> */}
         <CDropdownItem divider />
         <CDropdownItem
           onClick={() => {
-            firebase.auth().signOut();
+            // firebase.auth().signOut();
+            // history.push("/");
+            console.log('handleLogout', history);
+            localStorage.clear();
             history.push("/");
 
           }}
         >
           <CIcon name="cil-lock-locked" className="mfe-2" />
-          Lock Account
+          {/* Lock Account */}
+          Sign Out 
         </CDropdownItem>
       </CDropdownMenu>
     </CDropdown>

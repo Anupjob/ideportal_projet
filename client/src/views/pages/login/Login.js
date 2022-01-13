@@ -294,10 +294,13 @@ class Login extends React.Component {
     //   console.log(error);
     //   alert("Please Enter Right Email or Password !");
     // })
+    const regex = /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
      if(this.state.email == '' || this.state.email == null || this.state.email == undefined){
-      // console.log("===Please Enter Email")
       alert("Please Enter Email !");
-     }else{
+     }else if(!(regex.test(this.state.email))){
+      alert("Invalid Email !");
+     }
+     else{
       console.log("===You are in else")
       this.setState({isLoading:true})
      const headers = {
@@ -312,15 +315,25 @@ class Login extends React.Component {
       headers,
     }).then((response) => {
       console.log("Respone from post ", response);
-      this.setState({ sendOtp: true,isLoading:false})
+      if (response.data.err ){
+        alert(response.data.err);
+      }else{
+        this.setState({ sendOtp: true})
+      }
+      this.setState({isLoading:false})
 
     })
   }
   }
   verifyOtpClick = () => {
+    const regex = /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+
     if(this.state.email == '' || this.state.email == null || this.state.email == undefined){
       // console.log("===Please Enter Email")
       alert("Please Enter Email !");
+     }
+     else if(!(regex.test(this.state.email))){
+      alert("Invalid Email !");
      }
      else if(this.state.password == '' || this.state.password == null || this.state.password == undefined){
       alert("Please Enter OTP !");
@@ -571,7 +584,7 @@ class Login extends React.Component {
                       <h1 style={formTitle}>Let's Get Started!</h1>
                       <p style={formDesc}>Sign in to your Image Data Extract Account</p>
                       <CInputGroup className="mb-4">
-                        <TextField id="outlined-basic" label="Email" variant="outlined" style={{ width: "100%" }} onChange={this.handleClickEmail} />
+                        <TextField id="outlined-basic" disabled={this.state.sendOtp} label="Email"  variant="outlined" style={{ width: "100%" }} onChange={this.handleClickEmail} />
                       </CInputGroup>
                       {this.state.sendOtp ? <CInputGroup className="mb-4">
 
