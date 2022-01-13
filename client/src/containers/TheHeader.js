@@ -168,10 +168,14 @@ const TheHeader = () => {
             <CCol xs="10"><h4 style={{ color: "#fff" }}>Account Activity-ABC Company, Inc.</h4></CCol>
             <CCol xs="2">
               <CRow>
-                <CCol xs="6" style={{ textAlign: "right" }}>
+
+                <CCol xs="4" style={{ textAlign: "right" }}>
+                  <Link to="" class="fa fa-chevron-circle-left" aria-hidden="true" style={{ color: "#fff", fontSize: "2em" }}></Link>
+                </CCol>
+                <CCol xs="4" style={{ textAlign: "right" }}>
                   <Link to="" class="fa fa-print" aria-hidden="true" style={{ color: "#fff", fontSize: "2em" }}></Link>
                 </CCol>
-                <CCol xs="6"><Link to="" class="fa fa-download" aria-hidden="true" style={{ color: "#fff", fontSize: "2em" }}></Link></CCol>
+                <CCol xs="4"><Link to="" class="fa fa-download" aria-hidden="true" style={{ color: "#fff", fontSize: "2em" }}></Link></CCol>
               </CRow>
             </CCol>
           </CRow>
