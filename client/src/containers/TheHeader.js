@@ -53,13 +53,16 @@ const useStyles = makeStyles(theme => ({
     padding: "60px 0px 60px 130px",
     backgroundPosition: "0 50%",
     color: "#fff",
+    display: "block",
     marginLeft: "40px",
+    fontSize: "2.2em",
     "@media (max-width: 1200px)": {
       backgroundSize: "70px",
       padding: "40px 0px 40px 90px",
       backgroundPosition: "0 50%",
       fontSize: "1.6em",
     }
+
   },
   right_content: {
     width: "580px",
@@ -94,6 +97,10 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const TheHeader = () => {
+
+
+
+
   const dispatch = useDispatch()
   const classes = useStyles();
   const sidebarShow = useSelector(state => state.sidebarShow)
@@ -121,9 +128,6 @@ const TheHeader = () => {
   // }
 
 
-
-
-
   return (
     <>
       <div className={classes.header_bg}></div>
@@ -141,7 +145,9 @@ const TheHeader = () => {
 
         <CHeaderNav className="mr-auto">
           <CHeaderNavItem >
-            <h3 className={classes.logo_image}>IMAGE DATA EXTRACT</h3>
+            <Link to="/document_list" className={classes.logo_image}>
+              IMAGE DATA EXTRACT
+            </Link>
           </CHeaderNavItem>
 
         </CHeaderNav>

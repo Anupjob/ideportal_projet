@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import moment from 'moment'
 import { makeStyles } from '@material-ui/core/styles';
 import {
   CRow,
@@ -14,6 +15,7 @@ import {
   CForm
 } from '@coreui/react'
 import Table from '@material-ui/core/Table';
+import CircularProgress from "@material-ui/core/CircularProgress";
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
@@ -21,7 +23,20 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import { useHistory } from "react-router";
+import axios from "axios";
 
+const loader = {
+  position: "fixed",
+  top: "0",
+  left: "0",
+  right: "0",
+  bottom: "0",
+  background: "rgba(255,255,255,0.4)",
+  zIndex: "100",
+  display: "table",
+  width: "100%",
+  height: "100%"
+}
 
 const table_header = {
   borderBottom: "1px solid #ccc",
@@ -45,29 +60,71 @@ const upload_file = {
   border: "none",
 }
 const Dashboard = () => {
-  // const [Sdate, setSdate] = useState();
-  // const [Edate, setEdate] = useState();
-  // const [Status, setStatus] = useState();
-  // const [Document, setDocument] = useState();
+
+  const [Isloader, setIsloader] = useState(false);
+  const [Sdate, setSdate] = useState('');
+  const [Edate, setEdate] = useState('');
+  const [Status, setStatus] = useState('');
+  const [Document, setDocument] = useState('');
+  const [IncomingArr, setIncomingArr] = useState([]);
+
 
   const history = useHistory();
-  // const Sdate = (event) => {
-  //   console.log(event.target.value);
-  // }
+  const Sdate1 = (event) => {
+    console.log(event.target.value);
+    setSdate(event.target.value)
+  }
 
-  // const Edate = (event) => {
-  //   console.log(event.target.value);
-  // }
+  const Edate1 = (event) => {
+    console.log(event.target.value);
+    setEdate(event.target.value)
+  }
 
 
-  // const Status = (event) => {
-  //   console.log(event.target.value);
-  // }
+  const Status1 = (event) => {
+    console.log(event.target.value);
+    setStatus(event.target.value)
+  }
 
-  // const Document = (event) => {
-  //   console.log(event.target.value);
-  // }
+  const Document1 = (event) => {
+    console.log(event.target.value);
+    setDocument(event.target.value)
+  }
+  const searchBtn = () => {
+    setIsloader(true)
+    console.log("Sdate:::", Sdate)
+    console.log("Edate:::", Edate)
+    console.log("status:::", Status)
+    console.log("Document:::", Document)
+    const headers = {
+      "Content-Type": "application/json",
+      // Authorization: "Bearer " + logginUser.token,
+      // reqFrom: "ADMIN",
+    };
+    axios({
+      method: "POST",
+      url: "http://192.168.11.170:8081/incomingData",
+      data: JSON.stringify({
+        dateRec: Sdate, dateProcessed: Edate,
+        docStatus: Status,
+        docType: Document
+      }),
+      headers,
+    }).then((response) => {
+      setIsloader(false)
+      console.log("Response", response.data.result);
+      // this.setState({ isLoading: false })
+      setIncomingArr(response.data.result)
 
+      // if (response.data.err) {
+      //   alert(response.data.err);
+      // }
+      // if (response.data.result == "success") {
+      //   this.props.history.push('/document_list');
+      // }
+
+    })
+  }
 
   return (
     <>
@@ -85,13 +142,13 @@ const Dashboard = () => {
                     <CInput
                       type="date"
                       name='StartDate'
-                    // onChange={Sdate}
+                      onChange={Sdate1}
                     />
                     <div style={{ width: "40px", fontSize: "1.3em", textAlign: "center" }}>to</div>
                     <CInput
                       type="date"
                       name='EndDate'
-                    // onChange={Edate}
+                      onChange={Edate1}
                     />
                   </CInputGroup>
                 </CCol>
@@ -102,12 +159,11 @@ const Dashboard = () => {
                   <CInputGroup>
                     <CSelect aria-label="Default select example"
                       name='Status'
-                    // onChange={Status}
+                      onChange={Status1}
                     >
-                      <option>SELECT STATUS</option>
-                      <option value="PROCESSED">PROCESSED</option>
-                      <option value="PENDING">PENDING</option>
-                      <option value="ERROR">ERROR</option>
+                      <option value="Processed">PROCESSED</option>
+                      <option value="Pending">PENDING</option>
+                      <option value="Error">ERROR</option>
                     </CSelect>
                     {/* <CInput type="text" /> */}
                   </CInputGroup>
@@ -120,7 +176,7 @@ const Dashboard = () => {
                     <CInput
                       type="text"
                       name='Documents'
-                    // onChange={Document}
+                      onChange={Document1}
                     />
                   </CInputGroup>
                 </CCol>
@@ -130,12 +186,13 @@ const Dashboard = () => {
                 <CCol md="9"></CCol>
                 <CCol md="3">
                   <CButton
-                    // onClick={searchBtn} 
+                    onClick={searchBtn}
                     color="primary"
                     size="lg"
                     style={{ width: "100%", background: "#4ea7d8", border: "#4ea7d8" }}
                   >Search
-                  </CButton></CCol>
+                  </CButton>
+                </CCol>
               </CRow>
 
             </CCol>
@@ -163,22 +220,30 @@ const Dashboard = () => {
 
             </TableRow>
           </TableHead>
-          <TableBody>
+          {Isloader ?
+            <div style={loader}>
 
-            <TableRow>
-              <TableCell style={table_content}><a href='#' style={{ color: "#ccc" }}><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></a></TableCell>
-              <TableCell style={table_content}><i class="fa fa-search-plus" aria-hidden="true"
-                onClick={() => {
-                  history.push("/details");
-                }}></i></TableCell>
-              <TableCell style={table_content}><strong>INCOMING</strong> </TableCell>
-              <TableCell style={table_content}>CHECKS ENVERUS</TableCell>
-              <TableCell style={table_content}>12/21/21 10:30 AM</TableCell>
-              <TableCell style={table_content}>12/21/21 10:30 AM</TableCell>
-              <TableCell style={table_content}>3</TableCell>
-              <TableCell style={table_content}>PROCESSED</TableCell>
-            </TableRow>
-            <TableRow>
+              <CircularProgress style={{ margin: "22% auto", display: "block" }} />
+
+            </div>
+            :
+            <TableBody>
+              {IncomingArr.length > 0 && IncomingArr.map((data) => (
+                <TableRow>
+                  <TableCell style={table_content}><a href='#' style={{ color: "#ccc" }}><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></a></TableCell>
+                  <TableCell style={table_content}><i class="fa fa-search-plus" aria-hidden="true"
+                    onClick={() => {
+                      history.push("/details");
+                    }}></i></TableCell>
+                  <TableCell style={table_content}><strong>INCOMING</strong> </TableCell>
+                  <TableCell style={table_content}>{data.processorGroup}<br />{data.processorName}</TableCell>
+                  <TableCell style={table_content}>{moment(data.dateRec).format("MM/DD/YYYY hh:mm A")}</TableCell>
+                  <TableCell style={table_content}>{moment(data.dateProcessed).format("MM/DD/YYYY hh:mm A")}</TableCell>
+                  <TableCell style={table_content}>{data.noOfPages}</TableCell>
+                  <TableCell style={table_content}>{data.docStatus}</TableCell>
+                </TableRow>
+              ))}
+              {/* <TableRow>
               <TableCell style={table_content}><a href='#' style={{ color: "#c00" }}><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></a></TableCell>
               <TableCell style={table_content}><a href='#' style={{ color: "#ccc" }}><i class="fa fa-search-plus" aria-hidden="true"></i></a></TableCell>
               <TableCell style={table_content}><strong>INCOMING</strong> </TableCell>
@@ -217,9 +282,10 @@ const Dashboard = () => {
               <TableCell style={table_content}>12/21/21 10:30 AM</TableCell>
               <TableCell style={table_content}>3</TableCell>
               <TableCell style={table_content}>PROCESSED</TableCell>
-            </TableRow>
+            </TableRow> */}
 
-          </TableBody>
+            </TableBody>
+          }
         </Table>
       </TableContainer>
     </>
