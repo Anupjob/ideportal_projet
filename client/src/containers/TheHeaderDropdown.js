@@ -26,7 +26,7 @@ const TheHeaderDropdown = () => {
   return (
     <CDropdown inNav className="c-header-nav-items mx-3" direction="down">
       <CDropdownToggle className="c-header-nav-link" caret={false}>
-        <div style={userText}>John Doe</div>
+        <div style={userText}>{localStorage.getItem('name')}</div>
         <div className="c-avatar">
           <CImg
             src={"avatars/6.jpg"}
@@ -106,7 +106,7 @@ const TheHeaderDropdown = () => {
         >
           <CIcon name="cil-lock-locked" className="mfe-2" />
           {/* Lock Account */}
-          Sign Out 
+          Sign Out
         </CDropdownItem>
       </CDropdownMenu>
     </CDropdown>

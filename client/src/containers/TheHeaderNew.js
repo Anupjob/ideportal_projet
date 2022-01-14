@@ -33,7 +33,7 @@ import {
 const useStyles = makeStyles(theme => ({
   header_bg: {
     background: "rgb(131,73,191)",
-    background: "linear-gradient(200deg, rgba(131,73,191,1) 16%, rgba(25,229,246,1) 84%)",
+    background: "linear-gradient(200deg, rgba(131,73,191,1) 0%, rgba(25,229,246,1) 90%)",
     height: "300px",
     position: "fixed",
     width: "100%",
@@ -42,7 +42,7 @@ const useStyles = makeStyles(theme => ({
   },
   header_bg1: {
     background: "rgb(131,73,191)",
-    background: "linear-gradient(200deg, rgba(131,73,191,1) 16%, rgba(25,229,246,1) 84%)",
+    background: "linear-gradient(200deg, rgba(131,73,191,1) 0%, rgba(25,229,246,1) 90%)",
     zIndex: "20",
     border: "0", paddingRight: "20px", position: "fixed"
   },
@@ -96,9 +96,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const TheHeader = () => {
-
-
+const TheHeaderNew = () => {
 
 
   const dispatch = useDispatch()
@@ -187,4 +185,4 @@ const TheHeader = () => {
   )
 }
 
-export default TheHeader
+export default TheHeaderNew

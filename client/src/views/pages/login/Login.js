@@ -25,7 +25,7 @@ import _ from "underscore";
 import Modal from '@material-ui/core/Modal';
 import { AccordionDetails } from '@material-ui/core';
 import CircularProgress from "@material-ui/core/CircularProgress";
-
+import settings from 'src/config/settings'
 
 
 
@@ -99,17 +99,17 @@ const otpText = {
   marginBottom: "40px"
 }
 
-const loader={
+const loader = {
   position: "fixed",
-  top:"0",
-  left:"0",
-  right:"0",
-  bottom:"0",
+  top: "0",
+  left: "0",
+  right: "0",
+  bottom: "0",
   background: "rgba(255,255,255,0.4)",
   zIndex: "100",
-  display:"table",
-  width:"100%",
-  height:"100%"
+  display: "table",
+  width: "100%",
+  height: "100%"
 }
 // const divider = {
 //   lineHeight: "3px",
@@ -163,7 +163,7 @@ class Login extends React.Component {
       confirmResult: null,
       change: false,
       sendOtp: false,
-      isLoading:false,
+      isLoading: false,
       changeOne: false,
       phone: '',
       error: '',
@@ -295,75 +295,77 @@ class Login extends React.Component {
     //   alert("Please Enter Right Email or Password !");
     // })
     const regex = /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
-     if(this.state.email == '' || this.state.email == null || this.state.email == undefined){
+    if (this.state.email == '' || this.state.email == null || this.state.email == undefined) {
       alert("Please Enter Email !");
-     }else if(!(regex.test(this.state.email))){
+    } else if (!(regex.test(this.state.email))) {
       alert("Invalid Email !");
-     }
-     else{
+    }
+    else {
       console.log("===You are in else")
-      this.setState({isLoading:true})
-     const headers = {
-      "Content-Type": "application/json",
-      // Authorization: "Bearer " + logginUser.token,
-      // reqFrom: "ADMIN",
-    };
-    axios({
-      method: "POST",
-      url: "http://192.168.11.170:8081/user/login/",
-      data:JSON.stringify({email: this.state.email }),
-      headers,
-    }).then((response) => {
-      console.log("Respone from post ", response);
-      if (response.data.err ){
-        alert(response.data.err);
-      }else{
-        this.setState({ sendOtp: true})
-      }
-      this.setState({isLoading:false})
+      this.setState({ isLoading: true })
+      const headers = {
+        "Content-Type": "application/json",
+        // Authorization: "Bearer " + logginUser.token,
+        // reqFrom: "ADMIN",
+      };
+      axios({
+        method: "POST",
+        url: settings.serverUrl + "/user/login/",
+        data: JSON.stringify({ email: this.state.email }),
+        headers,
+      }).then((response) => {
+        console.log("Respone from post ", response);
+        localStorage.setItem('company', response.data.result.company)
+        localStorage.setItem('name', response.data.result.name)
+        if (response.data.err) {
+          alert(response.data.err);
+        } else {
+          this.setState({ sendOtp: true })
+        }
+        this.setState({ isLoading: false })
 
-    })
-  }
+      })
+    }
   }
   verifyOtpClick = () => {
     const regex = /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
 
-    if(this.state.email == '' || this.state.email == null || this.state.email == undefined){
+    if (this.state.email == '' || this.state.email == null || this.state.email == undefined) {
       // console.log("===Please Enter Email")
       alert("Please Enter Email !");
-     }
-     else if(!(regex.test(this.state.email))){
+    }
+    else if (!(regex.test(this.state.email))) {
       alert("Invalid Email !");
-     }
-     else if(this.state.password == '' || this.state.password == null || this.state.password == undefined){
+    }
+    else if (this.state.password == '' || this.state.password == null || this.state.password == undefined) {
       alert("Please Enter OTP !");
-     }
-     else{
-      this.setState({isLoading:true})
+    }
+    else {
+      this.setState({ isLoading: true })
 
-    const headers = {
-      "Content-Type": "application/json",
-      // Authorization: "Bearer " + logginUser.token,
-      // reqFrom: "ADMIN",
-    };
-    axios({
-      method: "POST",
-      url: "http://192.168.11.170:8081/user/login/",
-      data:JSON.stringify({email: this.state.email,otp:this.state.password }),
-      headers,
-    }).then((response) => {
-      console.log("Respone from Verify otp ", response.data,response.data.err);
-      this.setState({isLoading:false})
+      const headers = {
+        "Content-Type": "application/json",
+        // Authorization: "Bearer " + logginUser.token,
+        // reqFrom: "ADMIN",
+      };
+      axios({
+        method: "POST",
+        url: "http://192.168.11.170:8081/user/login/",
+        data: JSON.stringify({ email: this.state.email, otp: this.state.password }),
+        headers,
+      }).then((response) => {
+        console.log("Respone from Verify otp ", response.data, response.data.err);
+        this.setState({ isLoading: false })
 
-      if (response.data.err ){
-        alert(response.data.err);
-      }
-      if(response.data.result == "success"){
-        this.props.history.push('/document_list');
-      }
+        if (response.data.err) {
+          alert(response.data.err);
+        }
+        if (response.data.result == "success") {
+          this.props.history.push('/document_list');
+        }
 
-    })
-  }
+      })
+    }
   }
   handlePhone = (event) => {
     this.setState({ phone: event.target.value })
@@ -395,7 +397,7 @@ class Login extends React.Component {
   }
   render() {
     const { sendOtp } = this.props;
-    console.log("===sendOtp in render:::",this.state.sendOtp)
+    console.log("===sendOtp in render:::", this.state.sendOtp)
 
 
     var contList = [];
@@ -584,22 +586,22 @@ class Login extends React.Component {
                       <h1 style={formTitle}>Let's Get Started!</h1>
                       <p style={formDesc}>Sign in to your Image Data Extract Account</p>
                       <CInputGroup className="mb-4">
-                        <TextField id="outlined-basic" disabled={this.state.sendOtp} label="Email"  variant="outlined" style={{ width: "100%" }} onChange={this.handleClickEmail} />
+                        <TextField id="outlined-basic" disabled={this.state.sendOtp} label="Email" variant="outlined" style={{ width: "100%" }} onChange={this.handleClickEmail} />
                       </CInputGroup>
                       {this.state.sendOtp ? <CInputGroup className="mb-4">
 
                         <TextField id="outlined-basic" label="Enter OTP" type="text" variant="outlined" style={{ width: "100%" }}
                           onChange={this.handleClickPwd}
                         />
-                      </CInputGroup>:null}
+                      </CInputGroup> : null}
                       {this.state.sendOtp ?
-                      <p style={otpText}>The OTP is sent to given Email Id</p>
-                      :null}
+                        <p style={otpText}>The OTP is sent to given Email Id</p>
+                        : null}
                       {this.state.sendOtp ? <CInputGroup className="mb-4">
                         <Button variant={"contained"} color={"primary"} fullWidth style={buttonStyle}
                           onClick={this.verifyOtpClick}
                         >Verify OTP</Button>
-                      </CInputGroup>: <CInputGroup className="mb-4">
+                      </CInputGroup> : <CInputGroup className="mb-4">
                         <Button variant={"contained"} color={"primary"} fullWidth style={buttonStyle}
                           onClick={this.handleClick}
                         >Let's Go</Button>
@@ -613,10 +615,10 @@ class Login extends React.Component {
                       </CRow>
                       {this.state.isLoading && (
                         <div style={loader}>
-                     
-                      <CircularProgress style={{margin: "22% auto", display: "block"}} />
-                      
-                      </div>
+
+                          <CircularProgress style={{ margin: "22% auto", display: "block" }} />
+
+                        </div>
                       )}
                       {/* <div style={divider}><div style={orText}>OR</div></div>
 

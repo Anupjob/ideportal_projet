@@ -30,6 +30,7 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import Button from "@material-ui/core/Button";
+import settings from 'src/config/settings';
 
 const loader = {
   position: "fixed",
@@ -75,14 +76,15 @@ const Dashboard = () => {
   const [IncomingArr, setIncomingArr] = useState([]);
   const [open, setOpen] = React.useState(false);
   const [errorMsg, setErrorMsg] = React.useState('');
+  const [ArrNull, setArrNull] = React.useState(false);
 
 
   const handleClickToOpen = (errMsg) => {
-    console.log("===errMsg===",errMsg)
+    console.log("===errMsg===", errMsg)
     setErrorMsg(errMsg);
     setOpen(true);
   };
-  
+
   const handleToClose = () => {
     setOpen(false);
   };
@@ -111,6 +113,7 @@ const Dashboard = () => {
   }
   const searchBtn = () => {
     setIsloader(true)
+    setArrNull(false)
     console.log("Sdate:::", Sdate)
     console.log("Edate:::", Edate)
     console.log("status:::", Status)
@@ -122,7 +125,7 @@ const Dashboard = () => {
     };
     axios({
       method: "POST",
-      url: "http://192.168.11.170:8081/incomingData",
+      url: settings.serverUrl + "/incomingData",
       data: JSON.stringify({
         dateRec: Sdate, dateProcessed: Edate,
         docStatus: Status,
@@ -132,8 +135,13 @@ const Dashboard = () => {
     }).then((response) => {
       setIsloader(false)
       console.log("Response", response.data.result);
+      if (response.data.result == 0) {
+        setArrNull(true)
+        setIsloader(false)
+      }
       // this.setState({ isLoading: false })
       setIncomingArr(response.data.result)
+
 
       // if (response.data.err) {
       //   alert(response.data.err);
@@ -180,6 +188,8 @@ const Dashboard = () => {
                       name='Status'
                       onChange={Status1}
                     >
+                      <option value="">Select Status</option>
+                      <option value="all">ALL</option>
                       <option value="Processed">PROCESSED</option>
                       <option value="Pending">PENDING</option>
                       <option value="Error">ERROR</option>
@@ -245,32 +255,33 @@ const Dashboard = () => {
               <CircularProgress style={{ margin: "22% auto", display: "block" }} />
 
             </div>
+
             :
             <TableBody>
-              {IncomingArr.length > 0 && IncomingArr.map((data) => (
+              {IncomingArr.length > 0 && !ArrNull ? IncomingArr.map((data) => (
                 <TableRow>
-                 
+
                   <TableCell style={table_content}>
-                  {data.docStatus.toLowerCase() == 'error' && 
-                    <a style={{ color: "#00f" }} onClick = {()=>handleClickToOpen(data.errMsg)}>
-                      {console.log("==data error msg::",data)}
-                     <i class="fa fa-exclamation-triangle" aria-hidden="true" >
-                      </i>
-                    </a>
+                    {data.docStatus.toLowerCase() == 'error' &&
+                      <a style={{ color: "#00f" }} onClick={() => handleClickToOpen(data.errMsg)}>
+                        {console.log("==data error msg::", data)}
+                        <i class="fa fa-exclamation-triangle" aria-hidden="true" >
+                        </i>
+                      </a>
                     }
                   </TableCell>
                   <Dialog open={open} onClose={handleToClose}>
-               <DialogTitle>Error</DialogTitle>
-                <DialogContent style={{minWidth:500}}>
-                 <DialogContentText>
-                {errorMsg}
-               </DialogContentText>
-              </DialogContent>
-              <DialogActions>
-              <Button style={{backgroundColor:'#4EA7D8',fontSize:14,color:'white'}} onClick={handleToClose}>Close</Button>
-              </DialogActions>
-              </Dialog>
-                      <TableCell style={table_content}><i class="fa fa-search-plus" aria-hidden="true"
+                    <DialogTitle>Error</DialogTitle>
+                    <DialogContent style={{ minWidth: 500 }}>
+                      <DialogContentText>
+                        {errorMsg}
+                      </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                      <Button style={{ backgroundColor: '#4EA7D8', fontSize: 14, color: 'white' }} onClick={handleToClose}>Close</Button>
+                    </DialogActions>
+                  </Dialog>
+                  <TableCell style={table_content}><i class="fa fa-search-plus" aria-hidden="true"
                     onClick={() => {
                       history.push("/details");
                     }}></i></TableCell>
@@ -281,7 +292,16 @@ const Dashboard = () => {
                   <TableCell style={table_content}>{data.noOfPages}</TableCell>
                   <TableCell style={table_content}>{data.docStatus}</TableCell>
                 </TableRow>
-              ))}
+              ))
+                :
+
+                <TableRow>
+                  <TableCell colSpan={8}><p style={{ width: "100%", display: "block", color: "#c00", margin: "12px 0", textAlign: "center", fontSize: "1.6em" }}>No record Found!!</p></TableCell>
+
+                </TableRow>
+
+
+              }
               {/* <TableRow>
               <TableCell style={table_content}><a href='#' style={{ color: "#c00" }}><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></a></TableCell>
               <TableCell style={table_content}><a href='#' style={{ color: "#ccc" }}><i class="fa fa-search-plus" aria-hidden="true"></i></a></TableCell>

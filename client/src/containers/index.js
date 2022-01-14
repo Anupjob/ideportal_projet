@@ -1,6 +1,7 @@
 import TheContent from './TheContent'
 import TheFooter from './TheFooter'
 import TheHeader from './TheHeader'
+import TheHeaderNew from './TheHeaderNew'
 import TheHeaderDropdown from './TheHeaderDropdown'
 import TheHeaderDropdownMssg from './TheHeaderDropdownMssg'
 import TheHeaderDropdownNotif from './TheHeaderDropdownNotif'
@@ -12,6 +13,7 @@ export {
   TheContent,
   TheFooter,
   TheHeader,
+  TheHeaderNew,
   TheHeaderDropdown,
   TheHeaderDropdownMssg,
   TheHeaderDropdownNotif,
