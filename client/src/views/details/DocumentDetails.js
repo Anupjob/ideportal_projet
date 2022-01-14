@@ -25,7 +25,11 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import TextField from "@material-ui/core/TextField";
 import { useHistory } from "react-router";
-import moment from 'moment'
+import moment from 'moment';
+import settings from 'src/config/settings';
+import axios from "axios";
+
+
 
 
 
@@ -103,7 +107,27 @@ class DocumentDetails extends React.Component {
       alert("Please Enter Issue !");
      }
      else{
+      
+      const headers = {
+        "Content-Type": "application/json",
+        // Authorization: "Bearer " + logginUser.token,
+        // reqFrom: "ADMIN",
+      };
+      axios({
+        method: "POST",
+        url: settings.serverUrl + "/reportIssue",
+        data: JSON.stringify({ doc_id: this.props.history.location.state.data.doc_id ,errMsg:this.state.enterIssue}),
+        headers,
+      }).then((response) => {
+        console.log("Respone from post ", response);
+        this.setState({ openReportIssue: false, })
+        if (response.data.err) {
+          alert(response.data.err);
+        }else{
+          alert(response.data.result);
+        }
 
+      })
      }
   }
   render() {
