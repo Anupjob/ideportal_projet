@@ -3,7 +3,7 @@ import subprocess
 from datetime import datetime, date
 import sys
 from fastapi import FastAPI, Body, Depends
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, EmailStr
 from typing import Optional
 
 from server.model import PostSchema, UserLoginSchema
@@ -16,7 +16,11 @@ from random import randint, randrange
 import pymongo
 import datetime
 from fastapi.middleware.cors import CORSMiddleware
-
+from azure.core.credentials import AzureKeyCredential
+import smtplib
+from fastapi_mail import FastMail, MessageSchema,ConnectionConfig
+from typing import List
+from bson.objectid import ObjectId
 
 def getConn():
     conn = 'mongodb://ide21qadguser_qa:shSgSAd63SDsgh67S@18.232.50.247:27021/ide_database_qa?authMechanism=SCRAM-SHA-256&authSource=ide_database_qa'
@@ -34,6 +38,16 @@ class IncomingData(BaseModel):
     dateRec: Optional[date] = None
     dateProcessed: Optional[date] = None
     docStatus: Optional[str] = None
+
+class FinalData(BaseModel):
+    fileName: Optional[str] = None
+
+class EmailSchema(BaseModel):
+   email: List[EmailStr]
+
+class IssueSchema(BaseModel):
+   errMsg: str
+   doc_id: str
 
 def getUserForEmail(emailStr):
     print("getUserForEmail",emailStr)
@@ -73,6 +87,12 @@ def checkOTP(emailStr, otp):
     # print("checkOTP result2",result2)
     return result
 
+def getCompany(companyId):
+    db_mongo = getConn()
+    companies_c = db_mongo.companies
+    result = companies_c.find_one({"_id": companyId})
+    return result
+
 app = FastAPI()
 # logger = glogger.get_glogger("server")
 
@@ -88,12 +108,76 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+conf = ConnectionConfig(
+    MAIL_FROM='support@vercx.com',
+    MAIL_USERNAME='support@vercx.com',
+    MAIL_PASSWORD='VercX2018$$',
+    MAIL_PORT=587,
+    MAIL_SERVER="smtp.gmail.com",
+    MAIL_TLS=True,
+    MAIL_SSL=False
+)
+
 def getIncomingData(dateRec, dateProcessed, docStatus, docType):
-    print("getIncomingData", docStatus)
+    print("getIncomingData", dateRec, dateProcessed, docStatus, docType)
     db_mongo = getConn()
     files_incoming_c = db_mongo.files_incoming
 
-    files_incoming_p = files_incoming_c.find({"status": docStatus})
+    query_str = {}
+    # query_str = {"file_date": {"$gte": dateRec}, "file_date": {"$lte": dateProcessed}}
+
+    if docStatus != 'all':
+        query_str = {"status": docStatus}
+
+    print("query_str",query_str)
+
+    files_incoming_p = files_incoming_c.find(query_str)
+    # files_incoming_p = files_incoming_c.find({"status": docStatus}, {'_id': 0})
+
+    return files_incoming_p
+
+async def send_otp_mail(otp, recipient):
+    print("send_otp_mail", otp, recipient)
+
+    html_template = '<html><head><title>OTP</title><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">'
+    html_template += '<p>Dear Valued Customer,</p><br/><br/>'
+    html_template += '<p>Your Password for Secure Login is: ' + otp + '<br /><br/>'
+    html_template += '</div></div><br/><br/><div class="row" style="background-color:#dbdada"><div class="col-sm-4"></div> <div class="col-sm-4" style="font-size:16px;padding:10px;">'
+    html_template += '<b>Thank you.<br/><br/></b></div><div class="col-sm-4"></div></div></div></body></html>'
+
+    template = """
+                <html>
+                <body>
+                <p>Hi !!!
+                <br>Thanks for using fastapi mail, keep using it..!!!</p>
+                </body>
+                </html>
+                """
+
+    template2 = "<html><body><p>Hi !!!<br>Thanks for using fastapi mail, keep using it..!!!</p></body></html>"
+
+    message = MessageSchema(
+        subject='OTP for secure login on IDE Portal',
+        recipients=[recipient],  # List of recipients, as many as you can pass
+        body=html_template,
+        subtype="html"
+    )
+
+    print("message", message)
+    print("conf", conf)
+
+    fm = FastMail(conf)
+    print("sending email")
+
+    return await fm.send_message(message)
+
+def getFinalData(file_name):
+    print("getFinalData", file_name)
+    db_mongo = getConn()
+    files_incoming_c = db_mongo.files_incoming
+
+    # files_incoming_p = files_incoming_c.find({"final_filename":file_name})
+    files_incoming_p = files_incoming_c.find_one({"final_filename":file_name})
     # files_incoming_p = files_incoming_c.find({"status": docStatus}, {'_id': 0})
 
     return files_incoming_p
@@ -106,6 +190,14 @@ async def root():
 @app.post("/user/login")
 # async def user_login(user: UserLogin = Body(..., embed=True)):
 async def user_login(user: UserLogin = Body(...)):
+    # print("sending email")
+    # mailServer = smtplib.SMTP('smtp.gmail.com', 587)
+    # mailServer.starttls()
+    # print("authenticate email")
+    # mailServer.login('support@vercx.com', 'vercxSupport2017')
+    # print("login success email")
+    # mailServer.sendmail('support@vercx.com', 'saurabh.dhiman@digitalglyde.com', 'message from ideprotal')
+    # print("sent success email")
 
     if user and user.otp and user.otp > 0:
         print("user found", user.email, user.otp)
@@ -128,14 +220,26 @@ async def user_login(user: UserLogin = Body(...)):
         if user and user.email and len(user.email) > 0:
             users_p = getUserForEmail(user.email)
             userfound = False
+            user_data = None
             for user_s in users_p:
                 userfound = True
-                print(user_s)
+                print("user_s",user_s)
+                user_data = user_s
             if (userfound):
+                companyData = getCompany(user_data["companyId"])
+                print("companyData", companyData)
                 otp = randint(100000, 999999)
+
                 createOTPRecord(user.email, otp)
-                # return {"validate": "OTP Created, login with OTP"}
-                return {"result": "OTP Created, login with OTP", "err": None}
+
+                await send_otp_mail(str(otp), user.email)
+
+                user_comp_details = {
+                    "company":companyData["companyName"],
+                    "email": user_data["email"],
+                    "name": user_data["name"]
+                }
+                return {"result": user_comp_details, "err": None}
             else:
                 # return {"error": "Email not found in System "}
                 return {"result": None, "err": "Email not found in System "}
@@ -162,6 +266,18 @@ async def user_login(user: UserLoginSchema = Body(...)):
     return {
         "error": "Wrong login details!"
     }
+
+@app.post("/reportIssue")
+async def report_issue(incData: IssueSchema = Body(...)):
+    errMsg = incData.errMsg
+    doc_id = incData.doc_id
+
+    db_mongo = getConn()
+    files_incoming_c = db_mongo.files_incoming
+
+    result = files_incoming_c.update_one({"_id": ObjectId(doc_id)}, {"$set": {"errMsg": errMsg, "status":"Error"}})
+    print("reportIssue  result", result)
+    return {"result": "issue reported successfully", "err": None}
 
 @app.post("/incomingData")
 async def incoming_data(incData: IncomingData = Body(...)):
@@ -204,6 +320,17 @@ async def incoming_data(incData: IncomingData = Body(...)):
         })
 
     return {"result": ids_dict, "err": None}
+
+@app.post("/finalData")
+async def final_data(incData: FinalData = Body(...)):
+    file_name = incData.fileName
+
+    print("final_data", incData)
+
+    finalDataRes = getFinalData(file_name)
+    print("finalDataRes", finalDataRes)
+
+    return {"result": "finaldata success", "err": None}
 
 @app.get("/provider/{id}", dependencies=[Depends(JWTBearer())], tags=["posts"])
 async def add_post(id: int) -> dict:
