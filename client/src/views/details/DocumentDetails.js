@@ -8,13 +8,88 @@ import {
 import CIcon from '@coreui/icons-react'
 import SplitPane, { Pane } from 'react-split-pane';
 import './document.css';
-
+// import './demo.txt';
 import { Document, Page, pdfjs } from 'react-pdf';
+import Table from '@material-ui/core/Table';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import Paper from '@material-ui/core/Paper';
+import Button from "@material-ui/core/Button";
+import Dialog from "@material-ui/core/Dialog";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import TextField from "@material-ui/core/TextField";
+import { useHistory } from "react-router";
+import moment from 'moment'
+
+
+
+
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
+
+const table_header = {
+  borderBottom: "1px solid #ccc",
+  color: "#000000",
+  fontSize: 12,
+  fontWeight: 'bold'
+}
+const table_headerMain = {
+  borderBottom: "1px solid #ccc",
+  color: "#2352a2",
+  fontSize: 10
+}
+const table_content = {
+  borderBottom: "1px dashed #ccc",
+  color: "rgb(142, 142, 142)",
+  fontSize: 10
+}
+const cancel_dialogBtn = {
+  backgroundColor:'#4EA7D8',
+  fontSize:14,
+  color:'white'
+}
+const submit_dialogBtn = {
+  backgroundColor:'#4EA7D8',
+  fontSize:14,color:'white',
+  marginLeft:10
+}
+
+
 class DocumentDetails extends React.Component {
 
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      openReportIssue: false,
+      enterIssue:'',
+      IncomingArr:[]
+
+      
+    }
+  }
+  openDialog = () => {
+    this.setState({ openReportIssue: true });
+  };
+
+  handleClose = () => {
+    this.setState({ openReportIssue: false });
+  };
+  handleClickReportIssue = (e) => {
+    this.setState({ enterIssue: e.target.value });
+  }
   componentDidMount() {
     localStorage.setItem('splitPos', 350)
+    console.log("=== history.location.state:::",this.props.history.location.state.data)
+    // if(history.location && history.location.state){
+    // console.log("=== history.location.state:::",history.location.state)
+
+    // }
   }
   onPageLoad(info) {
     const {
@@ -22,10 +97,26 @@ class DocumentDetails extends React.Component {
     } = info;
     console.log(height, width, originalHeight, originalWidth);
   }
+  submit = () => {
+    console.log("===Submit Click:::")
+    if(this.state.enterIssue == '' || this.state.enterIssue == null || this.state.enterIssue == undefined){
+      alert("Please Enter Issue !");
+     }
+     else{
 
+     }
+  }
   render() {
 
     // console.log("this.state", this.state);
+    // const { Sdate } = this.props.Sdate
+    // const { Edate } = this.props.Edate
+    // let dateRec = this.props.history.location.state.data.dateRec;
+    // console.log("===dateRec:::",dateRec)
+    let dateRec = moment(this.props.history.location.state.data.dateRec).format("MM/DD/YYYY hh:mm A");
+    let dateProcessed =moment(this.props.history.location.state.data.dateProcessed).format("MM/DD/YYYY hh:mm A");
+    let noOfPages = this.props.history.location.state.data.noOfPages;
+
 
     return (
       <CCard style={{ backgroundColor: 'transparent', border: 0 }}>
@@ -53,9 +144,70 @@ class DocumentDetails extends React.Component {
                 </Document>
               </div>
               <div style={{ backgroundColor: '#fff', padding: 20 }}>
-                Nothing compares to nature‘s beauty, as these famous quotes about nature agree. From spring‘s hopeful new blooms and fall’s exquisite array of colors to winter’s magic and summer’s energy, each season abounds with different types of natural beauty to explore and admire. For those who may forget what being in nature feels like—this is where these best nature quotes come in!
-                From enchanting nature’s beauty quotes that evoke visions of lush meadows full of brilliantly-colored flowers or dense forests with sky-high trees to famous quotes about nature’s ever-present—and absolutely fundamental—role in our lives, these 101 quotes about nature will have you itching to get off your couch and get outside. For famous quotes about nature, we have them here!
-                So whether you keep it simple and kick back in your backyard with your immediate family or you do something a bit more adventurous, like hitting the local trails for a socially distant hike with your pup, take a moment to get outdoors and appreciate the world’s natural wonders, since spending a little bit of time in nature is like chicken soup for the soul—and we could all use a little more of that right now.
+               
+                <TableContainer component={Paper} style={{ position: "relative", zIndex: "5" }}>
+                <Table aria-label="simple table">
+                <TableHead>
+                <TableRow>
+                {/* <TableCell style={table_header}><i class="fa fa-bell" aria-hidden="true"></i></TableCell>
+                <TableCell style={table_header}><i class="fa fa-sticky-note" aria-hidden="true"></i></TableCell> */}
+                <TableCell style={table_headerMain}><p style={{fontSize:12,width:250}}>Date/Time Received:{dateRec}</p></TableCell>
+                <TableCell style={table_headerMain}><p style={{fontSize:12,width:250}}>Date/Time Processed:{dateProcessed}</p></TableCell>
+                <TableCell style={table_headerMain}><p style={{fontSize:12,width:250}}># of Pages:{noOfPages}</p></TableCell>
+                <TableCell style={table_headerMain}>
+                <Button style={{backgroundColor:'#4EA7D8',fontSize:14,color:'white',width:170}}>VIEW DETAILS</Button>
+                </TableCell>
+                <TableCell style={table_headerMain}>
+                <Button style={{backgroundColor:'#4EA7D8',fontSize:14,color:'white',width:170}}
+                onClick = {()=>this.openDialog()}>REPORT ISSUE</Button>
+                </TableCell>             
+                </TableRow>
+                <TableRow>
+                <Dialog open={this.state.openReportIssue}
+                onClose={this.handleClose}>
+               <DialogTitle>Issue Detail</DialogTitle>
+                <DialogContent style={{minWidth:500}}>
+                 <DialogContentText>
+                 <TextField id="outlined-basic" label="Enter Issue" multiline={true} type="text" variant="outlined" style={{ width: "100%" }}
+                          onChange={this.handleClickReportIssue}
+                        />
+               </DialogContentText>
+              </DialogContent>
+              <DialogActions>
+              <div style={{flexDirection:'row'}}>
+              <Button style={cancel_dialogBtn} onClick={this.handleClose}>Cancel</Button>
+              <Button style={submit_dialogBtn} onClick={this.submit}>Submit</Button>
+              </div>
+              </DialogActions>
+              </Dialog>
+              {/* <TableCell style={table_header}><i class="fa fa-bell" aria-hidden="true"></i></TableCell>
+              <TableCell style={table_header}><i class="fa fa-sticky-note" aria-hidden="true"></i></TableCell> */}
+              <TableCell style={table_header}>Operator ID</TableCell>
+              <TableCell style={table_header}>Operator Name</TableCell>
+              <TableCell style={table_header}>Operator Name</TableCell>
+              <TableCell style={table_header}>Operator Name</TableCell>
+              <TableCell style={table_header}>Check Number</TableCell>
+              <TableCell style={table_header}>Check Date</TableCell>
+              <TableCell style={table_header}>Check Amount</TableCell>
+              <TableCell style={table_header}>Operator CC</TableCell>
+              <TableCell style={table_header}>Partener CC</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+
+              {/* <TableCell style={table_content}><a href='#' style={{ color: "#c00" }}><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></a></TableCell>
+              <TableCell style={table_content}><a href='#' style={{ color: "#ccc" }}><i class="fa fa-search-plus" aria-hidden="true"></i></a></TableCell> */}
+              <TableCell style={table_content}><strong>INCOMING</strong> </TableCell>
+              <TableCell style={table_content}>CHECKS ENVERUS</TableCell>
+              <TableCell style={table_content}><strong>INCOMING</strong> </TableCell>
+              <TableCell style={table_content}>CHECKS ENVERUS</TableCell>
+              <TableCell style={table_content}>12/21/21 10:30 AM</TableCell>
+              <TableCell style={table_content}>12/21/21 10:30 AM</TableCell>
+              <TableCell style={table_content}>3</TableCell>
+              <TableCell style={table_content}>PROCESSED</TableCell>
+          </TableBody>
+        </Table>
+      </TableContainer>
               </div>
             </SplitPane>
           </CCol>

@@ -66,11 +66,11 @@ const Colors = () => {
       <CCard style={{ padding: "3em" }}>
         <CForm>
           <CRow>
-            <CCol md="8">
+            <CCol md="9">
               <CInput type='file' style={upload_file} placeholder='sdsdfs' />
               <div style={upload_text}>Drag or Upload files</div>
             </CCol>
-            <CCol md="4">
+            <CCol md="3">
               <CButton color="primary" size="lg" style={{ width: "100%", background: "#4ea7d8", border: "#4ea7d8", marginTop: "25px" }}> Upload File</CButton>
             </CCol>
           </CRow>
