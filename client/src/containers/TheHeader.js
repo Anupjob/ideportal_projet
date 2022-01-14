@@ -15,9 +15,10 @@ import {
   CBreadcrumbRouter,
   CLink,
   CCol,
-  CRow
+  CRow,
+  CButton
 } from '@coreui/react'
-import { Link } from 'react-router-dom'
+import { Link, useHistory } from 'react-router-dom'
 
 
 // routes config
@@ -98,8 +99,7 @@ const useStyles = makeStyles(theme => ({
 
 const TheHeader = () => {
 
-
-
+  const history = useHistory()
 
   const dispatch = useDispatch()
   const classes = useStyles();
@@ -170,7 +170,9 @@ const TheHeader = () => {
               <CRow>
 
                 <CCol xs="4" style={{ textAlign: "right" }}>
-                  <Link to="" class="fa fa-chevron-circle-left" aria-hidden="true" style={{ color: "#fff", fontSize: "2em" }}></Link>
+
+                  <CButton onClick={history.goBack}
+                    class="fa fa-chevron-circle-left" aria-hidden="true" style={{ color: "#fff", fontSize: "2em", border: "none", background: "none" }}></CButton>
                 </CCol>
                 <CCol xs="4" style={{ textAlign: "right" }}>
                   <Link to="" class="fa fa-print" aria-hidden="true" style={{ color: "#fff", fontSize: "2em" }}></Link>

@@ -14,7 +14,7 @@ const TheLayout = () => {
       <TheSidebar />
       <div className="c-wrapper">
 
-        <TheHeaderNew />
+        <TheHeader />
         <div className="c-body">
           <TheContent />
         </div>
