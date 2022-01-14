@@ -131,7 +131,7 @@ const Dashboard = () => {
       headers,
     }).then((response) => {
       setIsloader(false)
-      console.log("Response", response.data.result);
+      console.log("Response====incoming", response.data.result);
       // this.setState({ isLoading: false })
       setIncomingArr(response.data.result)
 
@@ -272,7 +272,14 @@ const Dashboard = () => {
               </Dialog>
                       <TableCell style={table_content}><i class="fa fa-search-plus" aria-hidden="true"
                     onClick={() => {
-                      history.push("/details");
+                      // history.push("/details");
+                      console.log("IncomingArr send==>>",IncomingArr)
+                      history.push({
+                        pathname: '/details', 
+                        // state: {IncomingArr : IncomingArr}
+                        state: {data : data}
+
+                  })
                     }}></i></TableCell>
                   <TableCell style={table_content}><strong>INCOMING</strong> </TableCell>
                   <TableCell style={table_content}>{data.processorGroup}<br />{data.processorName}</TableCell>
