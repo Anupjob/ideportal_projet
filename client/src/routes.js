@@ -27,6 +27,8 @@ const Buttons = React.lazy(() => import('./views/buttons/buttons/Buttons'));
 const Charts = React.lazy(() => import('./views/charts/Charts'));
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'));
 const DocumentDetails = React.lazy(() => import('./views/details/DocumentDetails'));
+const PdfViewGoogleAzure = React.lazy(() => import('./views/details/PdfViewGoogleAzure'));
+
 
 const CoreUIIcons = React.lazy(() => import('./views/icons/coreui-icons/CoreUIIcons'));
 const Flags = React.lazy(() => import('./views/icons/flags/Flags'));
@@ -46,6 +48,8 @@ const routes = [
   { path: '/incoming_list', name: 'Dashboard', component: Dashboard },
   // { path: '/', exact: true, name: 'Login'},
   { path: '/details', name: 'DocumentDetails', component: DocumentDetails },
+  { path: '/detail/:id', name: 'PdfViewGoogleAzure', component: PdfViewGoogleAzure },
+
 
   { path: '/theme', name: 'Theme', component: Colors, exact: true },
   { path: '/document_list', name: 'Colors', component: Colors },

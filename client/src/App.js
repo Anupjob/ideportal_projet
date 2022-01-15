@@ -17,6 +17,8 @@ const TheLayout = React.lazy(() => import('./containers/TheLayout'));
 const Login = React.lazy(() => import('./views/pages/login/Login'));
 const Register = React.lazy(() => import('./views/pages/register/Register'));
 const DocumentDetails = React.lazy(() => import('./views/details/DocumentDetails'));
+const PdfViewGoogleAzure = React.lazy(() => import('./views/details/PdfViewGoogleAzure'));
+
 
 const Page404 = React.lazy(() => import('./views/pages/page404/Page404'));
 const Page500 = React.lazy(() => import('./views/pages/page500/Page500'));
@@ -79,6 +81,8 @@ class App extends Component {
             <Route path="/incoming_list" name="Dashboard" render={props => <TheLayout {...props} />} />
             <Route path="/document_list" name="Colors" render={props => <TheLayout {...props} />} />
             <Route path="/details" name="DocumentDetails" render={props => <TheLayout {...props} />} />
+            <Route path="/detail/:id" name="PdfViewGoogleAzure" render={props => <TheLayout {...props} />} />
+
 
             {/* <Route path="/" name="Home" render={props => <TheLayout {...props} />} /> */}
           </Switch>

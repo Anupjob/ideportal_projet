@@ -163,7 +163,7 @@ const Dashboard = () => {
           <CRow>
             <CCol><div style={{ fontSize: "1.3em", marginBottom: "30px" }}>Filter by any of these details</div>
               <CRow style={{ marginBottom: "20px" }}>
-                <CCol xs="4" style={text_box}>DATA RANGE: </CCol>
+                <CCol xs="4" style={text_box}>RECEIVE DATE: </CCol>
                 <CCol xs="8">
                   <CInputGroup>
                     <CInput
@@ -199,7 +199,7 @@ const Dashboard = () => {
                 </CCol>
               </CRow>
               <CRow style={{ marginBottom: "20px" }}>
-                <CCol xs="4" style={text_box}>TYPE OF DOCUMENTS: </CCol>
+                <CCol xs="4" style={text_box}>SEARCH: </CCol>
                 <CCol xs="8">
                   <CInputGroup>
                     <CInput
@@ -271,7 +271,7 @@ const Dashboard = () => {
                     }
                   </TableCell>
                   <Dialog open={open} onClose={handleToClose}>
-                    <DialogTitle>Error</DialogTitle>
+                    <DialogTitle>Issue</DialogTitle>
                     <DialogContent style={{ minWidth: 500 }}>
                       <DialogContentText>
                         {errorMsg}

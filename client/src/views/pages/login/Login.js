@@ -361,7 +361,7 @@ class Login extends React.Component {
           alert(response.data.err);
         }
         if (response.data.result == "success") {
-          this.props.history.push('/document_list');
+          this.props.history.push('/incoming_list');
         }
 
       })

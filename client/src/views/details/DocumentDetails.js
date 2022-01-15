@@ -137,9 +137,9 @@ class DocumentDetails extends React.Component {
     // const { Edate } = this.props.Edate
     // let dateRec = this.props.history.location.state.data.dateRec;
     // console.log("===dateRec:::",dateRec)
-    let dateRec = moment(this.props.history.location.state.data.dateRec).format("MM/DD/YYYY hh:mm A");
-    let dateProcessed =moment(this.props.history.location.state.data.dateProcessed).format("MM/DD/YYYY hh:mm A");
-    let noOfPages = this.props.history.location.state.data.noOfPages;
+    let dateRec = moment(this.props && this.props.history && this.props.history.location && this.props.history.location.state &&  this.props.history.location.state.data.dateRec).format("MM/DD/YYYY hh:mm A");
+    let dateProcessed = moment(this.props && this.props.history && this.props.history.location && this.props.history.location.state &&  this.props.history.location.state.data.dateProcessed).format("MM/DD/YYYY hh:mm A");
+    let noOfPages = this.props && this.props.history && this.props.history.location && this.props.history.location.state && this.props.history.location.state.data.noOfPages;
 
 
     return (
@@ -179,7 +179,8 @@ class DocumentDetails extends React.Component {
                 <TableCell style={table_headerMain}><p style={{fontSize:12,width:250}}>Date/Time Processed:{dateProcessed}</p></TableCell>
                 <TableCell style={table_headerMain}><p style={{fontSize:12,width:250}}># of Pages:{noOfPages}</p></TableCell>
                 <TableCell style={table_headerMain}>
-                <Button style={{backgroundColor:'#4EA7D8',fontSize:14,color:'white',width:170}}>VIEW DETAILS</Button>
+                <Button style={{backgroundColor:'#4EA7D8',fontSize:14,color:'white',width:170}}
+                onClick = {()=>{this.props.history.push('/detail/'+ this.props.history.location.state.data.doc_id)}}>VIEW DETAILS</Button>
                 </TableCell>
                 <TableCell style={table_headerMain}>
                 <Button style={{backgroundColor:'#4EA7D8',fontSize:14,color:'white',width:170}}
@@ -189,10 +190,10 @@ class DocumentDetails extends React.Component {
                 <TableRow>
                 <Dialog open={this.state.openReportIssue}
                 onClose={this.handleClose}>
-               <DialogTitle>Issue Detail</DialogTitle>
+                <DialogTitle>Issue Detail</DialogTitle>
                 <DialogContent style={{minWidth:500}}>
-                 <DialogContentText>
-                 <TextField id="outlined-basic" label="Enter Issue" multiline={true} type="text" variant="outlined" style={{ width: "100%" }}
+                <DialogContentText>
+                <TextField id="outlined-basic" label="Enter Issue" multiline={true} type="text" variant="outlined" style={{ width: "100%" }}
                           onChange={this.handleClickReportIssue}
                         />
                </DialogContentText>
