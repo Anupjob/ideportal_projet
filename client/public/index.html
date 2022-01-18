@@ -23,10 +23,21 @@
   <link rel="manifest" href="%PUBLIC_URL%/manifest.json">
   <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+  <link rel="stylesheet" href="styles.css">
   <style>
     .c-header-nav-item a:hover {
       color: #fff !important;
       text-decoration: none !important;
+    }
+
+    .react-multiple-carousel__arrow {
+      background: none !important;
+      outline: none !important;
+    }
+
+    .react-multi-carousel-list {
+      position: static !important;
     }
   </style>
   <!--
@@ -45,6 +56,7 @@
     You need to enable JavaScript to run this app.
   </noscript>
   <div id="root"></div>
+  <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
   <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.
