@@ -13,7 +13,8 @@ import {
   CCardHeader,
   CCardBody,
   CForm
-} from '@coreui/react'
+} from '@coreui/react';
+import { useSelector, useDispatch } from 'react-redux';
 import Table from '@material-ui/core/Table';
 import CircularProgress from "@material-ui/core/CircularProgress";
 import TableBody from '@material-ui/core/TableBody';
@@ -68,6 +69,9 @@ const upload_file = {
 }
 const Dashboard = () => {
 
+
+  const dispatch = useDispatch()
+
   const [Isloader, setIsloader] = useState(false);
   const [Sdate, setSdate] = useState('');
   const [Edate, setEdate] = useState('');
@@ -77,7 +81,12 @@ const Dashboard = () => {
   const [open, setOpen] = React.useState(false);
   const [errorMsg, setErrorMsg] = React.useState('');
   const [ArrNull, setArrNull] = React.useState(false);
+  // const url = useSelector(state => state.url)
 
+  //const toggleSidebar = () => {
+  // const val = [true, 'responsive'].includes(url) ? false : 'incoming'
+  // dispatch({ type: 'set', url: val })
+  //}
 
   const handleClickToOpen = (errMsg) => {
     console.log("===errMsg===", errMsg)
@@ -232,7 +241,7 @@ const Dashboard = () => {
 
 
 
-
+      <p onClick={() => history.push('/document_list')}>gf</p>
 
       <TableContainer component={Paper} style={{ position: "relative", zIndex: "5" }}>
         <Table aria-label="simple table">
@@ -284,13 +293,13 @@ const Dashboard = () => {
                   <TableCell style={table_content}><i class="fa fa-search-plus" aria-hidden="true"
                     onClick={() => {
                       // history.push("/details");
-                      console.log("IncomingArr send==>>",IncomingArr)
+                      console.log("IncomingArr send==>>", IncomingArr)
                       history.push({
-                        pathname: '/details', 
+                        pathname: '/details',
                         // state: {IncomingArr : IncomingArr}
-                        state: {data : data}
+                        state: { data: data }
 
-                  })
+                      })
                     }}></i></TableCell>
                   <TableCell style={table_content}><strong>INCOMING</strong> </TableCell>
                   <TableCell style={table_content}>{data.processorGroup}<br />{data.processorName}</TableCell>
