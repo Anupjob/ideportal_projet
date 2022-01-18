@@ -26,9 +26,8 @@ import Modal from '@material-ui/core/Modal';
 import { AccordionDetails } from '@material-ui/core';
 import CircularProgress from "@material-ui/core/CircularProgress";
 import settings from 'src/config/settings'
-
-
-
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 //import Modal from 'react-modal';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/storage';
@@ -111,6 +110,15 @@ const loader = {
   width: "100%",
   height: "100%"
 }
+const toast_options = {
+  position: "top-center",
+  autoClose: 5000,
+  hideProgressBar: true,
+  closeOnClick: true,
+  pauseOnHover: true,
+  draggable: true,
+  progress: undefined,
+  }
 // const divider = {
 //   lineHeight: "3px",
 //   borderTop: "1px solid #707070",
@@ -296,9 +304,9 @@ class Login extends React.Component {
     // })
     const regex = /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
     if (this.state.email == '' || this.state.email == null || this.state.email == undefined) {
-      alert("Please Enter Email !");
+      toast.warn("Please Enter Email !", {toast_options});
     } else if (!(regex.test(this.state.email))) {
-      alert("Invalid Email !");
+      toast.warn("Invalid Email !", {toast_options});  
     }
     else {
       console.log("===You are in else")
@@ -318,27 +326,28 @@ class Login extends React.Component {
         localStorage.setItem('company', response.data.result.company)
         localStorage.setItem('name', response.data.result.name)
         if (response.data.err) {
-          alert(response.data.err);
+          toast.error(response.data.err, {toast_options});         
         } else {
           this.setState({ sendOtp: true })
         }
         this.setState({ isLoading: false })
 
-      })
+      }).catch(err => {
+        toast.error(err.message, {toast_options});
+        console.log("Error on Let's Go Click===",err)});
     }
   }
   verifyOtpClick = () => {
     const regex = /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
 
     if (this.state.email == '' || this.state.email == null || this.state.email == undefined) {
-      // console.log("===Please Enter Email")
-      alert("Please Enter Email !");
+      toast.warn("Please Enter Email !", {toast_options});  
     }
     else if (!(regex.test(this.state.email))) {
-      alert("Invalid Email !");
+      toast.warn("Invalid Email !", {toast_options});  
     }
     else if (this.state.password == '' || this.state.password == null || this.state.password == undefined) {
-      alert("Please Enter OTP !");
+      toast.warn("Please Enter OTP !", {toast_options});  
     }
     else {
       this.setState({ isLoading: true })
@@ -356,15 +365,15 @@ class Login extends React.Component {
       }).then((response) => {
         console.log("Respone from Verify otp ", response.data, response.data.err);
         this.setState({ isLoading: false })
-
         if (response.data.err) {
-          alert(response.data.err);
+          toast.error(response.data.err, {toast_options});         
         }
         if (response.data.result == "success") {
-          this.props.history.push('/document_list');
+          this.props.history.push('/incoming_list');
         }
-
-      })
+      }).catch(err => {
+        toast.error(err.message, {toast_options});
+        console.log("Error on Verification==",err)});
     }
   }
   handlePhone = (event) => {
@@ -620,6 +629,17 @@ class Login extends React.Component {
 
                         </div>
                       )}
+                      <div><ToastContainer
+                              position="top-center"
+                              autoClose={5000}
+                              hideProgressBar
+                              newestOnTop={false}
+                              closeOnClick
+                              rtl={false}
+                              pauseOnFocusLoss
+                              draggable
+                              pauseOnHover
+                              /></div>
                       {/* <div style={divider}><div style={orText}>OR</div></div>
 
                       <Button variant={"outlined"} fullWidth style={phoneBtn} onClick={this.phoneClick} >Sign In with Phone No</Button>
@@ -645,6 +665,7 @@ class Login extends React.Component {
 
               </CCardGroup>
             </CCol>
+            
           </CRow>
         </CContainer>
       </CContainer>
