@@ -126,7 +126,6 @@ class DocumentDetails extends React.Component {
       ShowError: false,
       finalDataResult:{}  
     }
-    this.getPdfData();
   }
   componentDidMount = () => {
     this.getPdfData();
@@ -160,7 +159,7 @@ class DocumentDetails extends React.Component {
 
     }else{
       dataValid = false
-      toast.warning("FileName is invalid", {toast_options});
+      // toast.warning("FileName is invalid", {toast_options});
     }
     if(processPath){
 
@@ -191,6 +190,9 @@ class DocumentDetails extends React.Component {
       }).catch(err => {
         toast.error(err.message, {toast_options});
         console.log("Record Issue Error",err)});
+      }else{
+      toast.warning("Request is invalid", {toast_options});
+
       }
   }
   submit = () => {
