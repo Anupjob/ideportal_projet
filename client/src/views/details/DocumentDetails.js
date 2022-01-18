@@ -29,12 +29,10 @@ import { useHistory } from "react-router";
 import moment from 'moment';
 import settings from 'src/config/settings';
 import axios from "axios";
-
-
-
-
-
-
+import CircularProgress from "@material-ui/core/CircularProgress";
+import { width } from '@mui/system';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 const table_header = {
@@ -51,7 +49,20 @@ const table_headerMain = {
 const table_content = {
   borderBottom: "1px dashed #ccc",
   color: "rgb(142, 142, 142)",
-  fontSize: 10
+  fontSize: 10,
+  width: 200
+}
+const loader = {
+  position: "fixed",
+  top: "0",
+  left: "0",
+  right: "0",
+  bottom: "0",
+  background: "rgba(255,255,255,0.4)",
+  zIndex: "100",
+  display: "table",
+  width: "100%",
+  height: "100%"
 }
 const cancel_dialogBtn = {
   backgroundColor: '#4EA7D8',
@@ -63,36 +74,67 @@ const submit_dialogBtn = {
   fontSize: 14, color: 'white',
   marginLeft: 10
 }
-const mapStateToProps = (state) => {
-  return {
-    url: "state.url"
-  }
-
-};
-const mapDispatchToProps = (state) => {
-  return {
-    url: "state && state.url"
-  }
-};
-
+const cardView = {
+  backgroundColor: 'transparent',
+  border: 0
+}
+const pdfContentView = {
+  boxShadow: '0px 4px 32px 1px #00000029',
+  height: 800,
+  maxHeight: 800,
+  marginTop: 10,
+  marginLeft: 'auto',
+  marginRight: 'auto'
+}
+const bottom_View = {
+  backgroundColor: '#fff',
+  padding: 20,
+  maxHeight: 400,
+  overflowY: 'scroll'
+}
+const dateTimeView = {
+  fontSize: 12,
+  width: 250
+}
+const viewDetailBtn = {
+  backgroundColor: '#4EA7D8',
+  fontSize: 14, color: 'white',
+  width: 170
+}
+const reportIssueBtn = {
+  backgroundColor: '#4EA7D8',
+  fontSize: 14, color: 'white',
+  width: 170
+}
+const toast_options = {
+  position: "top-center",
+  autoClose: 5000,
+  hideProgressBar: true,
+  closeOnClick: true,
+  pauseOnHover: true,
+  draggable: true,
+  progress: undefined,
+}
 class DocumentDetails extends React.Component {
 
   constructor(props) {
     super(props);
-
     this.state = {
       openReportIssue: false,
       enterIssue: '',
-      IncomingArr: []
-
-
+      IncomingArr: [],
+      isLoading: false,
+      ShowError: false,
+      finalDataResult: {}
     }
   }
+  componentDidMount = () => {
+    this.getPdfData();
 
+  }
   openDialog = () => {
     this.setState({ openReportIssue: true });
   };
-
   handleClose = () => {
     this.setState({ openReportIssue: false });
   };
@@ -104,10 +146,6 @@ class DocumentDetails extends React.Component {
 
     localStorage.setItem('splitPos', 350)
     console.log("=== history.location.state:::", this.props.history.location.state.data)
-    // if(history.location && history.location.state){
-    // console.log("=== history.location.state:::",history.location.state)
-
-    // }
   }
 
 
@@ -117,13 +155,57 @@ class DocumentDetails extends React.Component {
     } = info;
     console.log(height, width, originalHeight, originalWidth);
   }
+  getPdfData = () => {
+    // console.log("===You are in getPdfData")
+    var fileName = this.props.history.location.state.data.finalFileName;
+    var processPath = this.props.history.location.state.data.processorContainerPath;
+    var dataValid = true;
+    if (fileName) {
+
+    } else {
+      dataValid = false
+      // toast.warning("FileName is invalid", {toast_options});
+    }
+    if (processPath) {
+
+    } else {
+      dataValid = false
+      // toast.warning("FileName is invalid", {toast_options});
+    }
+    if (dataValid) {
+      this.setState({ isLoading: true })
+      const headers = {
+        "Content-Type": "application/json",
+        // Authorization: "Bearer " + logginUser.token,
+        // reqFrom: "ADMIN",
+      };
+      axios({
+        method: "POST",
+        url: settings.serverUrl + "/finalData",
+        data: JSON.stringify({ fileName: fileName, processorContainerPath: processPath }),
+        headers,
+      }).then((response) => {
+        console.log("Respone from post getPdfData", response.data.result);
+        if (response.data.err) {
+          // alert(response.data.err);
+          toast.error(response.data.err, { toast_options });
+        } else {
+          this.setState({ finalDataResult: response.data.result, isLoading: false })
+        }
+      }).catch(err => {
+        toast.error(err.message, { toast_options });
+        console.log("Record Issue Error", err)
+      });
+    } else {
+      toast.warning("Request is invalid", { toast_options });
+
+    }
+  }
   submit = () => {
-    console.log("===Submit Click:::")
     if (this.state.enterIssue == '' || this.state.enterIssue == null || this.state.enterIssue == undefined) {
-      alert("Please Enter Issue !");
+      toast.warn("Please Enter Issue !", { toast_options });
     }
     else {
-
       const headers = {
         "Content-Type": "application/json",
         // Authorization: "Bearer " + logginUser.token,
@@ -132,34 +214,31 @@ class DocumentDetails extends React.Component {
       axios({
         method: "POST",
         url: settings.serverUrl + "/reportIssue",
-        data: JSON.stringify({ doc_id: this.props.history.location.state.data.doc_id, errMsg: this.state.enterIssue }),
+        data: JSON.stringify({ doc_id: this.props.history.location.state.data.doc_id, errMs: this.state.enterIssue }),
         headers,
       }).then((response) => {
         console.log("Respone from post ", response);
         this.setState({ openReportIssue: false, })
         if (response.data.err) {
-          alert(response.data.err);
+          // alert(response.data.err); 
+          toast.error(response.data.err, { toast_options });
         } else {
-          alert(response.data.result);
+          // alert(response.data.result);
+          toast.success(response.data.result, { toast_options });
         }
-
-      })
+      }).catch(err => {
+        toast.error(err.message, { toast_options });
+        console.log("Record Issue Error", err)
+      });
     }
   }
   render() {
-
-    // console.log("this.state", this.state);
-    // const { Sdate } = this.props.Sdate
-    // const { Edate } = this.props.Edate
-    // let dateRec = this.props.history.location.state.data.dateRec;
-    // console.log("===dateRec:::",dateRec)
     let dateRec = moment(this.props && this.props.history && this.props.history.location && this.props.history.location.state && this.props.history.location.state.data.dateRec).format("MM/DD/YYYY hh:mm A");
     let dateProcessed = moment(this.props && this.props.history && this.props.history.location && this.props.history.location.state && this.props.history.location.state.data.dateProcessed).format("MM/DD/YYYY hh:mm A");
     let noOfPages = this.props && this.props.history && this.props.history.location && this.props.history.location.state && this.props.history.location.state.data.noOfPages;
 
-
     return (
-      <CCard style={{ backgroundColor: 'transparent', border: 0 }}>
+      <CCard style={cardView}>
         <CRow>
           <CCol>
             <SplitPane
@@ -173,33 +252,31 @@ class DocumentDetails extends React.Component {
               }}
               style={{ position: "static", backgroundColor: 'transparent' }}
             >
-              <div style={{ boxShadow: '0px 4px 32px 1px #00000029', height: 800, maxHeight: 800, marginTop: 10, marginLeft: 'auto', marginRight: 'auto' }}>
+              <div style={pdfContentView}>
                 <Document
-                  // file = 'JVBERi0xLjMNCiXi48/TDQoNCjEgMCBvYmoNCjw8DQovVHlwZSAvQ2F0YWxvZw0KL091dGxpbmVzIDIgMCBSDQovUGFnZXMgMyAwIFINCj4+DQplbmRvYmoNCg0KMiAwIG9iag0KPDwNCi9UeXBlIC9PdXRsaW5lcw0KL0NvdW50IDANCj4+DQplbmRvYmoNCg0KMyAwIG9iag0KPDwNCi9UeXBlIC9QYWdlcw0KL0NvdW50IDINCi9LaWRzIFsgNCAwIFIgNiAwIFIgXSANCj4+DQplbmRvYmoNCg0KNCAwIG9iag0KPDwNCi9UeXBlIC9QYWdlDQovUGFyZW50IDMgMCBSDQovUmVzb3VyY2VzIDw8DQovRm9udCA8PA0KL0YxIDkgMCBSIA0KPj4NCi9Qcm9jU2V0IDggMCBSDQo+Pg0KL01lZGlhQm94IFswIDAgNjEyLjAwMDAgNzkyLjAwMDBdDQovQ29udGVudHMgNSAwIFINCj4+DQplbmRvYmoNCg0KNSAwIG9iag0KPDwgL0xlbmd0aCAxMDc0ID4+DQpzdHJlYW0NCjIgSg0KQlQNCjAgMCAwIHJnDQovRjEgMDAyNyBUZg0KNTcuMzc1MCA3MjIuMjgwMCBUZA0KKCBBIFNpbXBsZSBQREYgRmlsZSApIFRqDQpFVA0KQlQNCi9GMSAwMDEwIFRmDQo2OS4yNTAwIDY4OC42MDgwIFRkDQooIFRoaXMgaXMgYSBzbWFsbCBkZW1vbnN0cmF0aW9uIC5wZGYgZmlsZSAtICkgVGoNCkVUDQpCVA0KL0YxIDAwMTAgVGYNCjY5LjI1MDAgNjY0LjcwNDAgVGQNCigganVzdCBmb3IgdXNlIGluIHRoZSBWaXJ0dWFsIE1lY2hhbmljcyB0dXRvcmlhbHMuIE1vcmUgdGV4dC4gQW5kIG1vcmUgKSBUag0KRVQNCkJUDQovRjEgMDAxMCBUZg0KNjkuMjUwMCA2NTIuNzUyMCBUZA0KKCB0ZXh0LiBBbmQgbW9yZSB0ZXh0LiBBbmQgbW9yZSB0ZXh0LiBBbmQgbW9yZSB0ZXh0LiApIFRqDQpFVA0KQlQNCi9GMSAwMDEwIFRmDQo2OS4yNTAwIDYyOC44NDgwIFRkDQooIEFuZCBtb3JlIHRleHQuIEFuZCBtb3JlIHRleHQuIEFuZCBtb3JlIHRleHQuIEFuZCBtb3JlIHRleHQuIEFuZCBtb3JlICkgVGoNCkVUDQpCVA0KL0YxIDAwMTAgVGYNCjY5LjI1MDAgNjE2Ljg5NjAgVGQNCiggdGV4dC4gQW5kIG1vcmUgdGV4dC4gQm9yaW5nLCB6enp6ei4gQW5kIG1vcmUgdGV4dC4gQW5kIG1vcmUgdGV4dC4gQW5kICkgVGoNCkVUDQpCVA0KL0YxIDAwMTAgVGYNCjY5LjI1MDAgNjA0Ljk0NDAgVGQNCiggbW9yZSB0ZXh0LiBBbmQgbW9yZSB0ZXh0LiBBbmQgbW9yZSB0ZXh0LiBBbmQgbW9yZSB0ZXh0LiBBbmQgbW9yZSB0ZXh0LiApIFRqDQpFVA0KQlQNCi9GMSAwMDEwIFRmDQo2OS4yNTAwIDU5Mi45OTIwIFRkDQooIEFuZCBtb3JlIHRleHQuIEFuZCBtb3JlIHRleHQuICkgVGoNCkVUDQpCVA0KL0YxIDAwMTAgVGYNCjY5LjI1MDAgNTY5LjA4ODAgVGQNCiggQW5kIG1vcmUgdGV4dC4gQW5kIG1vcmUgdGV4dC4gQW5kIG1vcmUgdGV4dC4gQW5kIG1vcmUgdGV4dC4gQW5kIG1vcmUgKSBUag0KRVQNCkJUDQovRjEgMDAxMCBUZg0KNjkuMjUwMCA1NTcuMTM2MCBUZA0KKCB0ZXh0LiBBbmQgbW9yZSB0ZXh0LiBBbmQgbW9yZSB0ZXh0LiBFdmVuIG1vcmUuIENvbnRpbnVlZCBvbiBwYWdlIDIgLi4uKSBUag0KRVQNCmVuZHN0cmVhbQ0KZW5kb2JqDQoNCjYgMCBvYmoNCjw8DQovVHlwZSAvUGFnZQ0KL1BhcmVudCAzIDAgUg0KL1Jlc291cmNlcyA8PA0KL0ZvbnQgPDwNCi9GMSA5IDAgUiANCj4+DQovUHJvY1NldCA4IDAgUg0KPj4NCi9NZWRpYUJveCBbMCAwIDYxMi4wMDAwIDc5Mi4wMDAwXQ0KL0NvbnRlbnRzIDcgMCBSDQo+Pg0KZW5kb2JqDQoNCjcgMCBvYmoNCjw8IC9MZW5ndGggNjc2ID4+DQpzdHJlYW0NCjIgSg0KQlQNCjAgMCAwIHJnDQovRjEgMDAyNyBUZg0KNTcuMzc1MCA3MjIuMjgwMCBUZA0KKCBTaW1wbGUgUERGIEZpbGUgMiApIFRqDQpFVA0KQlQNCi9GMSAwMDEwIFRmDQo2OS4yNTAwIDY4OC42MDgwIFRkDQooIC4uLmNvbnRpbnVlZCBmcm9tIHBhZ2UgMS4gWWV0IG1vcmUgdGV4dC4gQW5kIG1vcmUgdGV4dC4gQW5kIG1vcmUgdGV4dC4gKSBUag0KRVQNCkJUDQovRjEgMDAxMCBUZg0KNjkuMjUwMCA2NzYuNjU2MCBUZA0KKCBBbmQgbW9yZSB0ZXh0LiBBbmQgbW9yZSB0ZXh0LiBBbmQgbW9yZSB0ZXh0LiBBbmQgbW9yZSB0ZXh0LiBBbmQgbW9yZSApIFRqDQpFVA0KQlQNCi9GMSAwMDEwIFRmDQo2OS4yNTAwIDY2NC43MDQwIFRkDQooIHRleHQuIE9oLCBob3cgYm9yaW5nIHR5cGluZyB0aGlzIHN0dWZmLiBCdXQgbm90IGFzIGJvcmluZyBhcyB3YXRjaGluZyApIFRqDQpFVA0KQlQNCi9GMSAwMDEwIFRmDQo2OS4yNTAwIDY1Mi43NTIwIFRkDQooIHBhaW50IGRyeS4gQW5kIG1vcmUgdGV4dC4gQW5kIG1vcmUgdGV4dC4gQW5kIG1vcmUgdGV4dC4gQW5kIG1vcmUgdGV4dC4gKSBUag0KRVQNCkJUDQovRjEgMDAxMCBUZg0KNjkuMjUwMCA2NDAuODAwMCBUZA0KKCBCb3JpbmcuICBNb3JlLCBhIGxpdHRsZSBtb3JlIHRleHQuIFRoZSBlbmQsIGFuZCBqdXN0IGFzIHdlbGwuICkgVGoNCkVUDQplbmRzdHJlYW0NCmVuZG9iag0KDQo4IDAgb2JqDQpbL1BERiAvVGV4dF0NCmVuZG9iag0KDQo5IDAgb2JqDQo8PA0KL1R5cGUgL0ZvbnQNCi9TdWJ0eXBlIC9UeXBlMQ0KL05hbWUgL0YxDQovQmFzZUZvbnQgL0hlbHZldGljYQ0KL0VuY29kaW5nIC9XaW5BbnNpRW5jb2RpbmcNCj4+DQplbmRvYmoNCg0KMTAgMCBvYmoNCjw8DQovQ3JlYXRvciAoUmF2ZSBcKGh0dHA6Ly93d3cubmV2cm9uYS5jb20vcmF2ZVwpKQ0KL1Byb2R1Y2VyIChOZXZyb25hIERlc2lnbnMpDQovQ3JlYXRpb25EYXRlIChEOjIwMDYwMzAxMDcyODI2KQ0KPj4NCmVuZG9iag0KDQp4cmVmDQowIDExDQowMDAwMDAwMDAwIDY1NTM1IGYNCjAwMDAwMDAwMTkgMDAwMDAgbg0KMDAwMDAwMDA5MyAwMDAwMCBuDQowMDAwMDAwMTQ3IDAwMDAwIG4NCjAwMDAwMDAyMjIgMDAwMDAgbg0KMDAwMDAwMDM5MCAwMDAwMCBuDQowMDAwMDAxNTIyIDAwMDAwIG4NCjAwMDAwMDE2OTAgMDAwMDAgbg0KMDAwMDAwMjQyMyAwMDAwMCBuDQowMDAwMDAyNDU2IDAwMDAwIG4NCjAwMDAwMDI1NzQgMDAwMDAgbg0KDQp0cmFpbGVyDQo8PA0KL1NpemUgMTENCi9Sb290IDEgMCBSDQovSW5mbyAxMCAwIFINCj4+DQoNCnN0YXJ0eHJlZg0KMjcxNA0KJSVFT0YNCg=='
                   file='https://dgsciense.s3.amazonaws.com/raw_invoices_hubspot/6085ca5e0c876f667d354cb0.pdf'
-                  onLoadSuccess={page => console.log('page onLoadSuccess:>> ', page)}
-                  onLoadError={(error) => console.log('pdf error :>> ', error)}
+                // onLoadSuccess={page => console.log('page onLoadSuccess:>> ', page)}
+                // onLoadError={(error) => console.log('pdf error :>> ', error)}
                 >
                   <Page pageNumber={1} onLoadSuccess={this.onPageLoad} />
                 </Document>
               </div>
-              <div style={{ backgroundColor: '#fff', padding: 20 }}>
-
-                <TableContainer component={Paper} style={{ position: "relative", zIndex: "5" }}>
+              <div style={bottom_View}>
+                <TableContainer component={Paper} style={{ position: "relative", zIndex: "5", overflow: 'hidden' }}>
                   <Table aria-label="simple table">
                     <TableHead>
                       <TableRow>
-                        {/* <TableCell style={table_header}><i class="fa fa-bell" aria-hidden="true"></i></TableCell>
-                <TableCell style={table_header}><i class="fa fa-sticky-note" aria-hidden="true"></i></TableCell> */}
-                        <TableCell style={table_headerMain}><p style={{ fontSize: 12, width: 250 }}>Date/Time Received:{dateRec}</p></TableCell>
-                        <TableCell style={table_headerMain}><p style={{ fontSize: 12, width: 250 }}>Date/Time Processed:{dateProcessed}</p></TableCell>
-                        <TableCell style={table_headerMain}><p style={{ fontSize: 12, width: 250 }}># of Pages:{noOfPages}</p></TableCell>
+                        <TableCell style={table_headerMain}><p style={dateTimeView}>Date/Time Received:{dateRec}</p></TableCell>
+                        <TableCell style={table_headerMain}><p style={dateTimeView}>Date/Time Processed:{dateProcessed}</p></TableCell>
+                        <TableCell style={table_headerMain}><p style={dateTimeView}># of Pages:{noOfPages}</p></TableCell>
                         <TableCell style={table_headerMain}>
-                          <Button style={{ backgroundColor: '#4EA7D8', fontSize: 14, color: 'white', width: 170 }}
-                            onClick={() => { this.props.history.push('/detail/' + this.props.history.location.state.data.doc_id) }}>VIEW DETAILS</Button>
+                          <Button style={viewDetailBtn}
+                            onClick={() => {
+                              this.props.history.push('/detail/' + this.props.history.location.state.data.doc_id)
+                            }}>VIEW DETAILS</Button>
                         </TableCell>
                         <TableCell style={table_headerMain}>
-                          <Button style={{ backgroundColor: '#4EA7D8', fontSize: 14, color: 'white', width: 170 }}
+                          <Button style={reportIssueBtn}
                             onClick={() => this.openDialog()}>REPORT ISSUE</Button>
                         </TableCell>
                       </TableRow>
@@ -221,37 +298,64 @@ class DocumentDetails extends React.Component {
                             </div>
                           </DialogActions>
                         </Dialog>
-                        {/* <TableCell style={table_header}><i class="fa fa-bell" aria-hidden="true"></i></TableCell>
-              <TableCell style={table_header}><i class="fa fa-sticky-note" aria-hidden="true"></i></TableCell> */}
-                        <TableCell style={table_header}>Operator ID</TableCell>
-                        <TableCell style={table_header}>Operator Name</TableCell>
-                        <TableCell style={table_header}>Operator Name</TableCell>
-                        <TableCell style={table_header}>Operator Name</TableCell>
-                        <TableCell style={table_header}>Check Number</TableCell>
-                        <TableCell style={table_header}>Check Date</TableCell>
-                        <TableCell style={table_header}>Check Amount</TableCell>
-                        <TableCell style={table_header}>Operator CC</TableCell>
-                        <TableCell style={table_header}>Partener CC</TableCell>
+
+
+                      </TableRow>
+
+                    </TableHead>
+                  </Table>
+                </TableContainer>
+                <TableContainer component={Paper} style={{ position: "relative", zIndex: "5" }}>
+                  <Table aria-label="simple table">
+                    <TableHead>
+                      <TableRow>
+                        {
+                          Object.keys(this.state.finalDataResult).map(key =>
+                            <TableCell style={table_header}>{key}</TableCell>
+                          )
+                        }
                       </TableRow>
                     </TableHead>
-                    <TableBody>
 
-                      {/* <TableCell style={table_content}><a href='#' style={{ color: "#c00" }}><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></a></TableCell>
-              <TableCell style={table_content}><a href='#' style={{ color: "#ccc" }}><i class="fa fa-search-plus" aria-hidden="true"></i></a></TableCell> */}
-                      <TableCell style={table_content}><strong>INCOMING</strong> </TableCell>
-                      <TableCell style={table_content}>CHECKS ENVERUS</TableCell>
-                      <TableCell style={table_content}><strong>INCOMING</strong> </TableCell>
-                      <TableCell style={table_content}>CHECKS ENVERUS</TableCell>
-                      <TableCell style={table_content}>12/21/21 10:30 AM</TableCell>
-                      <TableCell style={table_content}>12/21/21 10:30 AM</TableCell>
-                      <TableCell style={table_content}>3</TableCell>
-                      <TableCell style={table_content}>PROCESSED</TableCell>
+
+                    <TableBody>
+                      <TableRow>
+                        {
+                          Object.keys(this.state.finalDataResult).map((key, idex) => {
+                            return <TableCell >
+                              {
+                                this.state.finalDataResult[key].map((vObj, vIdx) => {
+                                  return <div style={table_content}><strong>{vObj}</strong> </div>
+                                })
+                              }
+                            </TableCell>
+                          })
+                        }
+                      </TableRow>
                     </TableBody>
                   </Table>
                 </TableContainer>
               </div>
             </SplitPane>
           </CCol>
+          {this.state.isLoading && (
+            <div style={loader}>
+
+              <CircularProgress style={{ margin: "22% auto", display: "block" }} />
+
+            </div>
+          )}
+          <div><ToastContainer
+            position="top-center"
+            autoClose={5000}
+            hideProgressBar
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+          /></div>
         </CRow>
       </CCard>
     );

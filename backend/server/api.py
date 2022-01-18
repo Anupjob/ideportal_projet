@@ -21,12 +21,24 @@ import smtplib
 from fastapi_mail import FastMail, MessageSchema,ConnectionConfig
 from typing import List
 from bson.objectid import ObjectId
+from azure.storage.blob import BlobServiceClient
+import pandas as pd
+from io import BytesIO
+
+folderFileProcessing = "fileprocessing/"
+container = "incomingfiles"
+connect_str_use = 'DefaultEndpointsProtocol=https;AccountName=idedata;AccountKey=7o/tRVR7exoh8XqFc2q/IRwm+YEo7/uxV3q1GjWeEYcfDbV56FC8xkp5xzLaO/rUnkI3JfnA1XFyq5dmDbJjXA==;EndpointSuffix=core.windows.net'
 
 def getConn():
     conn = 'mongodb://ide21qadguser_qa:shSgSAd63SDsgh67S@18.232.50.247:27021/ide_database_qa?authMechanism=SCRAM-SHA-256&authSource=ide_database_qa'
     client_mongo = pymongo.MongoClient(conn)
     db_mongo = client_mongo.ide_database_qa
     return db_mongo
+
+def blob_connection():
+    connect_str = connect_str_use
+    blob_service_client = BlobServiceClient.from_connection_string(connect_str)
+    return blob_service_client
 
 class UserLogin(BaseModel):
     email: str
@@ -41,6 +53,7 @@ class IncomingData(BaseModel):
 
 class FinalData(BaseModel):
     fileName: Optional[str] = None
+    processorContainerPath: Optional[str] = None
 
 class EmailSchema(BaseModel):
    email: List[EmailStr]
@@ -48,6 +61,64 @@ class EmailSchema(BaseModel):
 class IssueSchema(BaseModel):
    errMsg: str
    doc_id: str
+
+def download_blob_azure(local_path, complete_file_name):
+    print("download_blob_azure", local_path, complete_file_name);
+
+    try:
+        blob_service_client = blob_connection()
+        print("blob_service_client",blob_service_client)
+        blob_client = blob_service_client.get_blob_client(container=container, blob=complete_file_name)
+        with open(local_path, "wb") as my_blob:
+            download_stream = blob_client.download_blob()
+            my_blob.write(download_stream.readall())
+    except Exception as e:
+        print(f"download_blob_azure Error {complete_file_name} , {local_path} due to {e}")
+        # print('Error in downloading', complete_file_name, local_path)
+
+def download_blob_azure_buffer(complete_file_name):
+    print("download_blob_azure_buffer", complete_file_name);
+
+    try:
+        blob_service_client = blob_connection()
+        print("blob_service_client",blob_service_client)
+
+        blob_client = blob_service_client.get_blob_client(container=container, blob=complete_file_name)
+
+        # with BytesIO() as my_blob:
+        #     # Download as a stream
+        #     download_stream = blob_client.download_blob()
+        #     download_stream.readinto(my_blob)
+        #
+        #     # needed to reset the buffer, otherwise, panda won't read from the start
+        #     my_blob.seek(0)
+        #
+        # return my_blob
+
+        download_stream = blob_client.download_blob()
+        return download_stream.readall()
+
+    except Exception as e:
+        print(f"download_blob_azure_buffer Error {complete_file_name} due to {e}")
+        return ""
+        # print('Error in downloading', complete_file_name, local_path)
+
+def upload_blob_azure_process(fileName, local_file_comp, folder_name_process):
+    #     try:
+    container_path = folderFileProcessing + str(folder_name_process) + '/' + str(fileName)
+    file_url = local_file_comp
+    blob_service_client = blob_connection()
+    blob_client_upload = blob_service_client.get_blob_client(container=container, blob=container_path)
+    if (blob_client_upload.exists()):
+        print("already exists", container_path, container, fileName)
+    else:
+        print(container_path, container, fileName)
+        #     try:
+        with open(local_file_comp, "rb") as data:
+            blob_client_upload.upload_blob(data, overwrite=True)
+    #     except:
+    #         print(container_path,' doesnot exsist')
+    return container_path
 
 def getUserForEmail(emailStr):
     print("getUserForEmail",emailStr)
@@ -198,7 +269,6 @@ async def user_login(user: UserLogin = Body(...)):
     # print("login success email")
     # mailServer.sendmail('support@vercx.com', 'saurabh.dhiman@digitalglyde.com', 'message from ideprotal')
     # print("sent success email")
-
     if user and user.otp and user.otp > 0:
         print("user found", user.email, user.otp)
         userres = checkOTP(user.email, user.otp)
@@ -295,6 +365,8 @@ async def incoming_data(incData: IncomingData = Body(...)):
         processorGroup = ""
         processorName = ""
         errMsg = ""
+        processorContainerPath = ""
+        final_filename = ""
 
         if 'noOfPages' in ids_s:
             noOfPages = ids_s["noOfPages"]
@@ -308,6 +380,12 @@ async def incoming_data(incData: IncomingData = Body(...)):
         if 'errMsg' in ids_s:
             errMsg = ids_s["errMsg"]
 
+        if 'processorContainerPath' in ids_s:
+            processorContainerPath = ids_s["processorContainerPath"]
+
+        if 'final_filename' in ids_s:
+            final_filename = ids_s["final_filename"]
+
         ids_dict.append({
             "doc_id":str(ids_s["_id"]),
             "docStatus":ids_s["status"],
@@ -316,6 +394,8 @@ async def incoming_data(incData: IncomingData = Body(...)):
             "noOfPages": noOfPages,
             "processorGroup": processorGroup,
             "processorName": processorName,
+            "processorContainerPath": processorContainerPath,
+            "finalFileName": final_filename,
             "errMsg": errMsg
         })
 
@@ -324,13 +404,36 @@ async def incoming_data(incData: IncomingData = Body(...)):
 @app.post("/finalData")
 async def final_data(incData: FinalData = Body(...)):
     file_name = incData.fileName
+    processorContainerPath = incData.processorContainerPath
 
     print("final_data", incData)
 
     finalDataRes = getFinalData(file_name)
     print("finalDataRes", finalDataRes)
 
-    return {"result": "finaldata success", "err": None}
+    # local_path = "../csv_final_data/"+file_name
+    local_path = "csv_final.csv"
+    complete_file_name = "fileprocessing" + "/" +processorContainerPath + "/" + file_name
+
+    # download_blob_azure(local_path, complete_file_name)
+    file_buffer = download_blob_azure_buffer(complete_file_name)
+    print("file_buffer", file_buffer)
+
+    data = pd.read_csv(BytesIO(file_buffer))
+    # data = pd.read_csv(file_buffer)
+    data = data.drop("index", axis=1)
+    data = data.fillna(0)
+    data_dict = data.to_dict("list")
+
+    # data_keys =
+    # data_values =
+
+    # df = pd.DataFrame(data)
+    # print("df",df)
+    # print("dict(df.values)",dict(df.values))
+    # print("dict(df.keys)",dict(df.keys))
+
+    return {"result": data_dict, "err": None}
 
 @app.get("/provider/{id}", dependencies=[Depends(JWTBearer())], tags=["posts"])
 async def add_post(id: int) -> dict:
