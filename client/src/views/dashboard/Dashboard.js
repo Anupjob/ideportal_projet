@@ -31,6 +31,8 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import Button from "@material-ui/core/Button";
 import settings from 'src/config/settings';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const loader = {
   position: "fixed",
@@ -66,6 +68,15 @@ const upload_file = {
   background: "none",
   border: "none",
 }
+const toast_options = {
+  position: "top-center",
+  autoClose: 5000,
+  hideProgressBar: true,
+  closeOnClick: true,
+  pauseOnHover: true,
+  draggable: true,
+  progress: undefined,
+  }
 const Dashboard = () => {
 
   const [Isloader, setIsloader] = useState(false);
@@ -133,14 +144,13 @@ const Dashboard = () => {
       }),
       headers,
     }).then((response) => {
-      setIsloader(false)
       console.log("Response", response.data.result);
       if (response.data.result == 0) {
         setArrNull(true)
-        setIsloader(false)
       }
       // this.setState({ isLoading: false })
       setIncomingArr(response.data.result)
+      setIsloader(false)
 
 
       // if (response.data.err) {
@@ -150,7 +160,14 @@ const Dashboard = () => {
       //   this.props.history.push('/document_list');
       // }
 
-    })
+    }).catch(err => {
+      toast.error(err.message, {toast_options});
+      console.log("Record Issue Error",err)});
+      setTimeout(() => {
+      setIsloader(false)
+        
+      }, 1000);
+
   }
 
   return (
@@ -225,7 +242,17 @@ const Dashboard = () => {
               </CRow>
 
             </CCol>
-
+            <div><ToastContainer
+          position="top-center"
+          autoClose={5000}
+          hideProgressBar
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          /></div>
           </CRow>
         </CForm>
       </CCard >
