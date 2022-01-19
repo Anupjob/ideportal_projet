@@ -61,8 +61,8 @@ class PdfViewGoogleAzure extends React.Component {
       this.setState({ googleTableVisible: true, googleVisionVisible: false, azureTableVisible: false })
     }
   }
-    this.onChangeValue = this.onChangeValue.bind(this);
-  }
+//     this.onChangeValue = this.onChangeValue.bind(this);
+//   }
 onPageLoad(info) {
   const {
     height, width, originalHeight, originalWidth
