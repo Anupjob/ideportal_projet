@@ -20,13 +20,21 @@ const userText = {
   marginRight: "20px",
   whiteSpace: "nowrap"
 }
+const userTextbottom = {
+  display: "block",
+  color: "rgb(143, 222, 253)",
+  textTransform: "uppercase",
+  fontSize: "0.8em",
+  textAlign: "center",
+  fontWeight: "bold"
+}
 
 const TheHeaderDropdown = () => {
   const history = useHistory();
   return (
     <CDropdown inNav className="c-header-nav-items mx-3" direction="down">
       <CDropdownToggle className="c-header-nav-link" caret={false}>
-        <div style={userText}>{localStorage.getItem('name')}</div>
+        <div style={userText}>{localStorage.getItem('name')} <span style={userTextbottom}>{localStorage.getItem('company')}</span></div>
         <div className="c-avatar">
           <CImg
             src={"avatars/6.jpg"}

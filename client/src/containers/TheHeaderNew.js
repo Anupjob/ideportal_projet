@@ -17,10 +17,11 @@ import {
   CBreadcrumbRouter,
   CLink,
   CCol,
+  CButton,
   CRow
 } from '@coreui/react'
 import { CImg } from '@coreui/react'
-import { Link } from 'react-router-dom'
+import { Link, useHistory } from 'react-router-dom'
 // import SimpleImageSlider from "react-simple-image-slider";
 import DocumentDetails from '../views/details/DocumentDetails'
 // routes config
@@ -37,11 +38,32 @@ const useStyles = makeStyles(theme => ({
   header_bg: {
     background: "rgb(131,73,191)",
     background: "linear-gradient(-90deg, rgba(131,73,191,1) 16%, rgba(25,229,246,1) 84%)",
-    minHeight: "400px",
+    minHeight: "390px",
     position: "fixed",
     width: "100%",
     top: 0,
     left: 0,
+    "@media (max-width: 1200px)": {
+      minHeight: "430px",
+    },
+    "@media (max-width: 767px)": {
+      minHeight: "600px",
+    }
+  },
+  header_icon: {
+    width: "200px",
+    display: "block",
+    position: "absolute",
+    bottom: "10px",
+    right: "10px",
+    "@media (max-width: 767px)": {
+      marginTop: "0",
+    }
+  },
+  back_icon: {
+    position: "absolute",
+    left: "30px",
+    bottom: "10px",
   },
   header_bg1: {
     background: "rgb(131,73,191)",
@@ -85,7 +107,7 @@ const useStyles = makeStyles(theme => ({
     width: "350px",
     display: "table",
     float: "right",
-    marginBottom: "30px"
+    marginBottom: "80px"
   },
   report_box: {
     width: "23%",
@@ -109,7 +131,7 @@ const useStyles = makeStyles(theme => ({
   },
   acc_activity: {
     color: "#fff",
-    lineHeight: "6em",
+    margin: "4em 0",
   },
 
   bottom_content: {
@@ -127,6 +149,20 @@ const useStyles = makeStyles(theme => ({
     color: "#fff",
     margin: "-2px 0 0 17px",
     cursor: "pointer"
+  },
+  carousel_arrow_right: {
+    color: "rgb(255, 255, 255)",
+    background: "none",
+    position: "absolute",
+    right: "20px",
+    border: "none",
+  },
+  carousel_arrow_left: {
+    color: "rgb(255, 255, 255)",
+    background: "none",
+    position: "absolute",
+    left: "20px",
+    border: "none",
   }
 }));
 
@@ -152,10 +188,31 @@ const responsive = {
 };
 
 const TheHeaderNew = (props) => {
+  const history = useHistory()
 
   const [urlVal, SetUrlVal] = useState("")
   // const [urlValTrue, SetUrlValTrue] = useState(false)
+  const [sliderData, SetSliderData] = useState(["./canvas.png", "./canvas.png", "./canvas.png", "./canvas.png", "./canvas.png", "./canvas.png", "./canvas.png", "./canvas.png", "./canvas.png", "./canvas.png", "./canvas.png"])
 
+  const [counter, setCounter] = useState(0)
+  const RightArrow = () => {
+
+    if (counter >= sliderData.length) {
+      setCounter(sliderData.length)
+    } else {
+      setCounter(counter + 1)
+    }
+
+  }
+  const LeftArrow = () => {
+
+    if (counter == 0) {
+      setCounter(0)
+    } else {
+      setCounter(counter - 1)
+    }
+  }
+  console.log("counter", counter)
   useEffect(() => {
     // console.log("url props::", props)
   }, [])
@@ -193,16 +250,42 @@ const TheHeaderNew = (props) => {
   }
 
   let change = ""
+  if (window.location.href.includes("detail")) {
+    change = "detail page"
+  }
+
   if (window.location.href.includes("details")) {
     change = "details page"
   }
 
-  if (window.location.href.includes("detail")) {
-    change = "detail page"
+  if (window.location.href.includes("incoming")) {
+    change = "incoming page"
   }
   console.log("change", change)
 
+  const CustomRightArrow = ({ onClick, ...rest }) => {
+    const {
+      onMove,
+      carouselState: { currentSlide, deviceType }
+    } = rest;
+    // onMove means if dragging or swiping in progress.
+    return <button onClick={() => {
+      onClick();
+      RightArrow();
+    }} className={classes.carousel_arrow_right} ><i class="fa fa-chevron-right" aria-hidden="true"></i></button>;
+  };
 
+  const CustomLeftArrow = ({ onClick, ...rest }) => {
+    const {
+      onMove,
+      carouselState: { currentSlide, deviceType }
+    } = rest;
+    // onMove means if dragging or swiping in progress.
+    return <button onClick={() => {
+      onClick();
+      LeftArrow();
+    }} className={classes.carousel_arrow_left} ><i class="fa fa-chevron-left" aria-hidden="true"></i></button>;
+  };
 
   return (
 
@@ -242,37 +325,28 @@ const TheHeaderNew = (props) => {
 
         <CSubheader className={classes.bottom_content} style={{ border: "0" }}>
           <CRow>
-            <CCol md="8"><h4 className={classes.acc_activity}>Account Activity-{localStorage.getItem('company')}</h4></CCol>
+
+            <CCol md="8">
+              <h4 className={classes.acc_activity}>&nbsp;</h4>
+            </CCol>
+
             <CCol md="4">
-              {change == 'details page' &&
+              {change == 'detail page' &&
                 <div style={{ width: "400px", padding: "0 50px", position: "absolute", right: "20px" }}>
-                  <Carousel focusOnSelect={true} responsive={responsive}>
-                    <div><CImg src="./canvas.png" style={{ width: "100%", padding: "5px" }} /></div>
-                    <div><CImg src="./canvas.png" style={{ width: "100%", padding: "5px" }} /></div>
-                    <div><CImg src="./canvas.png" style={{ width: "100%", padding: "5px" }} /></div>
-                    <div><CImg src="./canvas.png" style={{ width: "100%", padding: "5px" }} /></div>
-                    <div><CImg src="./canvas.png" style={{ width: "100%", padding: "5px" }} /></div>
-                    <div><CImg src="./canvas.png" style={{ width: "100%", padding: "5px" }} /></div>
-                    <div><CImg src="./canvas.png" style={{ width: "100%", padding: "5px" }} /></div>
-                    <div><CImg src="./canvas.png" style={{ width: "100%", padding: "5px" }} /></div>
-                    <div><CImg src="./canvas.png" style={{ width: "100%", padding: "5px" }} /></div>
-                    <div><CImg src="./canvas.png" style={{ width: "100%", padding: "5px" }} /></div>
-                    <div><CImg src="./canvas.png" style={{ width: "100%", padding: "5px" }} /></div>
-                    <div><CImg src="./canvas.png" style={{ width: "100%", padding: "5px" }} /></div>
-                    <div><CImg src="./canvas.png" style={{ width: "100%", padding: "5px" }} /></div>
-                    <div><CImg src="./canvas.png" style={{ width: "100%", padding: "5px" }} /></div>
-                    <div><CImg src="./canvas.png" style={{ width: "100%", padding: "5px" }} /></div>
-                    <div><CImg src="./canvas.png" style={{ width: "100%", padding: "5px" }} /></div>
-                    <div><CImg src="./canvas.png" style={{ width: "100%", padding: "5px" }} /></div>
-                    <div><CImg src="./canvas.png" style={{ width: "100%", padding: "5px" }} /></div>
-                    <div><CImg src="./canvas.png" style={{ width: "100%", padding: "5px" }} /></div>
-                    <div><CImg src="./canvas.png" style={{ width: "100%", padding: "5px" }} /></div>
+                  <Carousel responsive={responsive}
+                    customLeftArrow={<CustomLeftArrow />}
+                    customRightArrow={<CustomRightArrow />}>
+                    {sliderData.length > 0 && sliderData.map((obj) => (
+                      <div><CImg src={obj} style={{ width: "100%", padding: "5px" }} /></div>
+                    ))}
+
                   </Carousel>
+                  <div style={{ color: "#fff", textAlign: "right", marginTop: "15px" }}>Pages {counter} of {sliderData.length}</div>
                 </div>
               }
               {/* <div style={{ fontSize: "3em", color: "#f00" }}>Change{change}</div> */}
-              {change == 'detail page' &&
 
+              {change == 'details page' &&
                 <CRow>
                   <CCol>
                     <div className={classes.report_block}>
@@ -297,17 +371,35 @@ const TheHeaderNew = (props) => {
                   </CCol>
                 </CRow>
               }
-              {/* <CRow>
 
-                <CCol xs="4" style={{ textAlign: "right" }}>
-                  <Link to="" class="fa fa-chevron-circle-left" aria-hidden="true" style={{ color: "#fff", fontSize: "2em" }}></Link>
-                </CCol>
-                <CCol xs="4" style={{ textAlign: "right" }}>
-                  <Link to="" class="fa fa-print" aria-hidden="true" style={{ color: "#fff", fontSize: "2em" }}></Link>
-                </CCol>
-                <CCol xs="4"><Link to="" class="fa fa-download" aria-hidden="true" style={{ color: "#fff", fontSize: "2em" }}></Link></CCol>
-              </CRow> */}
+              {(
+                change == 'incoming page'
+                //  || change == 'detail page'
+              ) &&
+                <div className={classes.header_icon}>
+                  <CRow>
+                    <CCol xs="4">
+                    </CCol>
+                    <CCol xs="4" >
+                      <Link to="" class="fa fa-print" aria-hidden="true" style={{ color: "#fff", fontSize: "2em" }}></Link>
+                    </CCol>
+                    <CCol xs="4" >
+                      <Link to="" class="fa fa-download" aria-hidden="true" style={{ color: "#fff", fontSize: "2em" }}></Link>
+                    </CCol>
+                  </CRow>
+                </div>
+              }
+
             </CCol>
+            <div className={classes.back_icon}>
+              <CButton onClick={() => {
+                // e.preventDefault();
+                history.goBack()
+              }}
+                class="fa fa-chevron-circle-left" aria-hidden="true" style={{ color: "#fff", fontSize: "2em", border: "none", background: "none" }}>
+
+              </CButton>
+            </div>
           </CRow>
 
         </CSubheader>
