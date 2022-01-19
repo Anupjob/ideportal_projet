@@ -24,6 +24,7 @@ from bson.objectid import ObjectId
 from azure.storage.blob import BlobServiceClient
 import pandas as pd
 from io import BytesIO
+import base64
 
 folderFileProcessing = "fileprocessing/"
 container = "incomingfiles"
@@ -61,6 +62,10 @@ class EmailSchema(BaseModel):
 class IssueSchema(BaseModel):
    errMsg: str
    doc_id: str
+
+class PdfDataSchema(BaseModel):
+   fileName: str
+   containerPath: str
 
 def download_blob_azure(local_path, complete_file_name):
     print("download_blob_azure", local_path, complete_file_name);
@@ -101,6 +106,34 @@ def download_blob_azure_buffer(complete_file_name):
     except Exception as e:
         print(f"download_blob_azure_buffer Error {complete_file_name} due to {e}")
         return ""
+        # print('Error in downloading', complete_file_name, local_path)
+
+def pdf_blob_azure_buffer(complete_file_name):
+    print("pdf_blob_azure_buffer", complete_file_name);
+
+    try:
+        blob_service_client = blob_connection()
+
+        blob_client = blob_service_client.get_blob_client(container=container, blob=complete_file_name)
+        print("blob_client",blob_client)
+
+        with BytesIO() as my_blob:
+            # Download as a stream
+            download_stream = blob_client.download_blob()
+            download_stream.readinto(my_blob)
+
+            # needed to reset the buffer, otherwise, panda won't read from the start
+            my_blob.seek(0)
+
+            base64Str = base64.b64encode(my_blob.getvalue())
+        return {"result":base64Str, "err":None}
+
+        # download_stream = blob_client.download_blob()
+        # return download_stream.readall()
+
+    except Exception as e:
+        print(f"pdf_blob_azure_buffer Error {complete_file_name} due to {e}")
+        return {"result":None, "err": e}
         # print('Error in downloading', complete_file_name, local_path)
 
 def upload_blob_azure_process(fileName, local_file_comp, folder_name_process):
@@ -349,6 +382,34 @@ async def report_issue(incData: IssueSchema = Body(...)):
     print("reportIssue  result", result)
     return {"result": "issue reported successfully", "err": None}
 
+@app.post("/getPdfFile")
+async def get_pdf_file(incData: PdfDataSchema = Body(...)):
+    fileName = incData.fileName
+    containerPath = incData.containerPath
+
+    # completeFileName = containerPath+"/"+fileName
+
+    db_mongo = getConn()
+    files_incoming_breakup_c = db_mongo.files_incoming_breakup
+
+    files_incoming_breakup_p = files_incoming_breakup_c.find_one({"filenameprocessing": fileName, "pageNo": 1})
+    print("files_incoming_breakup_p",files_incoming_breakup_p)
+
+    if files_incoming_breakup_p :
+        completeFileName = containerPath + "/" + files_incoming_breakup_p["pdf"]
+
+        data = pdf_blob_azure_buffer(completeFileName)
+        print("getPdfFile data", data)
+
+        return data
+    else:
+        return {"result": None, "err": "No file found"}
+
+    # if(data and data["pdfRes"] and len(data["pdfRes"]) > 0):
+    #     return {"result": data["pdfRes"], "err": None}
+    # else:
+    #     return {"result": None, "err": data.err}
+
 @app.post("/incomingData")
 async def incoming_data(incData: IncomingData = Body(...)):
     dateRec = incData.dateRec
@@ -367,6 +428,7 @@ async def incoming_data(incData: IncomingData = Body(...)):
         errMsg = ""
         processorContainerPath = ""
         final_filename = ""
+        filenameProcessing = ""
 
         if 'noOfPages' in ids_s:
             noOfPages = ids_s["noOfPages"]
@@ -386,16 +448,22 @@ async def incoming_data(incData: IncomingData = Body(...)):
         if 'final_filename' in ids_s:
             final_filename = ids_s["final_filename"]
 
+        if 'filenameprocessing' in ids_s:
+            filenameProcessing = ids_s["filenameprocessing"]
+
         ids_dict.append({
             "doc_id":str(ids_s["_id"]),
             "docStatus":ids_s["status"],
             "dateRec":ids_s["createdOn"],
             "dateProcessed": ids_s["file_date"],
+            # "dateRec": ids_s["file_date"],
+            # "dateProcessed": ids_s["step2time"],
             "noOfPages": noOfPages,
             "processorGroup": processorGroup,
             "processorName": processorName,
             "processorContainerPath": processorContainerPath,
             "finalFileName": final_filename,
+            "pdfFilename": filenameProcessing,
             "errMsg": errMsg
         })
 
