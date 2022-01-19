@@ -32,7 +32,9 @@ import axios from "axios";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { width } from '@mui/system';
 import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+// import 'react-toastify/dist/ReactToastify.css';
+import 'react-toastify/dist/ReactToastify.min.css';
+
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 const table_header = {
@@ -47,9 +49,9 @@ const table_headerMain = {
   fontSize: 10
 }
 const table_content = {
-  borderBottom: "1px dashed #ccc",
+  // borderBottom: '2px solid #D2D9DA',
   color: "rgb(142, 142, 142)",
-  fontSize: 10,
+  fontSize: 12,
   width: 200
 }
 const loader = {
@@ -80,7 +82,7 @@ const cardView = {
 }
 const pdfContentView = {
   boxShadow: '0px 4px 32px 1px #00000029',
-  height: 800,
+  // height: 800,
   maxHeight: 800,
   marginTop: 10,
   marginLeft: 'auto',
@@ -125,12 +127,16 @@ class DocumentDetails extends React.Component {
       IncomingArr: [],
       isLoading: false,
       ShowError: false,
-      finalDataResult: {}
+      finalDataResult: {},
+      pdfImage:''
     }
   }
   componentDidMount = () => {
-    this.getPdfData();
-
+    
+    localStorage.setItem('splitPos', 350)
+    console.log("=== history.location.state:::", this.props.history.location.state.data)
+    this.getPdfImage();
+    this.geCsvData();
   }
   openDialog = () => {
     this.setState({ openReportIssue: true });
@@ -141,12 +147,12 @@ class DocumentDetails extends React.Component {
   handleClickReportIssue = (e) => {
     this.setState({ enterIssue: e.target.value });
   }
-  componentDidMount() {
+  // componentDidMount() {
 
 
-    localStorage.setItem('splitPos', 350)
-    console.log("=== history.location.state:::", this.props.history.location.state.data)
-  }
+  //   localStorage.setItem('splitPos', 350)
+  //   console.log("=== history.location.state:::", this.props.history.location.state.data)
+  // }
 
 
   onPageLoad(info) {
@@ -155,8 +161,68 @@ class DocumentDetails extends React.Component {
     } = info;
     console.log(height, width, originalHeight, originalWidth);
   }
-  getPdfData = () => {
-    // console.log("===You are in getPdfData")
+  getPdfImage = () =>{
+    var pdfFileName =  this.props.history.location.state.data.pdfFilename;
+    var processorPath = this.props.history.location.state.data.processorContainerPath;
+    var pdfValid = true;
+    console.log("==pdfFileName==",pdfFileName)
+    console.log("==processorPath==",processorPath)
+
+
+    if (pdfFileName) {
+
+    } else {
+      pdfValid = false
+      // toast.warning("FileName is invalid", toast_options);
+    }
+    if (processorPath) {
+
+    } else {
+      pdfValid = false
+      // toast.warning("FileName is invalid", toast_options);
+    }
+
+    if (pdfValid) {
+    console.log("==pdfValid==in if under",pdfValid)
+
+    const headers = {
+      "Content-Type": "application/json",
+      // Authorization: "Bearer " + logginUser.token,
+      // reqFrom: "ADMIN",
+    };
+    axios({
+      method: "POST",
+      url: settings.serverUrl + "/getPdfFile",
+      data: JSON.stringify({ fileName: pdfFileName , containerPath: processorPath}),
+      headers,
+    }).then((response) => {
+      console.log("Respone from post getPdfImage==", response.data.result);
+      if (response.data.err) {
+        // alert(response.data.err);
+        toast.error(response.data.err, toast_options);
+      } else {
+        this.setState({ pdfImage: response.data.result, isLoading: false })
+      }
+    }).catch(err => {
+      toast.error(err.message, toast_options);
+      console.log("Record Issue Error", err)
+    });
+  }else{
+    console.log("==pdfValid==in else",pdfValid)
+
+    setTimeout(() => {
+      toast.warn("Request is invalid", toast_options);
+    setTimeout(() => {
+
+      this.props.history.goBack()  
+    }, 1000);
+
+    }, 500);
+
+  }
+   }
+  geCsvData = () => {
+    // console.log("===You are in geCsvData")
     var fileName = this.props.history.location.state.data.finalFileName;
     var processPath = this.props.history.location.state.data.processorContainerPath;
     var dataValid = true;
@@ -164,13 +230,13 @@ class DocumentDetails extends React.Component {
 
     } else {
       dataValid = false
-      // toast.warning("FileName is invalid", {toast_options});
+      // toast.warn("FileName is invalid", toast_options);
     }
     if (processPath) {
 
     } else {
       dataValid = false
-      // toast.warning("FileName is invalid", {toast_options});
+      // toast.warn("FileName is invalid", toast_options);
     }
     if (dataValid) {
       this.setState({ isLoading: true })
@@ -185,25 +251,25 @@ class DocumentDetails extends React.Component {
         data: JSON.stringify({ fileName: fileName, processorContainerPath: processPath }),
         headers,
       }).then((response) => {
-        console.log("Respone from post getPdfData", response.data.result);
+        console.log("Respone from post geCsvData", response.data.result);
         if (response.data.err) {
           // alert(response.data.err);
-          toast.error(response.data.err, { toast_options });
+          toast.error(response.data.err, toast_options);
         } else {
           this.setState({ finalDataResult: response.data.result, isLoading: false })
         }
       }).catch(err => {
-        toast.error(err.message, { toast_options });
+        toast.error(err.message, toast_options);
         console.log("Record Issue Error", err)
       });
     } else {
-      toast.warning("Request is invalid", { toast_options });
+      toast.warn("Request is invalid", toast_options);
 
     }
   }
   submit = () => {
     if (this.state.enterIssue == '' || this.state.enterIssue == null || this.state.enterIssue == undefined) {
-      toast.warn("Please Enter Issue !", { toast_options });
+      toast.warn("Please Enter Issue !",toast_options);
     }
     else {
       const headers = {
@@ -221,13 +287,13 @@ class DocumentDetails extends React.Component {
         this.setState({ openReportIssue: false, })
         if (response.data.err) {
           // alert(response.data.err); 
-          toast.error(response.data.err, { toast_options });
+          toast.error(response.data.err, toast_options);
         } else {
           // alert(response.data.result);
-          toast.success(response.data.result, { toast_options });
+          toast.success(response.data.result, toast_options);
         }
       }).catch(err => {
-        toast.error(err.message, { toast_options });
+        toast.error(err.message, toast_options);
         console.log("Record Issue Error", err)
       });
     }
@@ -252,14 +318,19 @@ class DocumentDetails extends React.Component {
               }}
               style={{ position: "static", backgroundColor: 'transparent' }}
             >
-              <div style={pdfContentView}>
+              <div style={this.state.isLoading?{...pdfContentView, ...{boxShadow: "none"}}:pdfContentView}>
+              {/* <img src={"data:image/jpeg;base64," + this.state.pdfImage} style={{width:500,height:700}}/> */}
+              {  this.state.pdfImage ? 
                 <Document
-                  file='https://dgsciense.s3.amazonaws.com/raw_invoices_hubspot/6085ca5e0c876f667d354cb0.pdf'
+                file = {"data:image/jpeg;base64," + this.state.pdfImage}
+                  // file='https://dgsciense.s3.amazonaws.com/raw_invoices_hubspot/6085ca5e0c876f667d354cb0.pdf'
                 // onLoadSuccess={page => console.log('page onLoadSuccess:>> ', page)}
                 // onLoadError={(error) => console.log('pdf error :>> ', error)}
                 >
                   <Page pageNumber={1} onLoadSuccess={this.onPageLoad} />
-                </Document>
+                </Document>:
+                <p>loading PDF</p>
+              }
               </div>
               <div style={bottom_View}>
                 <TableContainer component={Paper} style={{ position: "relative", zIndex: "5", overflow: 'hidden' }}>
@@ -281,7 +352,7 @@ class DocumentDetails extends React.Component {
                         </TableCell>
                       </TableRow>
                       <TableRow>
-                        <Dialog open={this.state.openReportIssue}
+                        {this.state.openReportIssue && <Dialog open={this.state.openReportIssue}
                           onClose={this.handleClose}>
                           <DialogTitle>Issue Detail</DialogTitle>
                           <DialogContent style={{ minWidth: 500 }}>
@@ -297,7 +368,7 @@ class DocumentDetails extends React.Component {
                               <Button style={submit_dialogBtn} onClick={this.submit}>Submit</Button>
                             </div>
                           </DialogActions>
-                        </Dialog>
+                        </Dialog>}
 
 
                       </TableRow>
@@ -322,7 +393,7 @@ class DocumentDetails extends React.Component {
                       <TableRow>
                         {
                           Object.keys(this.state.finalDataResult).map((key, idex) => {
-                            return <TableCell >
+                            return <TableCell>
                               {
                                 this.state.finalDataResult[key].map((vObj, vIdx) => {
                                   return <div style={table_content}><strong>{vObj}</strong> </div>
@@ -366,5 +437,5 @@ class DocumentDetails extends React.Component {
 //   mapDispatchToProps()
 // )(DocumentDetails);
 
-export default connect(mapStateToProps, mapDispatchToProps())
+export default 
   (DocumentDetails)

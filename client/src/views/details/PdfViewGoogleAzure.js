@@ -69,18 +69,18 @@ onPageLoad(info) {
   } = info;
   console.log(height, width, originalHeight, originalWidth);
 }
-onChangeValue(event) {
-  console.log("===Radio Button click::", event.target.value);
-  // if(event.target.value == "GoogleVision"){
-  //     this.setState({ visible:!this.state.visible })
-  // }
-}
+// onChangeValue(event) {
+//   console.log("===Radio Button click::", event.target.value);
+//   // if(event.target.value == "GoogleVision"){
+//   //     this.setState({ visible:!this.state.visible })
+//   // }
+// }
 render() {
   return (
     <CCard style={pdfMainView}>
       <CRow>
-        <CCol xs='1'></CCol>
-        <CCol xs="5">
+        <CCol xs='2'></CCol>
+        <CCol xs="4.5">
           <div style={pdfContentView}>
             <Document
               file='https://dgsciense.s3.amazonaws.com/raw_invoices_hubspot/6085ca5e0c876f667d354cb0.pdf'
@@ -91,8 +91,8 @@ render() {
             </Document>
           </div>
         </CCol>
-        <CCol xs='2'></CCol>
-        <CCol xs="3">
+        <CCol xs='0.5'></CCol>
+        <CCol xs="3">           
           <div style={radioBtnDiv}>
             <div onChange={this.onChangeValue}>
               <input type="radio" value="GoogleVision" name="gender" /> Show Results from Google Vision<br />
@@ -158,6 +158,8 @@ render() {
             </div>
           </div>
         </CCol>
+        <CCol xs='2'></CCol>
+
       </CRow>
     </CCard>
   );

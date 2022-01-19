@@ -134,6 +134,8 @@ const Dashboard = () => {
   const searchBtn = () => {
     setIsloader(true)
     setArrNull(false)
+    setIncomingArr([])
+
     console.log("Sdate:::", Sdate)
     console.log("Edate:::", Edate)
     console.log("status:::", Status)
