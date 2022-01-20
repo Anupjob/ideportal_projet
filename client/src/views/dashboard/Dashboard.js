@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import moment from 'moment'
 import { makeStyles } from '@material-ui/core/styles';
 import {
@@ -77,7 +77,7 @@ const toast_options = {
   pauseOnHover: true,
   draggable: true,
   progress: undefined,
-  }
+}
 const Dashboard = () => {
 
 
@@ -98,6 +98,23 @@ const Dashboard = () => {
   // const val = [true, 'responsive'].includes(url) ? false : 'incoming'
   // dispatch({ type: 'set', url: val })
   //}
+  useEffect(() => {
+    let doc = JSON.parse(localStorage.getItem("dashboardData"))
+    console.log("useeffect doc", doc)
+    if (doc && doc.Document) {
+      setDocument(doc.Document)
+      setSdate(doc.Sdate)
+      setEdate(doc.Edate)
+      setStatus(doc.Status)
+      setTimeout(() => {
+        searchBtn()
+        localStorage.clear()
+      }, 2000);
+
+
+    }
+  }, [])
+
 
   const handleClickToOpen = (errMsg) => {
     console.log("===errMsg===", errMsg)
@@ -172,12 +189,13 @@ const Dashboard = () => {
       // }
 
     }).catch(err => {
-      toast.error(err.message, {toast_options});
-      console.log("Record Issue Error",err)});
-      setTimeout(() => {
+      toast.error(err.message, { toast_options });
+      console.log("Record Issue Error", err)
+    });
+    setTimeout(() => {
       setIsloader(false)
-        
-      }, 1000);
+
+    }, 1000);
 
   }
 
@@ -198,12 +216,14 @@ const Dashboard = () => {
                       type="date"
                       name='StartDate'
                       onChange={Sdate1}
+                      value={Sdate}
                     />
                     <div style={{ width: "40px", fontSize: "1.3em", textAlign: "center" }}>to</div>
                     <CInput
                       type="date"
                       name='EndDate'
                       onChange={Edate1}
+                      value={Edate}
                     />
                   </CInputGroup>
                 </CCol>
@@ -215,6 +235,7 @@ const Dashboard = () => {
                     <CSelect aria-label="Default select example"
                       name='Status'
                       onChange={Status1}
+                      value={Status}
                     >
                       <option value="">Select Status</option>
                       <option value="all">ALL</option>
@@ -234,6 +255,7 @@ const Dashboard = () => {
                       type="text"
                       name='Documents'
                       onChange={Document1}
+                      value={Document}
                     />
                   </CInputGroup>
                 </CCol>
@@ -254,23 +276,20 @@ const Dashboard = () => {
 
             </CCol>
             <div><ToastContainer
-          position="top-center"
-          autoClose={5000}
-          hideProgressBar
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          /></div>
+              position="top-center"
+              autoClose={5000}
+              hideProgressBar
+              newestOnTop={false}
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+            /></div>
           </CRow>
         </CForm>
       </CCard >
 
-
-
-      <p onClick={() => history.push('/document_list')}>gf</p>
 
       <TableContainer component={Paper} style={{ position: "relative", zIndex: "5" }}>
         <Table aria-label="simple table">
@@ -321,6 +340,7 @@ const Dashboard = () => {
                   </Dialog>
                   <TableCell style={table_content}><i class="fa fa-search-plus" aria-hidden="true"
                     onClick={() => {
+                      localStorage.setItem("dashboardData", JSON.stringify({ Document: Document, Status: Status, Edate: Edate, Sdate: Sdate }))
                       // history.push("/details");
                       console.log("IncomingArr send==>>", IncomingArr)
                       history.push({

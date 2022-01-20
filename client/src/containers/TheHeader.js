@@ -19,7 +19,7 @@ import {
   CButton
 } from '@coreui/react'
 import { Link, useHistory } from 'react-router-dom'
-
+// const BrowserHistory = require('react-router/lib/BrowserHistory').default;
 
 // routes config
 import routes from '../routes'
@@ -171,7 +171,10 @@ const TheHeader = () => {
 
                 <CCol xs="4" style={{ textAlign: "right" }}>
 
-                  <CButton onClick={history.goBack}
+                  <CButton onClick={() => {
+                    // e.preventDefault();
+                    history.goBack()
+                  }}
                     class="fa fa-chevron-circle-left" aria-hidden="true" style={{ color: "#fff", fontSize: "2em", border: "none", background: "none" }}></CButton>
                 </CCol>
                 <CCol xs="4" style={{ textAlign: "right" }}>
