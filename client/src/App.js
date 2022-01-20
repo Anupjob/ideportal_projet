@@ -19,6 +19,7 @@ const Register = React.lazy(() => import('./views/pages/register/Register'));
 const DocumentDetails = React.lazy(() => import('./views/details/DocumentDetails'));
 const PdfViewGoogleAzure = React.lazy(() => import('./views/details/PdfViewGoogleAzure'));
 
+// const TheHeaderNew = React.lazy(() => import('./containers/TheHeaderNew'));
 
 const Page404 = React.lazy(() => import('./views/pages/page404/Page404'));
 const Page500 = React.lazy(() => import('./views/pages/page500/Page500'));
@@ -72,6 +73,7 @@ class App extends Component {
   render() {
     return (
       <HashRouter>
+        {/* {window.location.pathname !== "/" ? <TheHeaderNew /> : null} */}
         <React.Suspense fallback={loading}>
           <Switch>
             <Route exact path="/" name="Login" render={props => <Login {...props} />} />

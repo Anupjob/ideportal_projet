@@ -110,7 +110,7 @@ const useStyles = makeStyles(theme => ({
     marginBottom: "80px"
   },
   report_box: {
-    width: "23%",
+    width: "20%",
     background: "url(./list_icon.png) no-repeat",
     backgroundSize: "35px",
     backgroundPosition: "50% 0",
@@ -195,24 +195,8 @@ const TheHeaderNew = (props) => {
   const [sliderData, SetSliderData] = useState(["./canvas.png", "./canvas.png", "./canvas.png", "./canvas.png", "./canvas.png", "./canvas.png", "./canvas.png", "./canvas.png", "./canvas.png", "./canvas.png", "./canvas.png"])
 
   const [counter, setCounter] = useState(0)
-  const RightArrow = () => {
 
-    if (counter >= sliderData.length) {
-      setCounter(sliderData.length)
-    } else {
-      setCounter(counter + 1)
-    }
 
-  }
-  const LeftArrow = () => {
-
-    if (counter == 0) {
-      setCounter(0)
-    } else {
-      setCounter(counter - 1)
-    }
-  }
-  console.log("counter", counter)
   useEffect(() => {
     // console.log("url props::", props)
   }, [])
@@ -263,15 +247,20 @@ const TheHeaderNew = (props) => {
   }
   console.log("change", change)
 
+
+
   const CustomRightArrow = ({ onClick, ...rest }) => {
     const {
       onMove,
       carouselState: { currentSlide, deviceType }
     } = rest;
+    console.log("currentSlide: ", currentSlide);
+    console.log("deviceType: ", deviceType);
+    setCounter(currentSlide)
     // onMove means if dragging or swiping in progress.
     return <button onClick={() => {
       onClick();
-      RightArrow();
+      //RightArrow();
     }} className={classes.carousel_arrow_right} ><i class="fa fa-chevron-right" aria-hidden="true"></i></button>;
   };
 
@@ -280,10 +269,11 @@ const TheHeaderNew = (props) => {
       onMove,
       carouselState: { currentSlide, deviceType }
     } = rest;
+    setCounter(currentSlide)
     // onMove means if dragging or swiping in progress.
     return <button onClick={() => {
       onClick();
-      LeftArrow();
+      //LeftArrow();
     }} className={classes.carousel_arrow_left} ><i class="fa fa-chevron-left" aria-hidden="true"></i></button>;
   };
 
@@ -333,11 +323,19 @@ const TheHeaderNew = (props) => {
             <CCol md="4">
               {change == 'detail page' &&
                 <div style={{ width: "400px", padding: "0 50px", position: "absolute", right: "20px" }}>
+                  {/* <div style={{ width: "100px", height: "100px", position: "absolute", background: "#f00" }}></div> */}
                   <Carousel responsive={responsive}
+                    //focusOnSelect={true}
                     customLeftArrow={<CustomLeftArrow />}
-                    customRightArrow={<CustomRightArrow />}>
-                    {sliderData.length > 0 && sliderData.map((obj) => (
-                      <div><CImg src={obj} style={{ width: "100%", padding: "5px" }} /></div>
+                    customRightArrow={<CustomRightArrow />}
+                  >
+                    {sliderData.length > 0 && sliderData.map((obj, idx) => (
+
+                      <div
+
+                        style={{ background: idx == counter ? "rgb(5, 162, 210)" : 'none', margin: "5px" }}
+                      >
+                        <CImg src={obj} style={{ width: "100%", opacity: idx == counter ? "0.6" : '1' }} /></div>
                     ))}
 
                   </Carousel>

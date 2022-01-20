@@ -23,8 +23,9 @@ from typing import List
 from bson.objectid import ObjectId
 from azure.storage.blob import BlobServiceClient
 import pandas as pd
-from io import BytesIO
+from io import BytesIO, StringIO
 import base64
+import json
 
 folderFileProcessing = "fileprocessing/"
 container = "incomingfiles"
@@ -66,6 +67,11 @@ class IssueSchema(BaseModel):
 class PdfDataSchema(BaseModel):
    fileName: str
    containerPath: str
+
+class GoogleVisionSchema(BaseModel):
+   docId: str
+   resType: str
+   pageNum: int
 
 def download_blob_azure(local_path, complete_file_name):
     print("download_blob_azure", local_path, complete_file_name);
@@ -286,6 +292,18 @@ def getFinalData(file_name):
 
     return files_incoming_p
 
+
+def getDataForPage(data, pageNo):
+    dataret = []
+    #     print(data)
+    if (len(data) > 0):
+        for dats in data:
+            if (dats['pageCount'] == pageNo):
+                dataret.append(dats)
+                print("some data found for this page")
+
+    return dataret
+
 @app.get("/")
 async def root():
     return {"message": "Welcome to IDE Portal"}
@@ -409,6 +427,69 @@ async def get_pdf_file(incData: PdfDataSchema = Body(...)):
     #     return {"result": data["pdfRes"], "err": None}
     # else:
     #     return {"result": None, "err": data.err}
+
+@app.post("/getGoogleVisionData")
+async def get_google_vision_data(incData: GoogleVisionSchema = Body(...)):
+
+    print("get_google_vision_data",incData)
+
+    docId = incData.docId
+    resType = incData.resType
+    pageNum = incData.pageNum
+
+    db_mongo = getConn()
+    files_incoming_c = db_mongo.files_incoming
+
+    files_incoming_p = files_incoming_c.find_one({"_id": ObjectId(docId)})
+    print("files_incoming_p",files_incoming_p)
+
+    colName = 'google_vision_response_filename'
+
+    if resType == "googlet":
+        colName = 'google_vision_response_filename'
+    elif resType == "azuret":
+        colName = 'azure_form_filename'
+
+    print("colName",colName)
+    # if ('google_vision_response_filename' in files_incoming_p and files_incoming_p['google_vision_response_filename'] != ''):
+    if colName in files_incoming_p and files_incoming_p[colName] != '':
+
+        try:
+            blob_service_client = blob_connection()
+
+            complete_file_name = files_incoming_p["processorContainerPath"] + "/" + files_incoming_p[colName]
+            print("complete_file_name", complete_file_name)
+
+            blob_client = blob_service_client.get_blob_client(container=container, blob=complete_file_name)
+            print("blob_client", blob_client)
+
+            download_stream = blob_client.download_blob()
+            my_blob = download_stream.readall()
+            jsonFileData = json.loads(my_blob)
+
+            dataRet = getDataForPage(jsonFileData, pageNum)
+            fullTextAnnotation_text = dataRet[0]['data']
+
+            return {"result": fullTextAnnotation_text, "err": None}
+
+            # if resType == "googlev" or resType == "googlet":
+            #     dataRet = getDataForPage(jsonFileData, pageNum)
+            #     fullTextAnnotation_text = dataRet[0]['data']
+            #
+            #     return {"result": fullTextAnnotation_text, "err": None}
+            #
+            # else:
+            #     return {"result": jsonFileData, "err": None}
+
+            # download_stream = blob_client.download_blob()
+            # return download_stream.readall()
+
+        except Exception as e:
+            print(f"get_google_vision_data Error {complete_file_name} due to {e}")
+            return {"result": None, "err": e}
+
+    else:
+        return {"result": None, "err": "No file found"}
 
 @app.post("/incomingData")
 async def incoming_data(incData: IncomingData = Body(...)):
