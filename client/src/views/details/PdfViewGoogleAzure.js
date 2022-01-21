@@ -74,12 +74,10 @@ class PdfViewGoogleAzure extends React.Component {
       visionType:"googlev",
       pageNo:1
     }
-    this.onChangeValue = this.onChangeValue.bind(this);
   }
   componentDidMount = () => {
 
     console.log("===PdfViewGoogleAzure doc_id :::",this.props)
-    this.getPdfViewData();
   }
   onPageLoad(info) {
     const {
@@ -126,10 +124,10 @@ class PdfViewGoogleAzure extends React.Component {
       });
 
   }
-  onChangeValue(event) {
+  onChangeValue = (event) =>  {
     // console.log("===Radio Button click::", event.target.value);
     if (event.target.value == "GoogleVision") {
-    //   this.setState({ googleVisionVisible: true, azureTableVisible: false, googleTableVisible: false ,visionType:'googlev'},()=>{this.getPdfViewData()})
+      this.setState({ googleVisionVisible: true, azureTableVisible: false, googleTableVisible: false ,visionType:'googlev'},()=>{this.getPdfViewData()})
     } else if (event.target.value == "AzureTables") {
       this.setState({ azureTableVisible: true, googleVisionVisible: false, googleTableVisible: false ,visionType:'azuret'},()=>{this.getPdfViewData()})
     } else {
@@ -167,8 +165,8 @@ render() {
         <CCol xs='0.5'></CCol>
         <CCol xs="3">           
           <div style={radioBtnDiv}>
-            <div onChange={this.onChangeValue}>
-              <input type="radio" value="GoogleVision" name="gender" /> Show Results from Google Vision<br />
+            <div>
+              <input type="radio" value="GoogleVision" name="gender"  onChange={() => this.onChangeValue()}/> Show Results from Google Vision<br />
               {this.state.googleVisionVisible &&
                 <div style={radioBtnMainView}>
 
