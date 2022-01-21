@@ -412,7 +412,7 @@ class DocumentDetails extends React.Component {
           {this.state.isLoading && (
             <div style={loader}>
 
-              <CircularProgress style={{ margin: "22% auto", display: "block" }} />
+              <CircularProgress style={{ margin: "26% auto", display: "block" }} />
 
             </div>
           )}

@@ -74,10 +74,12 @@ class PdfViewGoogleAzure extends React.Component {
       visionType:"googlev",
       pageNo:1
     }
+    // this.onChangeValue = this.onChangeValue.bind(this);
   }
   componentDidMount = () => {
 
     console.log("===PdfViewGoogleAzure doc_id :::",this.props)
+    // this.getPdfViewData();
   }
   onPageLoad(info) {
     const {
@@ -113,9 +115,12 @@ class PdfViewGoogleAzure extends React.Component {
           toast.error(response.data.err, toast_options);
         } else {
             if(this.state.visionType == 'googlev'){
-            this.setState({ finalDataResult: pardedResp.fullTextAnnotation,isLoading: false })
+            this.setState({ googleVisionVisible: true, azureTableVisible: false, googleTableVisible: false ,finalDataResult: pardedResp.fullTextAnnotation,isLoading: false })
+            }else if(this.state.visionType == 'azuret'){
+            this.setState({azureTableVisible: true, googleVisionVisible: false, googleTableVisible: false ,azureDataResults:pardedResp.cells, isLoading: false })
             }else{
-            this.setState({azureDataResults:pardedResp.cells, isLoading: false })
+            this.setState({googleTableVisible: true, googleVisionVisible: false, azureTableVisible: false , isLoading: false })
+
             }
         }
       }).catch(err => {
@@ -124,19 +129,20 @@ class PdfViewGoogleAzure extends React.Component {
       });
 
   }
-  onChangeValue = (event) =>  {
+  onChangeValue = (event) => {
     // console.log("===Radio Button click::", event.target.value);
     if (event.target.value == "GoogleVision") {
-      this.setState({ googleVisionVisible: true, azureTableVisible: false, googleTableVisible: false ,visionType:'googlev'},()=>{this.getPdfViewData()})
+       this.setState({ visionType:'googlev'},()=>{this.getPdfViewData()})
     } else if (event.target.value == "AzureTables") {
-      this.setState({ azureTableVisible: true, googleVisionVisible: false, googleTableVisible: false ,visionType:'azuret'},()=>{this.getPdfViewData()})
+      this.setState({ visionType:'azuret'},()=>{this.getPdfViewData()})
     } else {
-      this.setState({ googleTableVisible: true, googleVisionVisible: false, azureTableVisible: false ,visionType:'googlet'},()=>{
-        this.getPdfViewData()
-      })
+      this.setState({ visionType:'googlet'},()=>{this.getPdfViewData()})
     }
   }
 
+  // onChangeRadioValue(event) {
+  //   console.log("Radio button click===",event.target.value);
+  // }
   
 onPageLoad(info) {
   const {
@@ -149,6 +155,17 @@ render() {
     // console.log("===PdfViewGoogleAzure doc_id in render :::",this.props.history.location.state.data.doc_id)
   return (
     <CCard style={pdfMainView}>
+       {/* <CRow>
+        <CCol xs='3'></CCol>
+        <CCol xs='6' style={{backgroundColor:'white',height:50}}>
+        <div onChange={this.onChangeRadioValue} style={{height:50,justifyContent:'space-around',marginTop:10}}>
+        <input type="radio" value="Image" name="gender" /> Image
+        <input type="radio" value="PDF" name="gender" /> PDF
+        <input type="radio" value="RotatedImage" name="gender" /> Rotated Image
+        </div>
+        </CCol>
+        <CCol xs='3'></CCol>
+        </CRow> */}
       <CRow>
         <CCol xs='2'></CCol>
         <CCol xs="4.5">
@@ -165,13 +182,13 @@ render() {
         <CCol xs='0.5'></CCol>
         <CCol xs="3">           
           <div style={radioBtnDiv}>
-            <div>
-              <input type="radio" value="GoogleVision" name="gender"  onChange={() => this.onChangeValue()}/> Show Results from Google Vision<br />
+            <div  onChange={this.onChangeValue} >
+              <input type="radio" value="GoogleVision" name="gender"/> Show Results from Google Vision<br />
               {this.state.googleVisionVisible &&
                 <div style={radioBtnMainView}>
 
                     {
-                        this.state.finalDataResult.pages.map((pageData) => 
+                       this.state.finalDataResult && Object.keys(this.state.finalDataResult).length>0 && this.state.finalDataResult.pages.map((pageData) => 
                             <div >
                                 {
                                     pageData.blocks.map((blockData, blockIdx) =>
