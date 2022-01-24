@@ -128,15 +128,25 @@ class DocumentDetails extends React.Component {
       isLoading: false,
       ShowError: false,
       finalDataResult: {},
-      pdfImage:''
+      pdfImage: ''
     }
   }
   componentDidMount = () => {
-    
+
     localStorage.setItem('splitPos', 350)
-    console.log("=== history.location.state:::", this.props.history.location.state.data)
-    this.getPdfImage();
-    this.geCsvData();
+    let details = JSON.parse(localStorage.getItem("details"))
+    //console.log("=== history.location.state:::", this.props.history.location.state.data)
+    if (this.props.history.location && this.props.history.location.state && this.props.history.location.state.data) {
+      this.getPdfImage();
+      this.geCsvData();
+    }
+    else if (details) {
+      this.props.history.location.state = details
+      this.getPdfImage();
+      this.geCsvData();
+    }
+
+
   }
   openDialog = () => {
     this.setState({ openReportIssue: true });
@@ -161,12 +171,12 @@ class DocumentDetails extends React.Component {
     } = info;
     console.log(height, width, originalHeight, originalWidth);
   }
-  getPdfImage = () =>{
-    var pdfFileName =  this.props.history.location.state.data.pdfFilename;
+  getPdfImage = () => {
+    var pdfFileName = this.props.history.location.state.data.pdfFilename;
     var processorPath = this.props.history.location.state.data.processorContainerPath;
     var pdfValid = true;
-    console.log("==pdfFileName==",pdfFileName)
-    console.log("==processorPath==",processorPath)
+    console.log("==pdfFileName==", pdfFileName)
+    console.log("==processorPath==", processorPath)
 
 
     if (pdfFileName) {
@@ -183,44 +193,44 @@ class DocumentDetails extends React.Component {
     }
 
     if (pdfValid) {
-    console.log("==pdfValid==in if under",pdfValid)
+      console.log("==pdfValid==in if under", pdfValid)
 
-    const headers = {
-      "Content-Type": "application/json",
-      // Authorization: "Bearer " + logginUser.token,
-      // reqFrom: "ADMIN",
-    };
-    axios({
-      method: "POST",
-      url: settings.serverUrl + "/getPdfFile",
-      data: JSON.stringify({ fileName: pdfFileName , containerPath: processorPath}),
-      headers,
-    }).then((response) => {
-      console.log("Respone from post getPdfImage==", response.data.result);
-      if (response.data.err) {
-        // alert(response.data.err);
-        toast.error(response.data.err, toast_options);
-      } else {
-        this.setState({ pdfImage: response.data.result, isLoading: false })
-      }
-    }).catch(err => {
-      toast.error(err.message, toast_options);
-      console.log("Record Issue Error", err)
-    });
-  }else{
-    console.log("==pdfValid==in else",pdfValid)
+      const headers = {
+        "Content-Type": "application/json",
+        // Authorization: "Bearer " + logginUser.token,
+        // reqFrom: "ADMIN",
+      };
+      axios({
+        method: "POST",
+        url: settings.serverUrl + "/getPdfFile",
+        data: JSON.stringify({ fileName: pdfFileName, containerPath: processorPath }),
+        headers,
+      }).then((response) => {
+        console.log("Respone from post getPdfImage==", response.data.result);
+        if (response.data.err) {
+          // alert(response.data.err);
+          toast.error(response.data.err, toast_options);
+        } else {
+          this.setState({ pdfImage: response.data.result, isLoading: false })
+        }
+      }).catch(err => {
+        toast.error(err.message, toast_options);
+        console.log("Record Issue Error", err)
+      });
+    } else {
+      console.log("==pdfValid==in else", pdfValid)
 
-    setTimeout(() => {
-      toast.warn("Request is invalid", toast_options);
-    setTimeout(() => {
+      setTimeout(() => {
+        toast.warn("Request is invalid", toast_options);
+        setTimeout(() => {
 
-      this.props.history.goBack()  
-    }, 1000);
+          this.props.history.goBack()
+        }, 1000);
 
-    }, 500);
+      }, 500);
 
+    }
   }
-   }
   geCsvData = () => {
     // console.log("===You are in geCsvData")
     var fileName = this.props.history.location.state.data.finalFileName;
@@ -269,7 +279,7 @@ class DocumentDetails extends React.Component {
   }
   submit = () => {
     if (this.state.enterIssue == '' || this.state.enterIssue == null || this.state.enterIssue == undefined) {
-      toast.warn("Please Enter Issue !",toast_options);
+      toast.warn("Please Enter Issue !", toast_options);
     }
     else {
       const headers = {
@@ -318,19 +328,19 @@ class DocumentDetails extends React.Component {
               }}
               style={{ position: "static", backgroundColor: 'transparent' }}
             >
-              <div style={this.state.isLoading?{...pdfContentView, ...{boxShadow: "none"}}:pdfContentView}>
-              {/* <img src={"data:image/jpeg;base64," + this.state.pdfImage} style={{width:500,height:700}}/> */}
-              {  this.state.pdfImage ? 
-                <Document
-                file = {"data:image/jpeg;base64," + this.state.pdfImage}
+              <div style={this.state.isLoading ? { ...pdfContentView, ...{ boxShadow: "none" } } : pdfContentView}>
+                {/* <img src={"data:image/jpeg;base64," + this.state.pdfImage} style={{width:500,height:700}}/> */}
+                {this.state.pdfImage ?
+                  <Document
+                    file={"data:image/jpeg;base64," + this.state.pdfImage}
                   // file='https://dgsciense.s3.amazonaws.com/raw_invoices_hubspot/6085ca5e0c876f667d354cb0.pdf'
-                // onLoadSuccess={page => console.log('page onLoadSuccess:>> ', page)}
-                // onLoadError={(error) => console.log('pdf error :>> ', error)}
-                >
-                  <Page pageNumber={1} onLoadSuccess={this.onPageLoad} />
-                </Document>:
-                <p>loading PDF</p>
-              }
+                  // onLoadSuccess={page => console.log('page onLoadSuccess:>> ', page)}
+                  // onLoadError={(error) => console.log('pdf error :>> ', error)}
+                  >
+                    <Page pageNumber={1} onLoadSuccess={this.onPageLoad} />
+                  </Document> :
+                  <p>loading PDF</p>
+                }
               </div>
               <div style={bottom_View}>
                 <TableContainer component={Paper} style={{ position: "relative", zIndex: "5", overflow: 'hidden' }}>
@@ -343,6 +353,7 @@ class DocumentDetails extends React.Component {
                         <TableCell style={table_headerMain}>
                           <Button style={viewDetailBtn}
                             onClick={() => {
+                              localStorage.setItem("details", JSON.stringify(this.props.history.location.state))
                               this.props.history.push('/detail/' + this.props.history.location.state.data.doc_id)
                             }}>VIEW DETAILS</Button>
                         </TableCell>
@@ -437,5 +448,5 @@ class DocumentDetails extends React.Component {
 //   mapDispatchToProps()
 // )(DocumentDetails);
 
-export default 
+export default
   (DocumentDetails)

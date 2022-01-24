@@ -18,7 +18,12 @@ import {
   CLink,
   CCol,
   CButton,
-  CRow
+  CRow,
+  CDropdown,
+  CDropdownItem,
+  CDropdownMenu,
+  CDropdownToggle,
+  //CImg,
 } from '@coreui/react'
 import { CImg } from '@coreui/react'
 import { Link, useHistory } from 'react-router-dom'
@@ -35,26 +40,29 @@ import {
 } from './index'
 
 const useStyles = makeStyles(theme => ({
+
   header_bg: {
     background: "rgb(131,73,191)",
     background: "linear-gradient(-90deg, rgba(131,73,191,1) 16%, rgba(25,229,246,1) 84%)",
-    minHeight: "390px",
-    position: "fixed",
     width: "100%",
-    top: 0,
-    left: 0,
+    display: "table",
+    position: "fixed",
+    zIndex: "0",
+    height: "180px",
+    top: "0",
     "@media (max-width: 1200px)": {
-      minHeight: "430px",
+      height: "230px",
     },
     "@media (max-width: 767px)": {
-      minHeight: "600px",
+      height: "260px",
     }
   },
+
   header_icon: {
     width: "200px",
     display: "block",
     position: "absolute",
-    bottom: "10px",
+    bottom: "0px",
     right: "10px",
     "@media (max-width: 767px)": {
       marginTop: "0",
@@ -63,7 +71,7 @@ const useStyles = makeStyles(theme => ({
   back_icon: {
     position: "absolute",
     left: "30px",
-    bottom: "10px",
+    bottom: "5px",
   },
   header_bg1: {
     background: "rgb(131,73,191)",
@@ -76,18 +84,18 @@ const useStyles = makeStyles(theme => ({
   logo_image: {
     whiteSpace: "nowrap",
     background: "url(./dg_logo.png) no-repeat",
-    backgroundSize: "100px",
-    padding: "40px 0px 40px 130px",
+    backgroundSize: "70px",
+    padding: "20px 0px 20px 90px",
     backgroundPosition: "0 50%",
     color: "#fff",
     display: "block",
     marginLeft: "40px",
-    fontSize: "2.2em",
+    fontSize: "1.8em",
     "@media (max-width: 1200px)": {
-      backgroundSize: "70px",
-      padding: "40px 0px 40px 90px",
-      backgroundPosition: "0 50%",
-      fontSize: "1.6em",
+      // backgroundSize: "70px",
+      // padding: "40px 0px 40px 90px",
+      // backgroundPosition: "0 50%",
+      // fontSize: "1.6em",
     }
 
   },
@@ -96,7 +104,7 @@ const useStyles = makeStyles(theme => ({
     margin: "0",
     "@media (max-width: 1200px)": {
       width: "100%",
-      margin: "-20px 0 20px 40px"
+      margin: "-10px 0 10px 40px;"
     },
     "@media (max-width: 767px)": {
       // marginLeft: "50px",
@@ -107,31 +115,32 @@ const useStyles = makeStyles(theme => ({
     width: "350px",
     display: "table",
     float: "right",
-    marginBottom: "80px"
+    marginBottom: "20px"
   },
   report_box: {
-    width: "20%",
+    width: "25%",
     background: "url(./list_icon.png) no-repeat",
     backgroundSize: "35px",
     backgroundPosition: "50% 0",
     padding: "50px 15px 0 15px",
     color: "#fff",
-    display: "table",
+    display: "block",
     textAlign: "center",
-    fontSize: "0.8em",
+    fontSize: "0.7em",
     boxShadow: "1px 0px 0 #fff",
     float: "left"
   },
   report_title: {
     fontSize: "1em",
     color: "#fff",
+    textAlign: "right",
     fontWeight: "700",
-    textAlign: "center",
-    marginBottom: "20px"
+    margin: "0 20px 20px 0",
+    cursor: "pointer"
   },
   acc_activity: {
     color: "#fff",
-    margin: "4em 0",
+    // margin: "4em 0",
   },
 
   bottom_content: {
@@ -196,7 +205,7 @@ const TheHeaderNew = (props) => {
 
   const [counter, setCounter] = useState(0)
 
-
+  const [Toggle, setToggle] = useState(false)
   useEffect(() => {
     // console.log("url props::", props)
   }, [])
@@ -277,6 +286,10 @@ const TheHeaderNew = (props) => {
     }} className={classes.carousel_arrow_left} ><i class="fa fa-chevron-left" aria-hidden="true"></i></button>;
   };
 
+  const sliderClick = () => {
+    setToggle(!Toggle)
+  }
+  console.log("Toggle", Toggle)
   return (
 
     <>
@@ -322,69 +335,94 @@ const TheHeaderNew = (props) => {
 
             <CCol md="4">
               {change == 'detail page' &&
-                <div style={{ width: "400px", padding: "0 50px", position: "absolute", right: "20px" }}>
-                  {/* <div style={{ width: "100px", height: "100px", position: "absolute", background: "#f00" }}></div> */}
-                  <Carousel responsive={responsive}
-                    //focusOnSelect={true}
-                    customLeftArrow={<CustomLeftArrow />}
-                    customRightArrow={<CustomRightArrow />}
-                  >
-                    {sliderData.length > 0 && sliderData.map((obj, idx) => (
 
-                      <div
+                <div className={classes.report_block}>
+                  <h4 className={classes.report_title} onClick={() => sliderClick()}>PDF VIEWER <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                  </h4>
+                  {Toggle &&
+                    <div style={{ width: "400px", padding: "20px 50px", position: "fixed", right: "20px", background: '#8349bf', boxShadow: "0px 4px 6px rgba(0,0,0,0.5)", border: "1px solid #fff", borderRadius: "5px" }}>
 
-                        style={{ background: idx == counter ? "rgb(5, 162, 210)" : 'none', margin: "5px" }}
+                      {/* <div style={{ width: "100px", height: "100px", position: "absolute", background: "#f00" }}></div> */}
+                      <Carousel responsive={responsive}
+                        //focusOnSelect={true}
+                        customLeftArrow={<CustomLeftArrow />}
+                        customRightArrow={<CustomRightArrow />}
+                        style={{ display: "table" }}
                       >
-                        <CImg src={obj} style={{ width: "100%", opacity: idx == counter ? "0.6" : '1' }} /></div>
-                    ))}
+                        {sliderData.length > 0 && sliderData.map((obj, idx) => (
 
-                  </Carousel>
-                  <div style={{ color: "#fff", textAlign: "right", marginTop: "15px" }}>Pages {counter} of {sliderData.length}</div>
+                          <div style={{ background: idx == counter ? "rgb(5, 162, 210)" : 'none', margin: "5px" }} >
+                            <CImg src={obj} style={{ width: "100%", opacity: idx == counter ? "0.6" : '1' }} /></div>
+                        ))}
+
+                      </Carousel>
+                      <div style={{ color: "#fff", textAlign: "right", marginTop: "15px" }}>Pages {counter} of {sliderData.length}</div>
+                    </div>
+                  }
+
                 </div>
+
               }
               {/* <div style={{ fontSize: "3em", color: "#f00" }}>Change{change}</div> */}
 
               {change == 'details page' &&
                 <CRow>
                   <CCol>
+
                     <div className={classes.report_block}>
-                      <h4 className={classes.report_title}>DOCUMENT REPORT CARD</h4>
-                      <div className={classes.report_box}>
-                        RECIEVED
-                        12/12/21
-                      </div>
-                      <div className={classes.report_box}>
-                        PROCESSED
-                        12/12/21
-                      </div>
-                      <div className={classes.report_box}>
-                        COMPLETED
-                        12/12/21
-                      </div>
-                      <div className={classes.report_box} style={{ boxShadow: "none" }}>
-                        REPORTED
-                        12/12/21
-                      </div>
+
+
+                      <h4 className={classes.report_title} onClick={() => sliderClick()}>DOCUMENT REPORT CARD <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                      </h4>
+                      {Toggle &&
+                        <div style={{ width: "400px", padding: "20px", position: "fixed", right: "20px", background: '#8349bf', boxShadow: "0px 4px 6px rgba(0,0,0,0.5)", border: "1px solid #fff", borderRadius: "5px" }}>
+                          <div className={classes.report_box}>
+                            RECIEVED
+                            12/12/21
+                          </div>
+                          <div className={classes.report_box}>
+                            PROCESSED
+                            12/12/21
+                          </div>
+                          <div className={classes.report_box}>
+                            COMPLETED
+                            12/12/21
+                          </div>
+                          <div className={classes.report_box} style={{ boxShadow: "none" }}>
+                            REPORTED
+                            12/12/21
+                          </div>
+                        </div>
+                      }
+
                     </div>
                   </CCol>
                 </CRow>
               }
 
-              {(
-                change == 'incoming page'
-                //  || change == 'detail page'
-              ) &&
-                <div className={classes.header_icon}>
+              {
+                change == 'incoming page' &&
+                <div style={{ width: "100%" }}>
                   <CRow>
-                    <CCol xs="4">
-                    </CCol>
-                    <CCol xs="4" >
-                      <Link to="" class="fa fa-print" aria-hidden="true" style={{ color: "#fff", fontSize: "2em" }}></Link>
-                    </CCol>
-                    <CCol xs="4" >
-                      <Link to="" class="fa fa-download" aria-hidden="true" style={{ color: "#fff", fontSize: "2em" }}></Link>
+                    <CCol>
+                      <div className={classes.report_block}>
+                        <h4 className={classes.report_title} >&nbsp;
+                        </h4>
+                      </div>
                     </CCol>
                   </CRow>
+                  <div className={classes.header_icon}>
+                    <CRow>
+                      <CCol xs="4">
+                      </CCol>
+                      <CCol xs="4" >
+                        <Link to="" class="fa fa-print" aria-hidden="true" style={{ color: "#fff", fontSize: "2em" }}></Link>
+                      </CCol>
+                      <CCol xs="4" >
+                        <Link to="" class="fa fa-download" aria-hidden="true" style={{ color: "#fff", fontSize: "2em" }}></Link>
+                      </CCol>
+                    </CRow>
+                  </div>
                 </div>
               }
 

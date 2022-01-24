@@ -101,15 +101,19 @@ const Dashboard = () => {
   useEffect(() => {
     let doc = JSON.parse(localStorage.getItem("dashboardData"))
     console.log("useeffect doc", doc)
-    if (doc && doc.Document) {
+    if (doc && doc.Sdate) {
       setDocument(doc.Document)
       setSdate(doc.Sdate)
       setEdate(doc.Edate)
       setStatus(doc.Status)
-      setTimeout(() => {
-        searchBtn()
-        localStorage.clear()
-      }, 2000);
+      // setTimeout(() => {
+      console.log("Search Btn Status: ", Sdate, Edate, Status, Document)
+      console.log("Search Btn Status: ", doc.Sdate, doc.Edate, doc.Status, doc.Document)
+
+      searchBtn(doc.Sdate, doc.Edate, doc.Status, doc.Document)
+
+      localStorage.clear()
+      //  }, 2000);
 
 
     }
@@ -148,7 +152,7 @@ const Dashboard = () => {
     console.log(event.target.value);
     setDocument(event.target.value)
   }
-  const searchBtn = () => {
+  const searchBtn = (Sdate, Edate, Status, Document) => {
     setIsloader(true)
     setArrNull(false)
     setIncomingArr([])
@@ -265,7 +269,7 @@ const Dashboard = () => {
                 <CCol md="9"></CCol>
                 <CCol md="3">
                   <CButton
-                    onClick={searchBtn}
+                    onClick={() => searchBtn(Sdate, Edate, Status, Document)}
                     color="primary"
                     size="lg"
                     style={{ width: "100%", background: "#4ea7d8", border: "#4ea7d8" }}

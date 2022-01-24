@@ -7,6 +7,8 @@ import {
   TheHeaderNew
 } from './index'
 
+
+
 const TheLayout = () => {
 
   return (
@@ -16,6 +18,7 @@ const TheLayout = () => {
 
         <TheHeaderNew />
         <div className="c-body">
+          <div></div>
           <TheContent />
         </div>
         <TheFooter />
