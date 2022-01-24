@@ -182,8 +182,10 @@ const Dashboard = () => {
       }
       // this.setState({ isLoading: false })
       setIncomingArr(response.data.result)
-      setIsloader(false)
-
+      // setIsloader(false)
+      setTimeout(() => {
+        setIsloader(false)
+      }, 1000);
 
       // if (response.data.err) {
       //   alert(response.data.err);

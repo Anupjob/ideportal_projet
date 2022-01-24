@@ -128,7 +128,9 @@ class DocumentDetails extends React.Component {
       isLoading: false,
       ShowError: false,
       finalDataResult: {},
-      pdfImage: ''
+      pdfImage: '',
+      fileType: 'pdf'
+
     }
   }
   componentDidMount = () => {
@@ -203,7 +205,7 @@ class DocumentDetails extends React.Component {
       axios({
         method: "POST",
         url: settings.serverUrl + "/getPdfFile",
-        data: JSON.stringify({ fileName: pdfFileName, containerPath: processorPath }),
+        data: JSON.stringify({ fileName: pdfFileName, containerPath: processorPath, fileType: this.state.fileType }),
         headers,
       }).then((response) => {
         console.log("Respone from post getPdfImage==", response.data.result);

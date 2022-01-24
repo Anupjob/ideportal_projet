@@ -324,6 +324,7 @@ class Login extends React.Component {
       }).then((response) => {
         console.log("Respone from post ", response);
         localStorage.setItem('company', response.data.result.company)
+        localStorage.setItem('companyId', response.data.result.companyId)
         localStorage.setItem('name', response.data.result.name)
         if (response.data.err) {
           toast.error(response.data.err, {toast_options});         
