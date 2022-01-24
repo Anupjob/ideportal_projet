@@ -73,6 +73,12 @@ class GoogleVisionSchema(BaseModel):
    resType: str
    pageNum: int
 
+class ProcessorDataSchema(BaseModel):
+   companyId: str
+
+class UserDataSchema(BaseModel):
+   companyId: str
+
 def download_blob_azure(local_path, complete_file_name):
     print("download_blob_azure", local_path, complete_file_name);
 
@@ -583,6 +589,85 @@ async def final_data(incData: FinalData = Body(...)):
     # print("dict(df.keys)",dict(df.keys))
 
     return {"result": data_dict, "err": None}
+
+@app.post("/getProcessorData")
+async def get_processors(incData: ProcessorDataSchema = Body(...)):
+    companyId = incData.companyId
+
+    db_mongo = getConn()
+    processors_c = db_mongo.processors
+
+    processors_p = processors_c.find({"company_id": ObjectId(companyId)})
+    print("processors_p",processors_p)
+
+    if processors_p :
+
+        processor_dict = []
+        for processor_dict_s in processors_p:
+            processor_dict.append(
+                {
+                    "processor_id": str(processor_dict_s["_id"]),
+                    "group": processor_dict_s["group"],
+                    "name": processor_dict_s["name"],
+                    "folder": processor_dict_s["folder"],
+                    "processor": processor_dict_s["processor"],
+                    "collection": processor_dict_s["collection"]
+                }
+            )
+
+        return {"result": processor_dict, "err": None}
+    else:
+        return {"result": None, "err": "no records found"}
+
+@app.get("/getCompaniesData")
+async def get_companies():
+
+    db_mongo = getConn()
+    companies_c = db_mongo.companies
+
+    companies_p = companies_c.find({})
+    print("companies_p",companies_p)
+
+    if companies_p :
+
+        companies_dict = []
+        for company_dict_s in companies_p:
+            companies_dict.append(
+                {
+                    "comp_id": str(company_dict_s["_id"]),
+                    "name": company_dict_s["companyName"]
+                }
+            )
+
+        return {"result": companies_dict, "err": None}
+    else:
+        return {"result": None, "err": "no records found"}
+
+@app.post("/getUsersData")
+async def get_users(incData: UserDataSchema = Body(...)):
+    companyId = incData.companyId
+
+    db_mongo = getConn()
+    users_c = db_mongo.users
+
+    users_p = users_c.find({"companyId": ObjectId(companyId)})
+    print("users_p",users_p)
+
+    if users_p :
+
+        user_dict = []
+        for user_dict_s in users_p:
+            user_dict.append(
+                {
+                    "user_id": str(user_dict_s["_id"]),
+                    "email": user_dict_s["email"],
+                    "name": user_dict_s["name"]
+                }
+            )
+
+        return {"result": user_dict, "err": None}
+    else:
+        return {"result": None, "err": "no records found"}
 
 @app.get("/provider/{id}", dependencies=[Depends(JWTBearer())], tags=["posts"])
 async def add_post(id: int) -> dict:
