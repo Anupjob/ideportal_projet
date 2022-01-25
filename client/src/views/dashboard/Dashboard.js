@@ -58,17 +58,10 @@ const table_content = {
   color: "rgb(142, 142, 142)"
 }
 const text_box = {
-  fontSize: "1.3em",
+  fontSize: "1.1em",
   fontWeight: "bold"
 }
-const upload_file = {
-  outline: "5px dashed #4ea7d8",
-  textIndent: "-200px",
-  padding: "50px 0",
-  borderRadius: "30px",
-  background: "none",
-  border: "none",
-}
+
 const toast_options = {
   position: "top-center",
   autoClose: 5000,
@@ -208,13 +201,13 @@ const Dashboard = () => {
   return (
     <>
 
-      <CCard style={{ padding: "3em" }}>
+      <CCard style={{ padding: "1em 3em" }}>
         <CForm
         // onSubmit={searchBtn}
         >
           <CRow>
-            <CCol><div style={{ fontSize: "1.3em", marginBottom: "30px" }}>Filter by any of these details</div>
-              <CRow style={{ marginBottom: "20px" }}>
+            <CCol><div style={{ fontSize: "1.3em", marginBottom: "15px" }}>Filter by any of these details</div>
+              <CRow style={{ marginBottom: "10px" }}>
                 <CCol xs="4" style={text_box}>RECEIVE DATE: </CCol>
                 <CCol xs="8">
                   <CInputGroup>
@@ -234,7 +227,7 @@ const Dashboard = () => {
                   </CInputGroup>
                 </CCol>
               </CRow>
-              <CRow style={{ marginBottom: "20px" }}>
+              <CRow style={{ marginBottom: "10px" }}>
                 <CCol xs="4" style={text_box}>STATUS: </CCol>
                 <CCol xs="8">
                   <CInputGroup>
@@ -253,7 +246,7 @@ const Dashboard = () => {
                   </CInputGroup>
                 </CCol>
               </CRow>
-              <CRow style={{ marginBottom: "20px" }}>
+              <CRow style={{ marginBottom: "10px" }}>
                 <CCol xs="4" style={text_box}>SEARCH: </CCol>
                 <CCol xs="8">
                   <CInputGroup>

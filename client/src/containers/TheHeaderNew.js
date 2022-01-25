@@ -156,9 +156,10 @@ const useStyles = makeStyles(theme => ({
   grid_icon: {
     fontSize: "2.7em",
     color: "#fff",
-    margin: "-2px 0 0 17px",
+    margin: "-2px 0 0 0px",
     cursor: "pointer"
   },
+
   carousel_arrow_right: {
     color: "rgb(255, 255, 255)",
     background: "none",
@@ -206,6 +207,7 @@ const TheHeaderNew = (props) => {
   const [counter, setCounter] = useState(0)
 
   const [Toggle, setToggle] = useState(false)
+
   useEffect(() => {
     // console.log("url props::", props)
   }, [])
@@ -289,6 +291,8 @@ const TheHeaderNew = (props) => {
   const sliderClick = () => {
     setToggle(!Toggle)
   }
+
+
   console.log("Toggle", Toggle)
   return (
 
@@ -319,10 +323,30 @@ const TheHeaderNew = (props) => {
             <CInput type="text" />
           </CInputGroup>
 
-          <h2 className={classes.grid_icon}>
-            <i class="fa fa-th" aria-hidden="true"></i>
-          </h2>
+          <CDropdown inNav className="c-header-nav-items mx-3" direction="down">
+            <CDropdownToggle className="c-header-nav-link" caret={false}>
+              <h2 className={classes.grid_icon}>
+                <i class="fa fa-th" aria-hidden="true"></i>
+              </h2>
 
+
+            </CDropdownToggle>
+            <CDropdownMenu className="pt-0" placement="bottom-end">
+
+
+              <CDropdownItem>
+                Companies List
+              </CDropdownItem>
+              <CDropdownItem divider />
+              <CDropdownItem>
+                Users List
+              </CDropdownItem>
+              <CDropdownItem divider />
+              <CDropdownItem>
+                Processor List
+              </CDropdownItem>
+            </CDropdownMenu>
+          </CDropdown>
           <TheHeaderDropdown />
         </CHeaderNav>
 
@@ -343,7 +367,7 @@ const TheHeaderNew = (props) => {
                     <div style={{ width: "400px", padding: "20px 50px", position: "fixed", right: "20px", background: '#8349bf', boxShadow: "0px 4px 6px rgba(0,0,0,0.5)", border: "1px solid #fff", borderRadius: "5px" }}>
 
                       {/* <div style={{ width: "100px", height: "100px", position: "absolute", background: "#f00" }}></div> */}
-                      <Carousel responsive={responsive}
+                      <Carousel responsive={responsive} focusOnSelect={true}
                         //focusOnSelect={true}
                         customLeftArrow={<CustomLeftArrow />}
                         customRightArrow={<CustomRightArrow />}
@@ -427,15 +451,20 @@ const TheHeaderNew = (props) => {
               }
 
             </CCol>
-            <div className={classes.back_icon}>
-              <CButton onClick={() => {
-                // e.preventDefault();
-                history.goBack()
-              }}
-                class="fa fa-chevron-circle-left" aria-hidden="true" style={{ color: "#fff", fontSize: "2em", border: "none", background: "none" }}>
+            {
+              change == 'incoming page' ?
+                <div className={classes.back_icon}></div>
+                :
+                <div className={classes.back_icon}>
+                  <CButton onClick={() => {
+                    // e.preventDefault();
+                    history.goBack()
+                  }}
+                    class="fa fa-chevron-circle-left" aria-hidden="true" style={{ color: "#fff", fontSize: "2em", border: "none", background: "none" }}>
 
-              </CButton>
-            </div>
+                  </CButton>
+                </div>
+            }
           </CRow>
 
         </CSubheader>
