@@ -129,7 +129,9 @@ class DocumentDetails extends React.Component {
       ShowError: false,
       finalDataResult: {},
       pdfImage: '',
-      fileType: 'pdf'
+      fileType: 'pdf',
+      pageNo:1,
+
 
     }
   }
@@ -137,7 +139,7 @@ class DocumentDetails extends React.Component {
 
     localStorage.setItem('splitPos', 350)
     let details = JSON.parse(localStorage.getItem("details"))
-    //console.log("=== history.location.state:::", this.props.history.location.state.data)
+    console.log("=== history.location.state:::", this.props)
     if (this.props.history.location && this.props.history.location.state && this.props.history.location.state.data) {
       this.getPdfImage();
       this.geCsvData();
@@ -205,7 +207,7 @@ class DocumentDetails extends React.Component {
       axios({
         method: "POST",
         url: settings.serverUrl + "/getPdfFile",
-        data: JSON.stringify({ fileName: pdfFileName, containerPath: processorPath, fileType: this.state.fileType }),
+        data: JSON.stringify({ fileName: pdfFileName, containerPath: processorPath, fileType: this.state.fileType, pageNum: this.state.pageNo }),
         headers,
       }).then((response) => {
         console.log("Respone from post getPdfImage==", response.data.result);
@@ -317,6 +319,9 @@ class DocumentDetails extends React.Component {
 
     return (
       <CCard style={cardView}>
+        <CRow style={{color:'white'}}>
+       {this.props.history.location.state.data.pdfFilename ? this.props.history.location.state.data.pdfFilename:""}
+       </CRow>
         <CRow>
           <CCol>
             <SplitPane
@@ -356,7 +361,12 @@ class DocumentDetails extends React.Component {
                           <Button style={viewDetailBtn}
                             onClick={() => {
                               localStorage.setItem("details", JSON.stringify(this.props.history.location.state))
-                              this.props.history.push('/detail/' + this.props.history.location.state.data.doc_id)
+                              this.props.history.push({
+                                pathname: '/detail/' + this.props.history.location.state.data.doc_id,
+                                  state: { fileName: this.props.history.location.state.data.pdfFilename ,
+                                containerPath:this.props.history.location.state.data.processorContainerPath}
+                              })
+                              
                             }}>VIEW DETAILS</Button>
                         </TableCell>
                         <TableCell style={table_headerMain}>

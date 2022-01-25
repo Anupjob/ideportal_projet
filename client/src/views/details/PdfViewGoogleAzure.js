@@ -11,6 +11,8 @@ import 'react-toastify/dist/ReactToastify.min.css';
 import CircularProgress from "@material-ui/core/CircularProgress";
 import settings from 'src/config/settings';
 import axios from "axios";
+import { useHistory } from "react-router";
+
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 const pdfMainView = {
@@ -21,6 +23,7 @@ const pdfContentView = {
   display: 'table',
   backgroundColor: 'white',
   boxShadow: '0px 4px 32px 1px #00000029',
+  minWidth:600
 }
 const radioBtnDiv = {
   backgroundColor: 'white',
@@ -72,20 +75,89 @@ class PdfViewGoogleAzure extends React.Component {
       finalDataResult: {},
       azureDataResults:[],
       visionType:"googlev",
-      pageNo:1
+      pageNo:1,
+      fileType:"pdf",
+      pdfImage:'',
+      isCheckedPdf:false,
+      isCheckedImage:false,
+      isCheckedRotateImg:false
     }
     // this.onChangeValue = this.onChangeValue.bind(this);
   }
   componentDidMount = () => {
 
-    console.log("===PdfViewGoogleAzure doc_id :::",this.props)
-    // this.getPdfViewData();
+    // console.log("===PdfViewGoogleAzure doc_id :::GoogleAzure",this.props)
+    this.getPdfImageRotate();
   }
   onPageLoad(info) {
     const {
       height, width, originalHeight, originalWidth
     } = info;
     console.log(height, width, originalHeight, originalWidth);
+  }
+  getPdfImageRotate = () =>{
+    // console.log("===PdfViewGoogleAzure doc_id :::GoogleAzure",this.props)
+
+    var pdfFileName = this.props.history.location.state.fileName;
+    var processorPath = this.props.history.location.state.containerPath;
+    var pdfValid = true;
+    console.log("==pdfFileName==PdfViewGoogleAzure", pdfFileName)
+    console.log("==processorPath==PdfViewGoogleAzure", processorPath)
+
+
+    if (pdfFileName) {
+
+    } else {
+      pdfValid = false
+      // toast.warning("FileName is invalid", toast_options);
+    }
+    if (processorPath) {
+
+    } else {
+      pdfValid = false
+      // toast.warning("FileName is invalid", toast_options);
+    }
+
+    if (pdfValid) {
+      // console.log("==pdfValid==in if under", pdfValid)
+      this.setState({ isLoading: true })
+
+      const headers = {
+        "Content-Type": "application/json",
+        // Authorization: "Bearer " + logginUser.token,
+        // reqFrom: "ADMIN",
+      };
+      axios({
+        method: "POST",
+        url: settings.serverUrl + "/getPdfFile",
+        data: JSON.stringify({ fileName: pdfFileName, containerPath: processorPath, fileType: this.state.fileType ,pageNum: this.state.pageNo}),
+        headers,
+      }).then((response) => {
+        console.log("Respone from post getPdfImage==", response.data.result);
+        if (response.data.err) {
+          // alert(response.data.err);
+          toast.error(response.data.err, toast_options);
+        } else {
+          this.setState({ pdfImage: response.data.result, isLoading: false })
+        }
+      }).catch(err => {
+        toast.error(err.message, toast_options);
+        console.log("Record Issue Error", err)
+      });
+    } else {
+      console.log("==pdfValid==in else", pdfValid)
+
+      setTimeout(() => {
+        toast.warn("Request is invalid", toast_options);
+        setTimeout(() => {
+
+          this.props.history.goBack()
+        }, 1000);
+
+      }, 500);
+
+    }
+
   }
   getPdfViewData = () => {
     console.log("===You are in if this.props:::",this.props)
@@ -140,10 +212,17 @@ class PdfViewGoogleAzure extends React.Component {
     }
   }
 
-  // onChangeRadioValue(event) {
-  //   console.log("Radio button click===",event.target.value);
-  // }
-  
+  onChangeRadioValue = (event) =>{
+    // console.log("Radio button click===",event.target.value);
+    if (event.target.value == "PDF") {
+    this.setState({ fileType:'pdf'},()=>{this.getPdfImageRotate()})
+    }else if(event.target.value == "Image"){
+      this.setState({ fileType:'image'},()=>{this.getPdfImageRotate()})
+    }else if(event.target.value == "RotatedImage"){
+      this.setState({ fileType:'image_rotated'},()=>{this.getPdfImageRotate()})
+    }
+  }
+   
 onPageLoad(info) {
   const {
     height, width, originalHeight, originalWidth
@@ -155,28 +234,46 @@ render() {
     // console.log("===PdfViewGoogleAzure doc_id in render :::",this.props.history.location.state.data.doc_id)
   return (
     <CCard style={pdfMainView}>
-       {/* <CRow>
-        <CCol xs='3'></CCol>
-        <CCol xs='6' style={{backgroundColor:'white',height:50}}>
-        <div onChange={this.onChangeRadioValue} style={{height:50,justifyContent:'space-around',marginTop:10}}>
-        <input type="radio" value="Image" name="gender" /> Image
-        <input type="radio" value="PDF" name="gender" /> PDF
-        <input type="radio" value="RotatedImage" name="gender" /> Rotated Image
+       <CRow style={{color:'white'}}>
+       {this.props.history.location.state.fileName ? this.props.history.location.state.fileName:""}
+       </CRow>
+       <CRow>
+       <CCol xs='2'></CCol>
+        
+        <CCol xs="4.5" style={{backgroundColor:'white',height:50}}>
+        <div  style={{width:600,display:'table'}} onChange={this.onChangeRadioValue}>
+        <input type="radio" value="PDF" name="check" defaultChecked  style={{margin:10}}/> PDF
+        <input type="radio" value="Image" name="check" style={{margin:10}}/> Image
+        <input type="radio" value="RotatedImage" name="check" style={{margin:10}}/> Rotated Image
         </div>
         </CCol>
-        <CCol xs='3'></CCol>
-        </CRow> */}
-      <CRow>
+        {/* <CCol xs='2'></CCol> */}
+        </CRow>
+      <CRow style={{marginTop:5}}>
         <CCol xs='2'></CCol>
         <CCol xs="4.5">
           <div style={pdfContentView}>
-            <Document
-              file='https://dgsciense.s3.amazonaws.com/raw_invoices_hubspot/6085ca5e0c876f667d354cb0.pdf'
-              onLoadSuccess={page => console.log('page onLoadSuccess:>> ', page)}
-              onLoadError={(error) => console.log('pdf error :>> ', error)}
-            >
-              <Page pageNumber={1} onLoadSuccess={this.onPageLoad} />
-            </Document>
+            
+            {this.state.fileType=='pdf' ?
+            <div style={this.state.isLoading ? { ...pdfContentView, ...{ boxShadow: "none" } } : pdfContentView}>
+                {this.state.pdfImage ?
+                  <Document
+                    file={"data:image/jpeg;base64," + this.state.pdfImage}
+                  >
+                    <Page pageNumber={1} onLoadSuccess={this.onPageLoad} />
+                  </Document> :
+                  <p>loading PDF</p>
+                }
+              </div>:
+              <div style={this.state.isLoading ? { ...pdfContentView, ...{ boxShadow: "none" } } : pdfContentView}>
+              {this.state.pdfImage ?
+                <img style={{width:600}}
+                src={"data:image/jpeg;base64," + this.state.pdfImage}>
+                </img> :
+                <p>loading PDF</p>
+              }
+            </div>
+              }
           </div>
         </CCol>
         <CCol xs='0.5'></CCol>
