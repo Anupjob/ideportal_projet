@@ -321,7 +321,9 @@ const TheHeaderNew = (props) => {
         </CHeaderNav>
         <CHeaderNav className={classes.right_content}>
           <CInputGroup>
-            <CInput type="text" />
+            <i class="fa fa-search" aria-hidden="true" style={{ position: "absolute", zIndex: "11", top: "10px", left: "10px", color: "#999" }}></i>
+            <CInput placeholder="Search" aria-label="Search" style={{ paddingLeft: "30px" }} />
+
           </CInputGroup>
 
           <CDropdown inNav className="c-header-nav-items mx-3" direction="down">
@@ -333,15 +335,15 @@ const TheHeaderNew = (props) => {
 
             </CDropdownToggle>
             <CDropdownMenu className="pt-0" placement="bottom-end">
-              <CDropdownItem onClick={() => {history.push('/compnies')}} >
+              <CDropdownItem onClick={() => { history.push('/compnies') }} >
                 Companies List
               </CDropdownItem>
               <CDropdownItem divider />
-              <CDropdownItem onClick={() => {history.push('/companyUser')}}>
+              <CDropdownItem onClick={() => { history.push('/companyUser') }}>
                 Users List
               </CDropdownItem>
               <CDropdownItem divider />
-              <CDropdownItem onClick={() => {history.push('/processors')}}>
+              <CDropdownItem onClick={() => { history.push('/processors') }}>
                 Processor List
               </CDropdownItem>
             </CDropdownMenu>
