@@ -32,6 +32,7 @@ import DocumentDetails from '../views/details/DocumentDetails'
 // routes config
 import routes from '../routes'
 
+
 import {
   TheHeaderDropdown,
   TheHeaderDropdownMssg,
@@ -332,17 +333,15 @@ const TheHeaderNew = (props) => {
 
             </CDropdownToggle>
             <CDropdownMenu className="pt-0" placement="bottom-end">
-
-
-              <CDropdownItem>
+              <CDropdownItem onClick={() => {history.push('/compnies')}} >
                 Companies List
               </CDropdownItem>
               <CDropdownItem divider />
-              <CDropdownItem>
+              <CDropdownItem onClick={() => {history.push('/companyUser')}}>
                 Users List
               </CDropdownItem>
               <CDropdownItem divider />
-              <CDropdownItem>
+              <CDropdownItem onClick={() => {history.push('/processors')}}>
                 Processor List
               </CDropdownItem>
             </CDropdownMenu>

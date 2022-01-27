@@ -34,6 +34,13 @@ import Button from "@material-ui/core/Button";
 import settings from 'src/config/settings';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import * as wjCore from '@grapecity/wijmo';
+import { FlexGrid, FlexGridColumn, FlexGridCellTemplate } from '@grapecity/wijmo.react.grid';
+import * as wjFilter from "@grapecity/wijmo.react.grid.filter";
+import * as wjGrid from '@grapecity/wijmo.react.grid';
+import '@grapecity/wijmo.styles/wijmo.css';
+import * as wjcCore from "@grapecity/wijmo";
+import Grid from "@material-ui/core/Grid";
 
 const loader = {
   position: "fixed",
@@ -288,9 +295,118 @@ const Dashboard = () => {
           </CRow>
         </CForm>
       </CCard >
+      <Dialog open={open} onClose={handleToClose}>
+                    <DialogTitle>Issue</DialogTitle>
+                    <DialogContent style={{ minWidth: 500 }}>
+                      <DialogContentText>
+                        {errorMsg}
+                      </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                      <Button style={{ backgroundColor: '#4EA7D8', fontSize: 14, color: 'white' }} onClick={handleToClose}>Close</Button>
+                    </DialogActions>
+                  </Dialog>
 
+      <Grid className="container-fluid">
+          <Grid item xs={12} style={{ marginTop: 25}}>
+          {IncomingArr.length>0 && !ArrNull ?
+            <FlexGrid
+                headersVisibility="Column"
+                autoGenerateColumns={false}
+                itemsSource={IncomingArr}
+                style={{
+                  height: "auto",
+                  maxHeight: 400,
+                  margin: 0,
+                }}> 
+                <FlexGridColumn>
+                 <FlexGridCellTemplate cellType="Cell" template={ctx => 
+                 <React.Fragment>
+                   {ctx.item.docStatus.toLowerCase() == 'error' && 
+                            <span><i class="fa fa-exclamation-triangle" aria-hidden="true"
+                             onClick={() => handleClickToOpen(ctx.item.errMsg)}
+                            ></i></span>
+                   }
+                        </React.Fragment>}/> 
+                </FlexGridColumn>
 
-      <TableContainer component={Paper} style={{ position: "relative", zIndex: "5" }}>
+                <FlexGridColumn>
+                 <FlexGridCellTemplate cellType="Cell" template={ctx => <React.Fragment>
+                            <span ><i class="fa fa-search-plus" aria-hidden="true"
+                             onClick={() => {
+                             localStorage.setItem("dashboardData", JSON.stringify({ Document: Document, Status: Status, Edate: Edate, Sdate: Sdate }))
+                            //  console.log("IncomingArr data==>>", ctx.item)
+                             history.push({
+                               pathname: '/details',
+                               state: { data: ctx.item }
+                             })
+                             }}
+                            ></i></span>
+                        </React.Fragment>}/> 
+                </FlexGridColumn> 
+                                
+                <FlexGridColumn
+                binding="processorGroup"
+                header="PROCESSING STAGE"
+                cssClass="cell-header"
+                width="*"
+                style={{backgroundColor:'grey'}}
+                />
+         
+                <FlexGridColumn
+                binding="dateRec"
+                header="DATE/TIME RECEIVED"
+                cssClass="cell-header"
+                width="*"
+                style={{backgroundColor:'grey'}}/>
+
+                <FlexGridColumn
+                binding="dateProcessed"
+                header="DATE/TIME PROCESSED"
+                cssClass="cell-header"
+                width="*"
+                style={{backgroundColor:'grey'}}/>
+
+                <FlexGridColumn
+                binding="noOfPages"
+                header="# OF PAGES"
+                cssClass="cell-header"
+                width="*"
+                style={{backgroundColor:'grey'}}/>
+
+                <FlexGridColumn
+                binding="docStatus"
+                header="Status"
+                cssClass="cell-header"
+                width="*"
+                style={{backgroundColor:'grey'}}
+                />
+                <wjFilter.FlexGridFilter></wjFilter.FlexGridFilter>
+              </FlexGrid>
+               :           
+               <p style={{ width: "100%", display: "block", color: "#c00", margin: "12px 0", textAlign: "center", fontSize: "1.6em" }}>No record Found!!</p>
+               } 
+            </Grid>
+
+            {Isloader &&
+            <div style={loader}>
+              <CircularProgress style={{ margin: "28% auto", display: "block" }} />
+            </div>}
+            <div><ToastContainer
+              position="top-center"
+              autoClose={5000}
+              hideProgressBar
+              newestOnTop={false}
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+            /></div>
+            
+      </Grid>
+
+      {/* <TableContainer component={Paper} style={{ position: "relative", zIndex: "5" }}>
         <Table aria-label="simple table">
           <TableHead>
             <TableRow>
@@ -363,54 +479,11 @@ const Dashboard = () => {
                   <TableCell colSpan={8}><p style={{ width: "100%", display: "block", color: "#c00", margin: "12px 0", textAlign: "center", fontSize: "1.6em" }}>No record Found!!</p></TableCell>
 
                 </TableRow>
-
-
               }
-              {/* <TableRow>
-              <TableCell style={table_content}><a href='#' style={{ color: "#c00" }}><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></a></TableCell>
-              <TableCell style={table_content}><a href='#' style={{ color: "#ccc" }}><i class="fa fa-search-plus" aria-hidden="true"></i></a></TableCell>
-              <TableCell style={table_content}><strong>INCOMING</strong> </TableCell>
-              <TableCell style={table_content}>CHECKS ENVERUS</TableCell>
-              <TableCell style={table_content}>12/21/21 10:30 AM</TableCell>
-              <TableCell style={table_content}>12/21/21 10:30 AM</TableCell>
-              <TableCell style={table_content}>3</TableCell>
-              <TableCell style={table_content}>PROCESSED</TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell style={table_content}><a href='#' style={{ color: "#ccc" }}><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></a></TableCell>
-              <TableCell style={table_content}><a href='#' style={{ color: "#ccc" }}><i class="fa fa-search-plus" aria-hidden="true" ></i></a></TableCell>
-              <TableCell style={table_content}><strong>INCOMING</strong> </TableCell>
-              <TableCell style={table_content}>CHECKS ENVERUS</TableCell>
-              <TableCell style={table_content}>12/21/21 10:30 AM</TableCell>
-              <TableCell style={table_content}>12/21/21 10:30 AM</TableCell>
-              <TableCell style={table_content}>3</TableCell>
-              <TableCell style={table_content}>PROCESSED</TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell style={table_content}><a href='#' style={{ color: "#ccc" }}><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></a></TableCell>
-              <TableCell style={table_content}><a href='#' style={{ color: "#ccc" }}><i class="fa fa-search-plus" aria-hidden="true"></i></a></TableCell>
-              <TableCell style={table_content}><strong>INCOMING</strong> </TableCell>
-              <TableCell style={table_content}>CHECKS ENVERUS</TableCell>
-              <TableCell style={table_content}>12/21/21 10:30 AM</TableCell>
-              <TableCell style={table_content}>12/21/21 10:30 AM</TableCell>
-              <TableCell style={table_content}>3</TableCell>
-              <TableCell style={table_content}>PROCESSED</TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell style={table_content}><a href='#' style={{ color: "#c00" }}><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></a></TableCell>
-              <TableCell style={table_content}><a href='#' style={{ color: "#ccc" }}><i class="fa fa-search-plus" aria-hidden="true"></i></a></TableCell>
-              <TableCell style={table_content}><strong>INCOMING</strong> </TableCell>
-              <TableCell style={table_content}>CHECKS ENVERUS</TableCell>
-              <TableCell style={table_content}>12/21/21 10:30 AM</TableCell>
-              <TableCell style={table_content}>12/21/21 10:30 AM</TableCell>
-              <TableCell style={table_content}>3</TableCell>
-              <TableCell style={table_content}>PROCESSED</TableCell>
-            </TableRow> */}
-
             </TableBody>
           }
         </Table>
-      </TableContainer>
+      </TableContainer> */}
     </>
   )
 }
