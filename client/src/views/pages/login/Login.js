@@ -360,7 +360,7 @@ class Login extends React.Component {
       };
       axios({
         method: "POST",
-        url: "http://192.168.11.170:8081/user/login/",
+        url: settings.serverUrl + "/user/login/",
         data: JSON.stringify({ email: this.state.email, otp: this.state.password }),
         headers,
       }).then((response) => {
