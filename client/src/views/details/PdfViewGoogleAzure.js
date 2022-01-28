@@ -177,19 +177,22 @@ class PdfViewGoogleAzure extends React.Component {
         data: JSON.stringify({ docId: doc_id, resType: this.state.visionType,pageNum: this.state.pageNo }),
         headers,
       }).then((response) => {
+        console.log("response getGoogleVisionData===",response)
           var respdata = response.data.result
-          var pardedResp = JSON.parse(respdata)
-        console.log("Respone from post pardedResp===",pardedResp );
-        console.log("Respone from post fullTextAnnotation===",pardedResp.fullTextAnnotation );
 
         if (response.data.err) {
           // alert(response.data.err);
           toast.error(response.data.err, toast_options);
         } else {
             if(this.state.visionType == 'googlev'){
+            var pardedResp = JSON.parse(respdata)
             this.setState({ googleVisionVisible: true, azureTableVisible: false, googleTableVisible: false ,finalDataResult: pardedResp.fullTextAnnotation,isLoading: false })
             }else if(this.state.visionType == 'azuret'){
-            this.setState({azureTableVisible: true, googleVisionVisible: false, googleTableVisible: false ,azureDataResults:pardedResp.cells, isLoading: false })
+
+            this.setState({azureTableVisible: true, googleVisionVisible: false, googleTableVisible: false ,
+              // azureDataResults:pardedResp.cells,
+               isLoading: false })
+
             }else{
             this.setState({googleTableVisible: true, googleVisionVisible: false, azureTableVisible: false , isLoading: false })
 
@@ -324,14 +327,14 @@ render() {
               <input type="radio" value="AzureTables" name="gender" /> Show Results from Azure Tables<br />
               {this.state.azureTableVisible &&
                 <div style={radioBtnMainView}>
-                    {this.state.azureDataResults.map((cellData) =>
+                    {/* {this.state.azureDataResults.map((cellData) =>
                       <div style={radioBtnSubView}>
                       {
                           <span>{cellData.text}</span>
                       }
                   </div>
                     )
-                    }
+                    } */}
                  
                 </div>}
               <hr style={horizontalLine} />

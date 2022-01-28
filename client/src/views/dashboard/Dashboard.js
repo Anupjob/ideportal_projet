@@ -49,7 +49,7 @@ const loader = {
   right: "0",
   bottom: "0",
   background: "rgba(255,255,255,0.4)",
-  zIndex: "100",
+  zIndex: "9999",
   display: "table",
   width: "100%",
   height: "100%"
@@ -344,28 +344,53 @@ const Dashboard = () => {
                             ></i></span>
                         </React.Fragment>}/> 
                 </FlexGridColumn> 
-                                
+                
                 <FlexGridColumn
                 binding="processorGroup"
-                header="PROCESSING STAGE"
+                header="PROCESSOR GROUP"               
                 cssClass="cell-header"
                 width="*"
+                multiLine = "true"
+                style={{backgroundColor:'grey'}}
+                />
+                <FlexGridColumn
+                binding="processorName"
+                header="PROSESSOR NAME"               
+                cssClass="cell-header"
+                width="*"
+                multiLine = "true"
                 style={{backgroundColor:'grey'}}
                 />
          
                 <FlexGridColumn
-                binding="dateRec"
+                // binding="dateRec"
                 header="DATE/TIME RECEIVED"
                 cssClass="cell-header"
                 width="*"
-                style={{backgroundColor:'grey'}}/>
+                style={{backgroundColor:'grey'}}
+              
+                >
+                 <FlexGridCellTemplate cellType="Cell" template={ctx => 
+                 <React.Fragment>
+                   {ctx.item.dateRec && 
+                    <span>{moment(ctx.item.dateRec).format("MM/DD/YYYY hh:mm A")}</span>
+                   }
+                        </React.Fragment>}/>  
+                </FlexGridColumn>
 
                 <FlexGridColumn
-                binding="dateProcessed"
+                // binding="dateProcessed"
                 header="DATE/TIME PROCESSED"
                 cssClass="cell-header"
                 width="*"
-                style={{backgroundColor:'grey'}}/>
+                style={{backgroundColor:'grey'}}>
+                  <FlexGridCellTemplate cellType="Cell" template={ctx => 
+                 <React.Fragment>
+                   {ctx.item.dateProcessed && 
+                    <span>{moment(ctx.item.dateProcessed).format("MM/DD/YYYY hh:mm A")}</span>
+                   }
+                        </React.Fragment>}/> 
+                </FlexGridColumn>
 
                 <FlexGridColumn
                 binding="noOfPages"
@@ -376,9 +401,24 @@ const Dashboard = () => {
 
                 <FlexGridColumn
                 binding="docStatus"
-                header="Status"
+                header="STATUS"
                 cssClass="cell-header"
                 width="*"
+                style={{backgroundColor:'grey'}}/>
+                 <FlexGridColumn
+                binding="fromEmail"
+                header="FROM"               
+                cssClass="cell-header"
+                width="*"
+                multiLine = "true"
+                style={{backgroundColor:'grey'}}
+                />
+                 <FlexGridColumn
+                // binding="toEmail"
+                header="UPLOADED BY"               
+                cssClass="cell-header"
+                width="*"
+                multiLine = "true"
                 style={{backgroundColor:'grey'}}
                 />
                 <wjFilter.FlexGridFilter></wjFilter.FlexGridFilter>
