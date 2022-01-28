@@ -67,6 +67,8 @@ class IssueSchema(BaseModel):
 class PdfDataSchema(BaseModel):
    fileName: str
    containerPath: str
+   fileType: str
+   pageNum: int
 
 class GoogleVisionSchema(BaseModel):
    docId: str
@@ -78,6 +80,23 @@ class ProcessorDataSchema(BaseModel):
 
 class UserDataSchema(BaseModel):
    companyId: str
+
+class CompanySchema(BaseModel):
+   companyName: str
+   street1: str
+   street2: Optional[str] = None
+   city: str
+   state: str
+   zip: str
+   contact: str
+
+class AddProcessorSchema(BaseModel):
+   company_id: str
+   group: str
+   name: str
+   folder: str
+   processor: str
+   collection: str
 
 def download_blob_azure(local_path, complete_file_name):
     print("download_blob_azure", local_path, complete_file_name);
@@ -363,6 +382,7 @@ async def user_login(user: UserLogin = Body(...)):
 
                 user_comp_details = {
                     "company":companyData["companyName"],
+                    "companyId": str(user_data["companyId"]),
                     "email": user_data["email"],
                     "name": user_data["name"]
                 }
@@ -410,17 +430,25 @@ async def report_issue(incData: IssueSchema = Body(...)):
 async def get_pdf_file(incData: PdfDataSchema = Body(...)):
     fileName = incData.fileName
     containerPath = incData.containerPath
+    fileType = incData.fileType
+    pageNum = incData.pageNum
 
     # completeFileName = containerPath+"/"+fileName
 
     db_mongo = getConn()
     files_incoming_breakup_c = db_mongo.files_incoming_breakup
 
-    files_incoming_breakup_p = files_incoming_breakup_c.find_one({"filenameprocessing": fileName, "pageNo": 1})
+    files_incoming_breakup_p = files_incoming_breakup_c.find_one({"filenameprocessing": fileName, "pageNo": pageNum})
     print("files_incoming_breakup_p",files_incoming_breakup_p)
 
     if files_incoming_breakup_p :
-        completeFileName = containerPath + "/" + files_incoming_breakup_p["pdf"]
+        file_type_str = "pdf"
+
+        if fileType == "image":
+            file_type_str = "img"
+        elif fileType == "image_rotated":
+            file_type_str = "img_rotated"
+        completeFileName = containerPath + "/" + files_incoming_breakup_p[file_type_str]
 
         data = pdf_blob_azure_buffer(completeFileName)
         print("getPdfFile data", data)
@@ -473,19 +501,76 @@ async def get_google_vision_data(incData: GoogleVisionSchema = Body(...)):
             my_blob = download_stream.readall()
             jsonFileData = json.loads(my_blob)
 
-            dataRet = getDataForPage(jsonFileData, pageNum)
-            fullTextAnnotation_text = dataRet[0]['data']
-
-            return {"result": fullTextAnnotation_text, "err": None}
-
-            # if resType == "googlev" or resType == "googlet":
-            #     dataRet = getDataForPage(jsonFileData, pageNum)
-            #     fullTextAnnotation_text = dataRet[0]['data']
+            # dataRet = getDataForPage(jsonFileData, pageNum)
+            # fullTextAnnotation_text = dataRet[0]['data']
             #
-            #     return {"result": fullTextAnnotation_text, "err": None}
-            #
-            # else:
-            #     return {"result": jsonFileData, "err": None}
+            # return {"result": fullTextAnnotation_text, "err": None}
+
+            if resType == "googlev" or resType == "googlet":
+                dataRet = getDataForPage(jsonFileData, pageNum)
+                fullTextAnnotation_text = dataRet[0]['data']
+
+                return {"result": fullTextAnnotation_text, "err": None}
+
+            else:
+                print("after loading the files", len(jsonFileData))
+
+                df_final = pd.DataFrame()
+
+                # noOfPages = files_incoming_p["noOfPages"]
+                #
+                # print("noOfPages", noOfPages)
+                #
+                # for i in range(noOfPages):
+
+                    # dataRet = getDataForPage(jsonFileData, (i + 1))
+                dataRet = getDataForPage(jsonFileData, pageNum)
+
+                # currCont = 0
+
+                data_dict = ""
+                for dats in dataRet:
+
+                    table = json.loads(dats['data'])
+                    table_count = dats['tableCount']
+                    print("***********complete table, ", type(table))
+
+                    rows = table['row_count']
+                    columns = table['column_count']
+                    print(rows, columns)
+
+                    col_list = list(range(0, columns))
+                    indx_list = list(range(0, rows))
+
+                    df_table = pd.DataFrame(index=indx_list, columns=col_list)
+
+                    for cell in table['cells']:
+                        # print("cell",cell)
+                        row_index = cell['row_index']
+                        col_index = cell['column_index']
+                        text = cell['text']
+                        # text = cell['content']
+
+                        print(row_index,col_index,text)
+                        df_table[col_index][row_index] = text
+
+                    df_table.columns = df_table.iloc[0]
+                    df_table = df_table.drop([0])
+                    df_table = df_table.reindex()
+
+                    s = pd.Series(df_table.columns)
+                    s = s.fillna('empty_' + (s.groupby(s.isnull()).cumcount() + 1).astype(str))
+                    df_table.columns = s
+
+                    print("df_table.columns::",df_table.columns)
+
+                    # df_table = df_table.drop("index", axis=1)
+                    df_table = df_table.fillna("0")
+                    data_dict = df_table.to_dict("list")
+
+                    print(df_table)
+                    print("data_dict",data_dict)
+                return {"result": data_dict, "err": None}
 
             # download_stream = blob_client.download_blob()
             # return download_stream.readall()
@@ -516,6 +601,8 @@ async def incoming_data(incData: IncomingData = Body(...)):
         processorContainerPath = ""
         final_filename = ""
         filenameProcessing = ""
+        fromEmail = ""
+        toEmail = ""
 
         if 'noOfPages' in ids_s:
             noOfPages = ids_s["noOfPages"]
@@ -538,6 +625,12 @@ async def incoming_data(incData: IncomingData = Body(...)):
         if 'filenameprocessing' in ids_s:
             filenameProcessing = ids_s["filenameprocessing"]
 
+        if 'from_email' in ids_s:
+            fromEmail = ids_s["from_email"]
+
+        if 'to_main' in ids_s:
+            toEmail = ids_s["to_main"]
+
         ids_dict.append({
             "doc_id":str(ids_s["_id"]),
             "docStatus":ids_s["status"],
@@ -551,7 +644,9 @@ async def incoming_data(incData: IncomingData = Body(...)):
             "processorContainerPath": processorContainerPath,
             "finalFileName": final_filename,
             "pdfFilename": filenameProcessing,
-            "errMsg": errMsg
+            "errMsg": errMsg,
+            "fromEmail":fromEmail,
+            "toEmail":toEmail
         })
 
     return {"result": ids_dict, "err": None}
@@ -619,6 +714,24 @@ async def get_processors(incData: ProcessorDataSchema = Body(...)):
     else:
         return {"result": None, "err": "no records found"}
 
+@app.post("/addProcessor")
+async def add_processor(incData: AddProcessorSchema = Body(...)):
+    print("add_processor", incData)
+
+    company_id = incData.company_id
+    group = incData.group
+    name = incData.name
+    folder = incData.folder
+    processor = incData.processor
+    collection = incData.collection
+
+    db_mongo = getConn()
+    processors_c = db_mongo.processors
+
+    processor_ins_result = processors_c.insert_one({"company_id": ObjectId(company_id), "group": group, "name": name, "folder": folder, "processor": processor, "collection": collection, "identify_keywords": [], "google_vision": "all", "google_vision_response": "all","azure_form": "","azure_document_analyzer": "","textract": ""})
+
+    return {"result": processor_ins_result, "err": None}
+
 @app.get("/getCompaniesData")
 async def get_companies():
 
@@ -635,13 +748,37 @@ async def get_companies():
             companies_dict.append(
                 {
                     "comp_id": str(company_dict_s["_id"]),
-                    "name": company_dict_s["companyName"]
+                    "name": company_dict_s["companyName"],
+                    "street1": company_dict_s["street1"],
+                    "street2": company_dict_s["street2"],
+                    "city": company_dict_s["city"],
+                    "state": company_dict_s["state"],
+                    "zip": company_dict_s["zip"],
+                    "contact": company_dict_s["contact"]
                 }
             )
 
         return {"result": companies_dict, "err": None}
     else:
         return {"result": None, "err": "no records found"}
+
+@app.post("/addCompany")
+async def add_company(incData: CompanySchema = Body(...)):
+    print("add_company", incData)
+    companyName = incData.companyName
+    street1 = incData.street1
+    street2 = incData.street2
+    city = incData.city
+    state = incData.state
+    zip = incData.zip
+    contact = incData.contact
+
+    db_mongo = getConn()
+    companies_c = db_mongo.companies
+
+    comp_ins_result = companies_c.insert_one({"companyName": companyName, "street1": street1, "street2": street2, "city": city, "state": state, "zip": zip, "contact": contact})
+
+    return {"result": comp_ins_result, "err": None}
 
 @app.post("/getUsersData")
 async def get_users(incData: UserDataSchema = Body(...)):
