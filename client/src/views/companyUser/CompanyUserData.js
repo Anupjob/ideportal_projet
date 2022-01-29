@@ -9,7 +9,8 @@ import {
     CSelect,
     CCardHeader,
     CCardBody,
-    CForm
+    CForm,
+    
   } from '@coreui/react';
 import CircularProgress from "@material-ui/core/CircularProgress";
 import * as wjCore from '@grapecity/wijmo';
@@ -43,6 +44,13 @@ const toast_options = {
   pauseOnHover: true,
   draggable: true,
   progress: undefined,
+}
+
+const btn_style = {
+  width: "15%", 
+  background: "#4ea7d8", 
+  border: "#4ea7d8",
+  marginTop:30 
 }
 const CompanyUserData = () => {
   const [Isloader, setIsloader] = useState(false);
@@ -88,7 +96,10 @@ const CompanyUserData = () => {
   }
 
   return (
-      <Grid className="container-fluid">
+
+      <Grid className="container-fluid" style={{marginTop:40}}>
+      <CButton type="submit" color="primary" size="lg" style={btn_style} >Add User</CButton>
+
           <Grid item xs={12} style={{ marginTop: 25}}>
             <FlexGrid
                 headersVisibility="Column"

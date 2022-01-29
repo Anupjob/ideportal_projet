@@ -22,6 +22,14 @@ import settings from 'src/config/settings';
 import axios from "axios";
 import Grid from "@material-ui/core/Grid";
 import { ToastContainer, toast } from 'react-toastify';
+import Dialog from "@material-ui/core/Dialog";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import Button from "@material-ui/core/Button";
+import TextField from "@material-ui/core/TextField";
+import 'react-toastify/dist/ReactToastify.css';
 
 const loader = {
   position: "fixed",
@@ -44,10 +52,33 @@ const toast_options = {
   draggable: true,
   progress: undefined,
 }
+const btn_style = {
+  width: "15%", 
+  background: "#4ea7d8", 
+  border: "#4ea7d8",
+  marginTop:30 
+}
+const cancel_dialogBtn = {
+  backgroundColor: '#4EA7D8',
+  fontSize: 14,
+  color: 'white'
+}
+const submit_dialogBtn = {
+  backgroundColor: '#4EA7D8',
+  fontSize: 14, color: 'white',
+  marginLeft: 10
+}
 const ProcessorsData = () => {
   const [Isloader, setIsloader] = useState(false);
   const [companyId, setCompanyId] = useState('');
   const [tableData, setTableData] = useState([]);
+  const [open, setOpen] = React.useState(false);
+  const [group, setGroup] = useState('Multi Row West');
+  const [name, setName] = useState('West Bay Exploration');
+  const [folder, setFolder] = useState('West_Bay');
+  const [processor, setProcessor] = useState('multi_west.py');
+  const [collection, setCollection] = useState('Dg_Data');
+  
   
   useEffect(() => {
 
@@ -93,9 +124,65 @@ const ProcessorsData = () => {
       // console.log("Record Issue Error Processor Data", err)
     });
   }
+  const handleClickToOpen = () => {
+    // let companyId = localStorage.getItem('companyId')
+    // console.log("===companyId:::",companyId)
+    // console.log("===errMsg===", errMsg)
+    // setErrorMsg(errMsg);
+    setOpen(true);
+  };
+
+  const handleToClose = () => {
+    setOpen(false);
+  };
+  const submit = () => {
+    if (group == '' || group == null || group == undefined) {
+      toast.warn("Please Enter Group !", {toast_options});
+    }else if(name == '' || name == null || name == undefined){
+      toast.warn("Please Enter Name!", {toast_options});
+    }else if(folder == '' || folder == null || folder == undefined){
+      toast.warn("Please Enter Folder!", {toast_options});
+    }else if(processor == '' || processor == null || processor == undefined){
+      toast.warn("Please Enter Processor!", {toast_options});
+    }else if(collection == '' || collection == null || collection == undefined){
+      toast.warn("Please Enter Collection!", {toast_options});
+    }
+    else{
+      setIsloader(true)
+      const headers = {
+        "Content-Type": "application/json",
+        // Authorization: "Bearer " + logginUser.token,
+        // reqFrom: "ADMIN",
+      };
+
+      let companyId = localStorage.getItem('companyId')
+      console.log("===companyId:::",companyId)
+      axios({
+        method: "POST",
+        url: settings.serverUrl + "/addProcessor",
+        data: JSON.stringify({company_id:companyId, name: name, group: group, folder: folder ,processor: processor,collection:collection}),
+        headers,
+      }).then((response) => {
+        console.log("Respone from post Processor Data==", response.data.result);
+        if (response.data.err) {
+          // alert(response.data.err);
+          toast.error(response.data.err, toast_options);
+        } else {
+          // this.setState({ pdfImage: response.data.result, isLoading: false })
+          setIsloader(false)
+          setTableData([])
+          getProcessorData()
+          handleToClose()
+        }
+      }).catch(err => {
+        toast.error(err.message, toast_options);
+        console.log("Company Data Issue Error", err)
+      });
+    }}
 
   return (
-      <Grid className="container-fluid">
+      <Grid className="container-fluid" style={{marginTop:55}}>
+        <CButton type="submit" color="primary" size="lg" style={btn_style} onClick={() => handleClickToOpen()}>Add Processor</CButton>
           <Grid item xs={12} style={{ marginTop: 25}}>
             <FlexGrid
                 headersVisibility="Column"
@@ -137,7 +224,40 @@ const ProcessorsData = () => {
               draggable
               pauseOnHover
             /></div>
-            
+            <Dialog open={open} onClose={handleToClose}>
+          <DialogTitle>Add Company</DialogTitle>
+                          <DialogContent style={{ minWidth: 500 }}>
+                            <DialogContentText>
+                            
+                              <TextField id="outlined-basic" label="Enter Group" type="text" variant="outlined" style={{ width: "100%",marginTop:10 }}
+                                value={group}
+                                onChange={e => setGroup(e.target.value)}
+                              />
+                              <TextField id="outlined-basic" label="Enter Name" type="text" variant="outlined" style={{ width: "100%",marginTop:10 }}
+                              value={name}
+                              onChange={e => setName(e.target.value)}
+                              />
+                               <TextField id="outlined-basic" label="Enter Folder" type="text" variant="outlined" style={{ width: "100%",marginTop:10 }}
+                                value={folder}
+                                onChange={e => setFolder(e.target.value)}                              
+                                />
+                               <TextField id="outlined-basic" label="Enter Processor" type="text" variant="outlined" style={{ width: "100%",marginTop:10 }}
+                                value={processor}
+                                onChange={e => setProcessor(e.target.value)}                               />
+                              <TextField id="outlined-basic" label="Enter Collection" type="text" variant="outlined" style={{ width: "100%",marginTop:10 }}
+                                value={collection}
+                                onChange={e => setCollection(e.target.value)} 
+                              />
+                              
+                            </DialogContentText>
+                          </DialogContent>
+                          <DialogActions>
+                            <div style={{ flexDirection: 'row',marginRight:30 }}>
+                              <Button style={cancel_dialogBtn} onClick={handleToClose}>Cancel</Button>
+                              <Button style={submit_dialogBtn} onClick={submit}>Submit</Button>
+                            </div>
+                          </DialogActions>
+                  </Dialog>
       </Grid>
 			);
 }
