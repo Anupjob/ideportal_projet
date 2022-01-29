@@ -291,10 +291,12 @@ class DocumentDetails extends React.Component {
         // Authorization: "Bearer " + logginUser.token,
         // reqFrom: "ADMIN",
       };
+      let requestBody = { doc_id: this.props.history.location.state.data.doc_id, errMsg: this.state.enterIssue }
+      console.log("requestBody::::",requestBody)
       axios({
         method: "POST",
         url: settings.serverUrl + "/reportIssue",
-        data: JSON.stringify({ doc_id: this.props.history.location.state.data.doc_id, errMs: this.state.enterIssue }),
+        data: JSON.stringify(requestBody),
         headers,
       }).then((response) => {
         console.log("Respone from post ", response);
