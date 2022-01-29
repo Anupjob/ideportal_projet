@@ -170,6 +170,7 @@ class PdfViewGoogleAzure extends React.Component {
     this.setState({ isLoading: true })
 
     const headers = {
+<<<<<<< HEAD
       "Content-Type": "application/json",
       // Authorization: "Bearer " + logginUser.token,
       // reqFrom: "ADMIN",
@@ -184,6 +185,20 @@ class PdfViewGoogleAzure extends React.Component {
       var pardedResp = JSON.parse(respdata)
       console.log("Respone from post pardedResp===", pardedResp);
       console.log("Respone from post fullTextAnnotation===", pardedResp.fullTextAnnotation);
+=======
+        "Content-Type": "application/json",
+        // Authorization: "Bearer " + logginUser.token,
+        // reqFrom: "ADMIN",
+      };
+      axios({
+        method: "POST",
+        url: settings.serverUrl + "/getGoogleVisionData",
+        data: JSON.stringify({ docId: doc_id, resType: this.state.visionType,pageNum: this.state.pageNo }),
+        headers,
+      }).then((response) => {
+        console.log("response getGoogleVisionData===",response)
+          var respdata = response.data.result
+>>>>>>> 96682d362b128f7e9fd1d6097f5a9af180ed7300
 
       if (response.data.err) {
         // alert(response.data.err);
@@ -194,8 +209,24 @@ class PdfViewGoogleAzure extends React.Component {
         } else if (this.state.visionType == 'azuret') {
           this.setState({ azureTableVisible: true, googleVisionVisible: false, googleTableVisible: false, azureDataResults: pardedResp.cells, isLoading: false })
         } else {
+<<<<<<< HEAD
           this.setState({ googleTableVisible: true, googleVisionVisible: false, azureTableVisible: false, isLoading: false })
 
+=======
+            if(this.state.visionType == 'googlev'){
+            var pardedResp = JSON.parse(respdata)
+            this.setState({ googleVisionVisible: true, azureTableVisible: false, googleTableVisible: false ,finalDataResult: pardedResp.fullTextAnnotation,isLoading: false })
+            }else if(this.state.visionType == 'azuret'){
+
+            this.setState({azureTableVisible: true, googleVisionVisible: false, googleTableVisible: false ,
+              // azureDataResults:pardedResp.cells,
+               isLoading: false })
+
+            }else{
+            this.setState({googleTableVisible: true, googleVisionVisible: false, azureTableVisible: false , isLoading: false })
+
+            }
+>>>>>>> 96682d362b128f7e9fd1d6097f5a9af180ed7300
         }
       }
     }).catch(err => {
@@ -320,17 +351,26 @@ class PdfViewGoogleAzure extends React.Component {
 
                   </div>
                 }
+<<<<<<< HEAD
                 <hr style={horizontalLine} />
                 <input type="radio" value="AzureTables" name="gender" /> Show Results from Azure Tables<br />
                 {this.state.azureTableVisible &&
                   <div style={radioBtnMainView}>
                     {this.state.azureDataResults.map((cellData) =>
+=======
+              <hr style={horizontalLine} />
+              <input type="radio" value="AzureTables" name="gender" /> Show Results from Azure Tables<br />
+              {this.state.azureTableVisible &&
+                <div style={radioBtnMainView}>
+                    {/* {this.state.azureDataResults.map((cellData) =>
+>>>>>>> 96682d362b128f7e9fd1d6097f5a9af180ed7300
                       <div style={radioBtnSubView}>
                         {
                           <span>{cellData.text}</span>
                         }
                       </div>
                     )
+<<<<<<< HEAD
                     }
 
                   </div>}
@@ -348,6 +388,24 @@ class PdfViewGoogleAzure extends React.Component {
                       squid. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt
                       sapiente ea proident.
                     </div>
+=======
+                    } */}
+                 
+                </div>}
+              <hr style={horizontalLine} />
+              <input type="radio" value="GoogleTables" name="gender" /> Show Results from Google Tables
+              {this.state.googleTableVisible &&
+                <div style={radioBtnMainView}>
+                  <div style={radioBtnSubView}>
+                    Google Tables Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad
+                    squid. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt
+                    sapiente ea proident.
+                  </div>
+                  <div style={radioBtnSubView}>
+                    Google Tables Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad
+                    squid. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt
+                    sapiente ea proident.
+>>>>>>> 96682d362b128f7e9fd1d6097f5a9af180ed7300
                   </div>
                 }
                 {this.state.isLoading && (
