@@ -72,7 +72,7 @@ const useStyles = makeStyles(theme => ({
   back_icon: {
     position: "absolute",
     left: "30px",
-    bottom: "5px",
+    bottom: "0px",
   },
   header_bg1: {
     background: "rgb(131,73,191)",
