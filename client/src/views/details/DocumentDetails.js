@@ -61,7 +61,7 @@ const loader = {
   right: "0",
   bottom: "0",
   background: "rgba(255,255,255,0.4)",
-  zIndex: "100",
+  zIndex: "9999",
   display: "table",
   width: "100%",
   height: "100%"
@@ -132,7 +132,7 @@ class DocumentDetails extends React.Component {
       finalDataResult: {},
       pdfImage: '',
       fileType: 'pdf',
-      pageNo:1,
+      pageNo: 1,
 
 
     }
@@ -332,11 +332,33 @@ class DocumentDetails extends React.Component {
 
     return (
       <CCard style={cardView}>
-        <CRow style={{color:'white'}}>
-       {this.props.history.location.state.data.pdfFilename ? this.props.history.location.state.data.pdfFilename:""}
-       </CRow>
+        <CRow style={{ color: 'white', position: "fixed", top: "108px", left: "85px", zIndex: "1030", fontWeight: "bold" }}>
+          {this.props.history.location.state.data.pdfFilename ? this.props.history.location.state.data.pdfFilename : ""}
+        </CRow>
         <CRow>
           <CCol>
+            <div style={{ width: "100%", maxWidth: "612px", background: "rgb(108,108,108)", margin: "0px auto -9px auto" }}>
+              <CRow>
+                <CCol xs="4">
+                  <div style={{ width: "100px", display: "table", border: "1px solid #999", borderRadius: "5px", textAlign: "center", lineHeight: "40px", margin: "10px", color: "#fff" }}>
+                    <div style={{ cursor: "pointer", width: "30px", borderRight: "1px solid #999", display: "table-cell" }}><i class="fa fa-angle-left" aria-hidden="true"></i>
+                    </div>
+                    <div style={{ width: "40px", display: "table-cell" }}>1</div>
+                    <div style={{ cursor: "pointer", width: "30px", borderLeft: "1px solid #999", display: "table-cell" }}><i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </div>
+                  </div>
+                </CCol>
+                <CCol xs="3"></CCol>
+                <CCol xs="5">
+                  <div style={{ display: "table", borderSpacing: "10px" }}>
+                    <div style={{ border: "1px solid #999", borderRadius: "50px", width: "40px", height: "40px", textAlign: "center", lineHeight: "38px", color: "#fff", display: "table-cell", cursor: "pointer" }}><i class="fa fa-expand" aria-hidden="true"></i></div>
+                    <div style={{ border: "1px solid #999", borderRadius: "50px", width: "40px", height: "40px", textAlign: "center", lineHeight: "38px", color: "#fff", display: "table-cell", cursor: "pointer" }}><i class="fa fa-search-plus" aria-hidden="true"></i></div>
+                    <div style={{ border: "1px solid #999", borderRadius: "50px", width: "40px", height: "40px", textAlign: "center", lineHeight: "38px", color: "#fff", display: "table-cell", cursor: "pointer" }}><i class="fa fa-search-minus" aria-hidden="true"></i></div>
+                    <div style={{ border: "1px solid #999", borderRadius: "50px", width: "40px", height: "40px", textAlign: "center", lineHeight: "38px", color: "#fff", display: "table-cell", cursor: "pointer" }}><i class="fa fa-repeat" aria-hidden="true"></i></div>
+                  </div>
+                </CCol>
+              </CRow>
+            </div>
             <SplitPane
               split="horizontal"
               minSize={70}
@@ -348,6 +370,7 @@ class DocumentDetails extends React.Component {
               }}
               style={{ position: "static", backgroundColor: 'transparent' }}
             >
+
               <div style={this.state.isLoading ? { ...pdfContentView, ...{ boxShadow: "none" } } : pdfContentView}>
                 {/* <img src={"data:image/jpeg;base64," + this.state.pdfImage} style={{width:500,height:700}}/> */}
                 {this.state.pdfImage ?
@@ -376,10 +399,12 @@ class DocumentDetails extends React.Component {
                               localStorage.setItem("details", JSON.stringify(this.props.history.location.state))
                               this.props.history.push({
                                 pathname: '/detail/' + this.props.history.location.state.data.doc_id,
-                                  state: { fileName: this.props.history.location.state.data.pdfFilename ,
-                                containerPath:this.props.history.location.state.data.processorContainerPath}
+                                state: {
+                                  fileName: this.props.history.location.state.data.pdfFilename,
+                                  containerPath: this.props.history.location.state.data.processorContainerPath
+                                }
                               })
-                              
+
                             }}>VIEW DETAILS</Button>
                         </TableCell>
                         <TableCell style={table_headerMain}>
@@ -477,7 +502,7 @@ class DocumentDetails extends React.Component {
             pauseOnHover
           /></div>
         </CRow>
-      </CCard>
+      </CCard >
     );
   }
 }

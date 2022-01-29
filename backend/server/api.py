@@ -63,6 +63,8 @@ class EmailSchema(BaseModel):
 class IssueSchema(BaseModel):
    errMsg: str
    doc_id: str
+   user_id: str
+   # company_id: str
 
 class PdfDataSchema(BaseModel):
    fileName: str
@@ -97,6 +99,15 @@ class AddProcessorSchema(BaseModel):
    folder: str
    processor: str
    collection: str
+
+class AddUserSchema(BaseModel):
+   company_id: str
+   email: str
+   name: str
+
+class ReportHistSchema(BaseModel):
+   company_id: str
+   user_id: str
 
 def download_blob_azure(local_path, complete_file_name):
     print("download_blob_azure", local_path, complete_file_name);
@@ -258,11 +269,22 @@ def getIncomingData(dateRec, dateProcessed, docStatus, docType):
     db_mongo = getConn()
     files_incoming_c = db_mongo.files_incoming
 
+    # print("len(docType)", len(docType))
+    # print("str dateRec",str(dateRec))
     query_str = {}
-    # query_str = {"file_date": {"$gte": dateRec}, "file_date": {"$lte": dateProcessed}}
+    # date_rec = datetime.datetime.strptime(str(dateRec), "%d %B, %Y")
+    # date_proc = datetime.datetime.strptime(str(dateProcessed), "%d %B, %Y")
+    # print("date_rec", date_rec)
+    #
+    # query_str = {"file_date": {"$gte": date_rec}, "file_date": {"$lte": date_proc}}
 
+    if len(docType)>0:
+        searchStr = ".*" + docType + ".*"
+        # query_str_doctype = {"$or":[{"processorGroup" : {"$regex" : searchStr, "$options":"i"}}, {"processorFolder" : {"$regex" : searchStr, "$options":"i"}}, {"final_filename" : {"$regex" : searchStr, "$options":"i"}}, {"filenameprocessing" : {"$regex" : searchStr, "$options":"i"}}, {"companyName" : {"$regex" : searchStr, "$options":"i"}}]}
+        query_str["$or"]=[{"processorGroup" : {"$regex" : searchStr, "$options":"i"}}, {"processorFolder" : {"$regex" : searchStr, "$options":"i"}}, {"final_filename" : {"$regex" : searchStr, "$options":"i"}}, {"filenameprocessing" : {"$regex" : searchStr, "$options":"i"}}, {"companyName" : {"$regex" : searchStr, "$options":"i"}}]
     if docStatus != 'all':
-        query_str = {"status": docStatus}
+        # query_str_status = {"status": docStatus}
+        query_str["status"] = docStatus
 
     print("query_str",query_str)
 
@@ -383,6 +405,7 @@ async def user_login(user: UserLogin = Body(...)):
                 user_comp_details = {
                     "company":companyData["companyName"],
                     "companyId": str(user_data["companyId"]),
+                    "userId": str(user_data["_id"]),
                     "email": user_data["email"],
                     "name": user_data["name"]
                 }
@@ -416,13 +439,37 @@ async def user_login(user: UserLoginSchema = Body(...)):
 
 @app.post("/reportIssue")
 async def report_issue(incData: IssueSchema = Body(...)):
+    print("report_issue", incData)
     errMsg = incData.errMsg
     doc_id = incData.doc_id
+    user_id = incData.user_id
 
     db_mongo = getConn()
     files_incoming_c = db_mongo.files_incoming
+    report_history_c = db_mongo.report_history
+    users_c = db_mongo.users
 
     result = files_incoming_c.update_one({"_id": ObjectId(doc_id)}, {"$set": {"errMsg": errMsg, "status":"Error"}})
+
+    files_incoming_p = files_incoming_c.find_one({"_id": ObjectId(doc_id)})
+    print("reportIssue files_incoming_p",files_incoming_p)
+
+    if files_incoming_p:
+        # uid = files_incoming_p["userId"]
+
+        uid = user_id
+
+        # users_p = users_c.find_one({"_id": ObjectId(files_incoming_p["userId"])})
+        users_p = users_c.find_one({"_id": ObjectId(user_id)})
+        # cid = files_incoming_p["companyId"]
+        cid = users_p["companyId"]
+        # cName = files_incoming_p["companyName"]
+        hist_obj = {"userId": ObjectId(user_id), "userEmail": users_p["email"], "companyId": cid, "fileIncomingId": ObjectId(doc_id), "errMsg": errMsg, "insertTime": datetime.datetime.now()}
+        print("hist_obj", hist_obj)
+
+        report_history_result = report_history_c.insert_one(hist_obj)
+        print("report_history_result", report_history_result)
+
     print("reportIssue  result", result)
     return {"result": "issue reported successfully", "err": None}
 
@@ -653,6 +700,7 @@ async def incoming_data(incData: IncomingData = Body(...)):
 
 @app.post("/finalData")
 async def final_data(incData: FinalData = Body(...)):
+    print("finalData", incData)
     file_name = incData.fileName
     processorContainerPath = incData.processorContainerPath
 
@@ -669,21 +717,24 @@ async def final_data(incData: FinalData = Body(...)):
     file_buffer = download_blob_azure_buffer(complete_file_name)
     print("file_buffer", file_buffer)
 
-    data = pd.read_csv(BytesIO(file_buffer))
-    # data = pd.read_csv(file_buffer)
-    data = data.drop("index", axis=1)
-    data = data.fillna(0)
-    data_dict = data.to_dict("list")
+    if file_buffer:
+        data = pd.read_csv(BytesIO(file_buffer))
+        # data = pd.read_csv(file_buffer)
+        data = data.drop("index", axis=1)
+        data = data.fillna(0)
+        data_dict = data.to_dict("list")
 
-    # data_keys =
-    # data_values =
+        # data_keys =
+        # data_values =
 
-    # df = pd.DataFrame(data)
-    # print("df",df)
-    # print("dict(df.values)",dict(df.values))
-    # print("dict(df.keys)",dict(df.keys))
+        # df = pd.DataFrame(data)
+        # print("df",df)
+        # print("dict(df.values)",dict(df.values))
+        # print("dict(df.keys)",dict(df.keys))
 
-    return {"result": data_dict, "err": None}
+        return {"result": data_dict, "err": None}
+    else:
+        return {"result": None, "err": "file not found"}
 
 @app.post("/getProcessorData")
 async def get_processors(incData: ProcessorDataSchema = Body(...)):
@@ -711,6 +762,35 @@ async def get_processors(incData: ProcessorDataSchema = Body(...)):
             )
 
         return {"result": processor_dict, "err": None}
+    else:
+        return {"result": None, "err": "no records found"}
+
+@app.post("/getReportHistory")
+async def get_report_hist(incData: ReportHistSchema = Body(...)):
+    companyId = incData.company_id
+    userId = incData.user_id
+
+    db_mongo = getConn()
+    report_history_c = db_mongo.report_history
+
+    report_history_p = report_history_c.find({"companyId": ObjectId(companyId)}, {"userId": ObjectId(userId)})
+    print("report_history_p",report_history_p)
+
+    if report_history_p :
+
+        hist_data = []
+        for report_history_s in report_history_p:
+            hist_data.append(
+                {
+                    "hist_id": str(report_history_s["_id"]),
+                    "userEmail": report_history_s["userEmail"],
+                    # "companyName": report_history_s["companyName"],
+                    "errMsg": report_history_s["errMsg"],
+                    "insertTime": report_history_s["insertTime"]
+                }
+            )
+        print("hist_data",hist_data)
+        return {"result": hist_data, "err": None}
     else:
         return {"result": None, "err": "no records found"}
 
@@ -805,6 +885,20 @@ async def get_users(incData: UserDataSchema = Body(...)):
         return {"result": user_dict, "err": None}
     else:
         return {"result": None, "err": "no records found"}
+
+@app.post("/addUser")
+async def add_user(incData: AddUserSchema = Body(...)):
+    print("add_user", incData)
+    company_id = incData.company_id
+    email = incData.email
+    name = incData.name
+
+    db_mongo = getConn()
+    users_c = db_mongo.users
+
+    user_ins_result = users_c.insert_one({"companyId": ObjectId(company_id), "email": email, "name": name})
+
+    return {"result": user_ins_result, "err": None}
 
 @app.get("/provider/{id}", dependencies=[Depends(JWTBearer())], tags=["posts"])
 async def add_post(id: int) -> dict:
