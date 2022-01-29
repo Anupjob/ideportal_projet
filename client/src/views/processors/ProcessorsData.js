@@ -73,11 +73,11 @@ const ProcessorsData = () => {
   const [companyId, setCompanyId] = useState('');
   const [tableData, setTableData] = useState([]);
   const [open, setOpen] = React.useState(false);
-  const [group, setGroup] = useState('Multi Row West');
-  const [name, setName] = useState('West Bay Exploration');
-  const [folder, setFolder] = useState('West_Bay');
-  const [processor, setProcessor] = useState('multi_west.py');
-  const [collection, setCollection] = useState('Dg_Data');
+  const [group, setGroup] = useState('');
+  const [name, setName] = useState('');
+  const [folder, setFolder] = useState('');
+  const [processor, setProcessor] = useState('');
+  const [collection, setCollection] = useState('');
   
   
   useEffect(() => {

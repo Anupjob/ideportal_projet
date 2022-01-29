@@ -21,7 +21,8 @@ const DocumentDetails = React.lazy(() => import('./views/details/DocumentDetails
 const PdfViewGoogleAzure = React.lazy(() => import('./views/details/PdfViewGoogleAzure'));
 const CompniesData = React.lazy(() => import('./views/compnies/CompniesData'));
 const ProcessorsData = React.lazy(() => import('./views/processors/ProcessorsData'));
-const CompanyUserData = React.lazy(() => import('./views/companyUser/CompanyUserData'))
+const CompanyUserData = React.lazy(() => import('./views/companyUser/CompanyUserData'));
+const IssueHistoryData = React.lazy(() => import('./views/details/IssueHistoryData'))
 
 // const TheHeaderNew = React.lazy(() => import('./containers/TheHeaderNew'));
 
@@ -95,6 +96,8 @@ class App extends Component {
             <Route path="/compnies" name="CompniesData" render={props => <TheLayout {...props} />} />
             <Route path="/processors" name="ProcessorsData" render={props => <TheLayout {...props} />} />
             <Route path="/companyUser" name="CompanyUserData" render={props => <TheLayout {...props} />} />
+            <Route path="/issueHistory" name="IssueHistoryData" render={props => <TheLayout {...props} />} />
+
 
 
 

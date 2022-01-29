@@ -96,17 +96,18 @@ const bottom_View = {
 }
 const dateTimeView = {
   fontSize: 12,
-  width: 250
+  //width: 250
 }
 const viewDetailBtn = {
   backgroundColor: '#4EA7D8',
   fontSize: 14, color: 'white',
-  width: 170
+  width: 130
 }
-const reportIssueBtn = {
-  backgroundColor: '#4EA7D8',
-  fontSize: 14, color: 'white',
-  width: 170
+const historyIssueBtn = {
+  borderBottom: "1px solid #ccc",
+  color: "#2352a2",
+  fontSize: 10,
+  marginRight:40
 }
 const toast_options = {
   position: "top-center",
@@ -126,6 +127,7 @@ class DocumentDetails extends React.Component {
       enterIssue: '',
       IncomingArr: [],
       isLoading: false,
+      isCsvLoading: false,
       ShowError: false,
       finalDataResult: {},
       pdfImage: '',
@@ -198,6 +200,7 @@ class DocumentDetails extends React.Component {
 
     if (pdfValid) {
       console.log("==pdfValid==in if under", pdfValid)
+      this.setState({ isLoading: true })
 
       const headers = {
         "Content-Type": "application/json",
@@ -219,6 +222,7 @@ class DocumentDetails extends React.Component {
         }
       }).catch(err => {
         toast.error(err.message, toast_options);
+        this.setState({ isLoading: false })
         console.log("Record Issue Error", err)
       });
     } else {
@@ -239,6 +243,7 @@ class DocumentDetails extends React.Component {
     // console.log("===You are in geCsvData")
     var fileName = this.props.history.location.state.data.finalFileName;
     var processPath = this.props.history.location.state.data.processorContainerPath;
+    this.setState({ isCsvLoading: true })
     var dataValid = true;
     if (fileName) {
 
@@ -253,7 +258,6 @@ class DocumentDetails extends React.Component {
       // toast.warn("FileName is invalid", toast_options);
     }
     if (dataValid) {
-      this.setState({ isLoading: true })
       const headers = {
         "Content-Type": "application/json",
         // Authorization: "Bearer " + logginUser.token,
@@ -270,18 +274,25 @@ class DocumentDetails extends React.Component {
           // alert(response.data.err);
           toast.error(response.data.err, toast_options);
         } else {
-          this.setState({ finalDataResult: response.data.result, isLoading: false })
+          this.setState({ finalDataResult: response.data.result, isCsvLoading: false })
         }
       }).catch(err => {
         toast.error(err.message, toast_options);
+        this.setState({ isCsvLoading: false })
+
         console.log("Record Issue Error", err)
       });
     } else {
+      this.setState({ isCsvLoading: false });
       toast.warn("Request is invalid", toast_options);
 
     }
   }
   submit = () => {
+    let companyId = localStorage.getItem('companyId')
+    console.log("===companyId in DocumentDetails:::",companyId)
+    let userId = localStorage.getItem('userId')
+    console.log("===userId in DocumentDetails:::",userId)
     if (this.state.enterIssue == '' || this.state.enterIssue == null || this.state.enterIssue == undefined) {
       toast.warn("Please Enter Issue !", toast_options);
     }
@@ -291,7 +302,7 @@ class DocumentDetails extends React.Component {
         // Authorization: "Bearer " + logginUser.token,
         // reqFrom: "ADMIN",
       };
-      let requestBody = { doc_id: this.props.history.location.state.data.doc_id, errMsg: this.state.enterIssue }
+      let requestBody = { doc_id: this.props.history.location.state.data.doc_id, errMsg: this.state.enterIssue,user_id: userId }
       console.log("requestBody::::",requestBody)
       axios({
         method: "POST",
@@ -372,8 +383,15 @@ class DocumentDetails extends React.Component {
                             }}>VIEW DETAILS</Button>
                         </TableCell>
                         <TableCell style={table_headerMain}>
-                          <Button style={reportIssueBtn}
+                          <Button style={viewDetailBtn}
                             onClick={() => this.openDialog()}>REPORT ISSUE</Button>
+                        </TableCell>
+                        <TableCell style={historyIssueBtn}>
+                          <Button style={viewDetailBtn}
+                            onClick={() => this.props.history.push("/issueHistory")}
+                            >
+                              ISSUE HISTORY
+                              </Button>
                         </TableCell>
                       </TableRow>
                       <TableRow>
@@ -401,6 +419,7 @@ class DocumentDetails extends React.Component {
                     </TableHead>
                   </Table>
                 </TableContainer>
+                {Object.keys(this.state.finalDataResult).length>0 ?
                 <TableContainer component={Paper} style={{ position: "relative", zIndex: "5" }}>
                   <Table aria-label="simple table">
                     <TableHead>
@@ -430,17 +449,22 @@ class DocumentDetails extends React.Component {
                       </TableRow>
                     </TableBody>
                   </Table>
-                </TableContainer>
+                </TableContainer>:
+                <p style={{ width: "100%", display: "block", color: "#c00", margin: "12px 0", textAlign: "center", fontSize: "1.6em" }}>
+                  {(!this.state.isCsvLoading)?"No record Found!!":""}
+                </p>
+                }
+                
               </div>
             </SplitPane>
           </CCol>
-          {this.state.isLoading && (
+          {this.state.isLoading || this.state.isCsvLoading &&
             <div style={loader}>
 
               <CircularProgress style={{ margin: "26% auto", display: "block" }} />
 
             </div>
-          )}
+          }
           <div><ToastContainer
             position="top-center"
             autoClose={5000}
