@@ -296,154 +296,154 @@ const Dashboard = () => {
         </CForm>
       </CCard >
       <Dialog open={open} onClose={handleToClose}>
-                    <DialogTitle>Issue</DialogTitle>
-                    <DialogContent style={{ minWidth: 500 }}>
-                      <DialogContentText>
-                        {errorMsg}
-                      </DialogContentText>
-                    </DialogContent>
-                    <DialogActions>
-                      <Button style={{ backgroundColor: '#4EA7D8', fontSize: 14, color: 'white' }} onClick={handleToClose}>Close</Button>
-                    </DialogActions>
-                  </Dialog>
+        <DialogTitle>Issue</DialogTitle>
+        <DialogContent style={{ minWidth: 500 }}>
+          <DialogContentText>
+            {errorMsg}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button style={{ backgroundColor: '#4EA7D8', fontSize: 14, color: 'white' }} onClick={handleToClose}>Close</Button>
+        </DialogActions>
+      </Dialog>
 
       <Grid className="container-fluid">
-          <Grid item xs={12} style={{ marginTop: 25}}>
-          {IncomingArr.length>0 && !ArrNull ?
+        <Grid item xs={12} style={{ marginTop: 25 }}>
+          {IncomingArr.length > 0 && !ArrNull ?
             <FlexGrid
-                headersVisibility="Column"
-                autoGenerateColumns={false}
-                itemsSource={IncomingArr}
-                style={{
-                  height: "auto",
-                  maxHeight: 400,
-                  margin: 0,
-                }}> 
-                <FlexGridColumn>
-                 <FlexGridCellTemplate cellType="Cell" template={ctx => 
-                 <React.Fragment>
-                   {ctx.item.docStatus.toLowerCase() == 'error' && 
-                            <span><i class="fa fa-exclamation-triangle" aria-hidden="true"
-                             onClick={() => handleClickToOpen(ctx.item.errMsg)}
-                            ></i></span>
-                   }
-                        </React.Fragment>}/> 
-                </FlexGridColumn>
+              headersVisibility="Column"
+              autoGenerateColumns={false}
+              itemsSource={IncomingArr}
+              style={{
+                height: "auto",
+                maxHeight: 400,
+                margin: 0,
+              }}>
+              <FlexGridColumn>
+                <FlexGridCellTemplate cellType="Cell" template={ctx =>
+                  <React.Fragment>
+                    {ctx.item.docStatus.toLowerCase() == 'error' &&
+                      <span><i class="fa fa-exclamation-triangle" aria-hidden="true"
+                        onClick={() => handleClickToOpen(ctx.item.errMsg)}
+                      ></i></span>
+                    }
+                  </React.Fragment>} />
+              </FlexGridColumn>
 
-                <FlexGridColumn>
-                 <FlexGridCellTemplate cellType="Cell" template={ctx => <React.Fragment>
-                            <span ><i class="fa fa-search-plus" aria-hidden="true"
-                             onClick={() => {
-                             localStorage.setItem("dashboardData", JSON.stringify({ Document: Document, Status: Status, Edate: Edate, Sdate: Sdate }))
-                            //  console.log("IncomingArr data==>>", ctx.item)
-                             history.push({
-                               pathname: '/details',
-                               state: { data: ctx.item }
-                             })
-                             }}
-                            ></i></span>
-                        </React.Fragment>}/> 
-                </FlexGridColumn> 
-                
-                <FlexGridColumn
+              <FlexGridColumn>
+                <FlexGridCellTemplate cellType="Cell" template={ctx => <React.Fragment>
+                  <span style={{ cursor: "pointer" }}><i class="fa fa-search-plus" aria-hidden="true"
+                    onClick={() => {
+                      localStorage.setItem("dashboardData", JSON.stringify({ Document: Document, Status: Status, Edate: Edate, Sdate: Sdate }))
+                      //  console.log("IncomingArr data==>>", ctx.item)
+                      history.push({
+                        pathname: '/details',
+                        state: { data: ctx.item }
+                      })
+                    }}
+                  ></i></span>
+                </React.Fragment>} />
+              </FlexGridColumn>
+
+              <FlexGridColumn
                 binding="processorGroup"
-                header="PROCESSOR GROUP"               
+                header="PROCESSOR GROUP"
                 cssClass="cell-header"
                 width="*"
-                multiLine = "true"
-                style={{backgroundColor:'grey'}}
-                />
-                <FlexGridColumn
+                multiLine="true"
+                style={{ backgroundColor: 'grey' }}
+              />
+              <FlexGridColumn
                 binding="processorName"
-                header="PROSESSOR NAME"               
+                header="PROSESSOR NAME"
                 cssClass="cell-header"
                 width="*"
-                multiLine = "true"
-                style={{backgroundColor:'grey'}}
-                />
-         
-                <FlexGridColumn
+                multiLine="true"
+                style={{ backgroundColor: 'grey' }}
+              />
+
+              <FlexGridColumn
                 // binding="dateRec"
                 header="DATE/TIME RECEIVED"
                 cssClass="cell-header"
                 width="*"
-                style={{backgroundColor:'grey'}}
-              
-                >
-                 <FlexGridCellTemplate cellType="Cell" template={ctx => 
-                 <React.Fragment>
-                   {ctx.item.dateRec && 
-                    <span>{moment(ctx.item.dateRec).format("MM/DD/YYYY hh:mm A")}</span>
-                   }
-                        </React.Fragment>}/>  
-                </FlexGridColumn>
+                style={{ backgroundColor: 'grey' }}
 
-                <FlexGridColumn
+              >
+                <FlexGridCellTemplate cellType="Cell" template={ctx =>
+                  <React.Fragment>
+                    {ctx.item.dateRec &&
+                      <span>{moment(ctx.item.dateRec).format("MM/DD/YYYY hh:mm A")}</span>
+                    }
+                  </React.Fragment>} />
+              </FlexGridColumn>
+
+              <FlexGridColumn
                 // binding="dateProcessed"
                 header="DATE/TIME PROCESSED"
                 cssClass="cell-header"
                 width="*"
-                style={{backgroundColor:'grey'}}>
-                  <FlexGridCellTemplate cellType="Cell" template={ctx => 
-                 <React.Fragment>
-                   {ctx.item.dateProcessed && 
-                    <span>{moment(ctx.item.dateProcessed).format("MM/DD/YYYY hh:mm A")}</span>
-                   }
-                        </React.Fragment>}/> 
-                </FlexGridColumn>
+                style={{ backgroundColor: 'grey' }}>
+                <FlexGridCellTemplate cellType="Cell" template={ctx =>
+                  <React.Fragment>
+                    {ctx.item.dateProcessed &&
+                      <span>{moment(ctx.item.dateProcessed).format("MM/DD/YYYY hh:mm A")}</span>
+                    }
+                  </React.Fragment>} />
+              </FlexGridColumn>
 
-                <FlexGridColumn
+              <FlexGridColumn
                 binding="noOfPages"
                 header="# OF PAGES"
                 cssClass="cell-header"
                 width="*"
-                style={{backgroundColor:'grey'}}/>
+                style={{ backgroundColor: 'grey' }} />
 
-                <FlexGridColumn
+              <FlexGridColumn
                 binding="docStatus"
                 header="STATUS"
                 cssClass="cell-header"
                 width="*"
-                style={{backgroundColor:'grey'}}/>
-                 <FlexGridColumn
+                style={{ backgroundColor: 'grey' }} />
+              <FlexGridColumn
                 binding="fromEmail"
-                header="FROM"               
+                header="FROM"
                 cssClass="cell-header"
                 width="*"
-                multiLine = "true"
-                style={{backgroundColor:'grey'}}
-                />
-                 <FlexGridColumn
+                multiLine="true"
+                style={{ backgroundColor: 'grey' }}
+              />
+              <FlexGridColumn
                 // binding="toEmail"
-                header="UPLOADED BY"               
+                header="UPLOADED BY"
                 cssClass="cell-header"
                 width="*"
-                multiLine = "true"
-                style={{backgroundColor:'grey'}}
-                />
-                <wjFilter.FlexGridFilter></wjFilter.FlexGridFilter>
-              </FlexGrid>
-               :           
-               <p style={{ width: "100%", display: "block", color: "#c00", margin: "12px 0", textAlign: "center", fontSize: "1.6em" }}>No record Found!!</p>
-               } 
-            </Grid>
+                multiLine="true"
+                style={{ backgroundColor: 'grey' }}
+              />
+              <wjFilter.FlexGridFilter></wjFilter.FlexGridFilter>
+            </FlexGrid>
+            :
+            <p style={{ width: "100%", display: "block", color: "#c00", margin: "12px 0", textAlign: "center", fontSize: "1.6em" }}>No record Found!!</p>
+          }
+        </Grid>
 
-            {Isloader &&
-            <div style={loader}>
-              <CircularProgress style={{ margin: "28% auto", display: "block" }} />
-            </div>}
-            <div><ToastContainer
-              position="top-center"
-              autoClose={5000}
-              hideProgressBar
-              newestOnTop={false}
-              closeOnClick
-              rtl={false}
-              pauseOnFocusLoss
-              draggable
-              pauseOnHover
-            /></div>
-            
+        {Isloader &&
+          <div style={loader}>
+            <CircularProgress style={{ margin: "28% auto", display: "block" }} />
+          </div>}
+        <div><ToastContainer
+          position="top-center"
+          autoClose={5000}
+          hideProgressBar
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+        /></div>
+
       </Grid>
 
       {/* <TableContainer component={Paper} style={{ position: "relative", zIndex: "5" }}>
