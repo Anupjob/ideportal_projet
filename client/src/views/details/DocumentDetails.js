@@ -133,6 +133,7 @@ class DocumentDetails extends React.Component {
       pdfImage: '',
       fileType: 'pdf',
       pageNo: 1,
+      width:0
 
 
     }
@@ -151,9 +152,8 @@ class DocumentDetails extends React.Component {
       this.getPdfImage();
       this.geCsvData();
     }
-
-
   }
+
   openDialog = () => {
     this.setState({ openReportIssue: true });
   };
@@ -329,7 +329,8 @@ class DocumentDetails extends React.Component {
     let dateRec = moment(this.props && this.props.history && this.props.history.location && this.props.history.location.state && this.props.history.location.state.data.dateRec).format("MM/DD/YYYY hh:mm A");
     let dateProcessed = moment(this.props && this.props.history && this.props.history.location && this.props.history.location.state && this.props.history.location.state.data.dateProcessed).format("MM/DD/YYYY hh:mm A");
     let noOfPages = this.props && this.props.history && this.props.history.location && this.props.history.location.state && this.props.history.location.state.data.noOfPages;
-
+    const screenWidth = window.innerWidth;
+    // console.log("screenWidth====",screenWidth);
     return (
       <CCard style={cardView}>
         <CRow style={{ color: 'white', position: "fixed", top: "108px", left: "85px", zIndex: "1030", fontWeight: "bold" }}>
@@ -386,6 +387,8 @@ class DocumentDetails extends React.Component {
                 }
               </div>
               <div style={bottom_View}>
+              {/* <i class="fa-window-minimize" aria-hidden="true" style={{width:100,height:15,backgroundColor:'#4EA7D8',position:'absolute',left:(screenWidth/2)-50,top:-8}} ></i> */}
+                <div style={{width:100,height:15,backgroundColor:'#4EA7D8',position:'absolute',left:(screenWidth/2)-50,top:-8}}></div>
                 <TableContainer component={Paper} style={{ position: "relative", zIndex: "5", overflow: 'hidden' }}>
                   <Table aria-label="simple table">
                     <TableHead>

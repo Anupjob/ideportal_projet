@@ -90,7 +90,7 @@ const upload_file = {
   background:"url(../upload.png) no-repeat #f2f2f2",
   backgroundSize: "110px",
   backgroundPosition: "50%",
-  marginBottom:"10px"
+  marginBottom:"10px",marginTop:"42px"
 }
 
 const Dashboard = () => {
@@ -107,6 +107,7 @@ const Dashboard = () => {
   const [open, setOpen] = React.useState(false);
   const [errorMsg, setErrorMsg] = React.useState('');
   const [ArrNull, setArrNull] = React.useState(false);
+  const [selectedFile, setSelectedFile] = useState();
   // const url = useSelector(state => state.url)
 
   //const toggleSidebar = () => {
@@ -219,6 +220,58 @@ const Dashboard = () => {
     }, 1000);
 
   }
+  const uploadBtn = (event) =>{
+    event.preventDefault();
+    let companyId = localStorage.getItem('companyId')
+    console.log("companyId in dashboard==",companyId)
+
+    let userId = localStorage.getItem('userId')
+    console.log("userId in dashboard==",userId)
+
+    let companyName = localStorage.getItem('company')
+    console.log("companyName in dashboard==",companyName)
+
+    let userEmail = localStorage.getItem('email')
+    console.log("UserEmail in dashboard==",userEmail)
+
+    console.log("selectedFile::::",selectedFile)
+    if(selectedFile == '' || selectedFile == null || selectedFile == undefined){
+      toast.warn("Please Select File !", toast_options);
+    }else if(!selectedFile.type.includes("pdf")){
+      toast.warn("Please Select Pdf File !", toast_options);
+    }
+    else{
+      // companyId='1234';
+      // userId='555';
+    const formData = new FormData();
+    formData.append("doc_file", selectedFile);
+    formData.append("companyId", companyId);
+    formData.append("userId", userId);
+    formData.append("companyName", companyName);
+    formData.append("email", userEmail);
+    formData.append("email", selectedFile.size);
+    const headers = {
+      "Content-Type": "multipart/form-data",
+      // Authorization: "Bearer " + logginUser.token,
+      // reqFrom: "ADMIN",
+    };
+    axios({
+      method: "POST",
+      url: settings.serverUrl + "/uploadFile",
+      data:formData,
+      headers,
+    }).then((response) => {
+      console.log("Respone from post from upload file==", response);
+      if (response.data.err) {
+        setTimeout(() => {
+        toast.error(response.data.err, toast_options);
+      }, 500);
+      } else {
+        toast.success(response.data.result, toast_options);
+    }})
+
+    }
+  }
 
   return (
     <>
@@ -226,12 +279,15 @@ const Dashboard = () => {
       <CCard style={{ padding: "1em 3em" }}>
         <CForm
         // onSubmit={searchBtn}
+        // method={"post"}
+        // action={serverUrl+"/UploadFile"}
+        // encType={"multipart/form-data"}
         >
           <CRow>
             <CCol md="9">
               <CRow>
-            <CCol><div style={{ fontSize: "1.3em", marginBottom: "15px" }}>Filter by any of these details</div>
-              <CRow style={{ marginBottom: "10px" }}>
+              <CCol><div style={{ fontSize: "1.3em", marginBottom: "15px" }}>Filter by any of these details</div>
+              <CRow style={{ marginBottom: "10px"}}>
                 <CCol xs="4" style={text_box}>RECEIVE DATE: </CCol>
                 <CCol xs="8">
                   <CInputGroup>
@@ -311,16 +367,9 @@ const Dashboard = () => {
           </CRow>
           </CCol>
             <CCol md="3">
-            <CInput type='file' style={upload_file} placeholder='sdsdfs' />
-            {/* <CButton
-                    onClick={() => searchBtn(Sdate, Edate, Status, Document)}
-                    color="primary"
-                    //size="lg"
-                    style={{ width: "100%", background: "#4ea7d8", border: "#4ea7d8" }}
-                  >Search
-                  </CButton> */}
+            <CInput type='file' style={upload_file} placeholder='sdsdfs' onChange={(event)=>setSelectedFile(event.target.files[0])} />
                   <CButton
-                    // onClick={() => searchBtn(Sdate, Edate, Status, Document)}
+                    onClick={(event) => uploadBtn(event)}
                     color="primary"
                     size="lg"
                     style={{ width: "100%", background: "#4ea7d8", border: "#4ea7d8" }}
