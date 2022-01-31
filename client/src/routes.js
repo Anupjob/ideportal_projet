@@ -30,7 +30,8 @@ const DocumentDetails = React.lazy(() => import('./views/details/DocumentDetails
 const PdfViewGoogleAzure = React.lazy(() => import('./views/details/PdfViewGoogleAzure'));
 const CompniesData = React.lazy(() => import('./views/compnies/CompniesData'));
 const ProcessorsData = React.lazy(() => import('./views/processors/ProcessorsData'));
-const CompanyUserData = React.lazy(() => import('./views/companyUser/CompanyUserData'))
+const CompanyUserData = React.lazy(() => import('./views/companyUser/CompanyUserData'));
+const IssueHistoryData = React.lazy(() => import('./views/details/IssueHistoryData'));
 
 
 const CoreUIIcons = React.lazy(() => import('./views/icons/coreui-icons/CoreUIIcons'));
@@ -55,6 +56,8 @@ const routes = [
   { path: '/compnies', name:'CompniesData', component:CompniesData},
   { path: '/processors', name:'ProcessorsData', component:ProcessorsData},
   { path: '/companyUser', name:'CompanyUserData', component:CompanyUserData},
+  { path: '/issueHistory', name:'IssueHistoryData', component:IssueHistoryData},
+
 
 
 

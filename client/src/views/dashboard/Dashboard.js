@@ -78,6 +78,21 @@ const toast_options = {
   draggable: true,
   progress: undefined,
 }
+const upload_file = {
+  textIndent: "-200px",
+  padding: "62px 0",
+  borderRadius: "5px",
+ // background: "none",
+  border: "none",
+  position: "relative",
+  zIndex: "1",
+  marginBottom: "5px",
+  background:"url(../upload.png) no-repeat #f2f2f2",
+  backgroundSize: "110px",
+  backgroundPosition: "50%",
+  marginBottom:"10px"
+}
+
 const Dashboard = () => {
 
 
@@ -213,6 +228,8 @@ const Dashboard = () => {
         // onSubmit={searchBtn}
         >
           <CRow>
+            <CCol md="9">
+              <CRow>
             <CCol><div style={{ fontSize: "1.3em", marginBottom: "15px" }}>Filter by any of these details</div>
               <CRow style={{ marginBottom: "10px" }}>
                 <CCol xs="4" style={text_box}>RECEIVE DATE: </CCol>
@@ -266,18 +283,17 @@ const Dashboard = () => {
                   </CInputGroup>
                 </CCol>
               </CRow>
-
-              <CRow>
-                <CCol md="9"></CCol>
-                <CCol md="3">
-                  <CButton
+              <CRow style={{ marginBottom: "10px"}}>
+              <CCol xs="4"></CCol>
+              <CCol xs="8">
+              <CButton
                     onClick={() => searchBtn(Sdate, Edate, Status, Document)}
                     color="primary"
                     size="lg"
-                    style={{ width: "100%", background: "#4ea7d8", border: "#4ea7d8" }}
+                    style={{ width:"100%",background: "#4ea7d8",float:'right', border: "#4ea7d8",position: "relative", }}
                   >Search
                   </CButton>
-                </CCol>
+              </CCol>
               </CRow>
 
             </CCol>
@@ -293,6 +309,27 @@ const Dashboard = () => {
               pauseOnHover
             /></div>
           </CRow>
+          </CCol>
+            <CCol md="3">
+            <CInput type='file' style={upload_file} placeholder='sdsdfs' />
+            {/* <CButton
+                    onClick={() => searchBtn(Sdate, Edate, Status, Document)}
+                    color="primary"
+                    //size="lg"
+                    style={{ width: "100%", background: "#4ea7d8", border: "#4ea7d8" }}
+                  >Search
+                  </CButton> */}
+                  <CButton
+                    // onClick={() => searchBtn(Sdate, Edate, Status, Document)}
+                    color="primary"
+                    size="lg"
+                    style={{ width: "100%", background: "#4ea7d8", border: "#4ea7d8" }}
+                  >Upload
+                  </CButton>
+            </CCol>
+          </CRow>
+          
+          
         </CForm>
       </CCard >
       <Dialog open={open} onClose={handleToClose}>
@@ -391,7 +428,18 @@ const Dashboard = () => {
                     }
                   </React.Fragment>} />
               </FlexGridColumn>
-
+              <FlexGridColumn
+                binding="pdfFilename"
+                header="FILE NAME"
+                cssClass="cell-header"
+                width="*"
+                style={{ backgroundColor: 'grey' }} />
+                <FlexGridColumn
+                binding="finalFileName"
+                header="CSV FILE"
+                cssClass="cell-header"
+                width="*"
+                style={{ backgroundColor: 'grey' }} />
               <FlexGridColumn
                 binding="noOfPages"
                 header="# OF PAGES"

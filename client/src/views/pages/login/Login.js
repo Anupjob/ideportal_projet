@@ -322,10 +322,12 @@ class Login extends React.Component {
         data: JSON.stringify({ email: this.state.email }),
         headers,
       }).then((response) => {
-        console.log("Respone from post ", response);
+        console.log("Respone from post in Login==", response);
         localStorage.setItem('company', response.data.result.company)
         localStorage.setItem('companyId', response.data.result.companyId)
         localStorage.setItem('name', response.data.result.name)
+        localStorage.setItem('userId', response.data.result.userId)
+
         if (response.data.err) {
           toast.error(response.data.err, {toast_options});         
         } else {
