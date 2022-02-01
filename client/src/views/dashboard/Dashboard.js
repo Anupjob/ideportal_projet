@@ -97,7 +97,6 @@ const Dashboard = () => {
 
 
   const dispatch = useDispatch()
-
   const [Isloader, setIsloader] = useState(false);
   const [Sdate, setSdate] = useState('');
   const [Edate, setEdate] = useState('');
@@ -128,7 +127,7 @@ const Dashboard = () => {
 
       searchBtn(doc.Sdate, doc.Edate, doc.Status, doc.Document)
 
-      localStorage.clear()
+      // localStorage.clear()
       //  }, 2000);
 
 
@@ -179,7 +178,7 @@ const Dashboard = () => {
     console.log("Document:::", Document)
     const headers = {
       "Content-Type": "application/json",
-      // Authorization: "Bearer " + logginUser.token,
+       Authorization: "Bearer " + localStorage.getItem('access_token'),
       // reqFrom: "ADMIN",
     };
     axios({
@@ -212,7 +211,9 @@ const Dashboard = () => {
 
     }).catch(err => {
       toast.error(err.message, { toast_options });
-      console.log("Record Issue Error", err)
+      console.log("Record Issue Error", err);
+      localStorage.clear();
+      history.push("/");
     });
     setTimeout(() => {
       setIsloader(false)
@@ -249,10 +250,10 @@ const Dashboard = () => {
     formData.append("userId", userId);
     formData.append("companyName", companyName);
     formData.append("email", userEmail);
-    formData.append("email", selectedFile.size);
+    formData.append("fileSize", selectedFile.size);
     const headers = {
       "Content-Type": "multipart/form-data",
-      // Authorization: "Bearer " + logginUser.token,
+      Authorization: "Bearer " + localStorage.getItem('access_token'),
       // reqFrom: "ADMIN",
     };
     axios({

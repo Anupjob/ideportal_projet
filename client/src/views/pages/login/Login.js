@@ -368,14 +368,20 @@ class Login extends React.Component {
         data: JSON.stringify({ email: this.state.email, otp: this.state.password }),
         headers,
       }).then((response) => {
-        console.log("Respone from Verify otp ", response.data, response.data.err);
+        console.log("Respone from Verify otp===", response.data, response.data.err);
         this.setState({ isLoading: false })
         if (response.data.err) {
           toast.error(response.data.err, {toast_options});         
+        }else{
+          let access_token  = response.data.result.access_token
+        localStorage.setItem('access_token', access_token)
+        this.props.history.push('/incoming_list');
         }
-        if (response.data.result == "success") {
-          this.props.history.push('/incoming_list');
-        }
+        // if (response.data.result == "success") {
+        //   this.props.history.push('/incoming_list');
+        // }
+        
+
       }).catch(err => {
         toast.error(err.message, {toast_options});
         console.log("Error on Verification==",err)});

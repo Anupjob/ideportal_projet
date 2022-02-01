@@ -23,6 +23,7 @@ import settings from 'src/config/settings';
 import axios from "axios";
 import Grid from "@material-ui/core/Grid";
 import { ToastContainer, toast } from 'react-toastify';
+import { useHistory } from "react-router";
  
 const loader = {
     position: "fixed",
@@ -47,6 +48,7 @@ const loader = {
   }
 const IssueHistoryData=()=>
 {
+    const history = useHistory();
     const [Isloader, setIsloader] = useState(false);
     const [historyData, setHistoryData] = useState([]);
 
@@ -63,7 +65,7 @@ const IssueHistoryData=()=>
     console.log("===userId in UserData:::",userId)
     const headers = {
       "Content-Type": "application/json",
-      // Authorization: "Bearer " + logginUser.token,
+      Authorization: "Bearer " + localStorage.getItem('access_token'),
       // reqFrom: "ADMIN",
     };
     let requestBody = {
@@ -90,6 +92,8 @@ const IssueHistoryData=()=>
     }).catch(err => {
       toast.error(err.message, toast_options);
       // console.log("Record Issue Error Processor Data", err)
+      localStorage.clear();
+      history.push("/");
     });
 
     }

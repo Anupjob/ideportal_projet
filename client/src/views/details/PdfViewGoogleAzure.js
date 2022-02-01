@@ -12,6 +12,7 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import settings from 'src/config/settings';
 import axios from "axios";
 import { useHistory } from "react-router";
+import Button from "@material-ui/core/Button";
 
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
@@ -66,6 +67,11 @@ const toast_options = {
   draggable: true,
   progress: undefined
 
+}
+const viewDetailBtn = {
+  backgroundColor: '#4EA7D8',
+  fontSize: 14, color: 'white',height:45,
+  // width: 130
 }
 class PdfViewGoogleAzure extends React.Component {
 
@@ -127,7 +133,7 @@ class PdfViewGoogleAzure extends React.Component {
 
       const headers = {
         "Content-Type": "application/json",
-        // Authorization: "Bearer " + logginUser.token,
+        Authorization: "Bearer " + localStorage.getItem('access_token'),
         // reqFrom: "ADMIN",
       };
       axios({
@@ -172,7 +178,7 @@ class PdfViewGoogleAzure extends React.Component {
     const headers = {
 
         "Content-Type": "application/json",
-        // Authorization: "Bearer " + logginUser.token,
+        Authorization: "Bearer " + localStorage.getItem('access_token'),
         // reqFrom: "ADMIN",
       };
       axios({
@@ -253,7 +259,10 @@ class PdfViewGoogleAzure extends React.Component {
               <input type="radio" value="RotatedImage" name="check" style={{ margin: 10 }} /> Rotated Image
             </div>
           </CCol>
-          {/* <CCol xs='2'></CCol> */}
+          <CCol xs='4'>
+          <Button style={viewDetailBtn} onClick={console.log("==")}><i class="fa fa-code fa-lg" aria-hidden="true"></i>Header Mapping</Button>
+          <Button style={{backgroundColor: '#4EA7D8',fontSize: 14, color: 'white',marginLeft:10,height:45}} onClick={console.log("==")}><i class="fa fa-code fa-lg" aria-hidden="true"></i>Table Mapping</Button>
+          </CCol>
         </CRow>
 
         <CRow style={{ marginTop: 5 }}>
@@ -286,6 +295,7 @@ class PdfViewGoogleAzure extends React.Component {
             <div style={radioBtnDiv}>
               <div onChange={this.onChangeValue} >
                 <input type="radio" value="GoogleVision" name="gender" /> Show Results from Google Vision<br />
+                
                 {this.state.googleVisionVisible &&
                   <div style={radioBtnMainView}>
 
@@ -325,8 +335,11 @@ class PdfViewGoogleAzure extends React.Component {
 
                   </div>
                 }
-                <hr style={horizontalLine} />
+                <input type="radio" value="SimpleGoogleVision" name="gender" /> Simple Google Vision<br />
+                <input type="radio" value="AdvancedGoogleVision" name="gender" /> Advanced Google Vision<br />
+                {/* <hr style={horizontalLine} /> */}
                 <input type="radio" value="AzureTables" name="gender" /> Show Results from Azure Tables<br />
+                
                 {this.state.azureTableVisible &&
                   <div style={radioBtnMainView}>
                     {/* {this.state.azureDataResults.map((cellData) =>
@@ -339,8 +352,13 @@ class PdfViewGoogleAzure extends React.Component {
                     } */}
 
                   </div>}
-                <hr style={horizontalLine} />
-                <input type="radio" value="GoogleTables" name="gender" /> Show Results from Google Tables
+                <input type="radio" value="AzureForm" name="gender" /> Azure Form<br />
+                <input type="radio" value="AzureDocAnalyzer" name="gender" /> Azure Document Analyzer<br />
+                {/* <hr style={horizontalLine} /> */}
+                <input type="radio" value="GoogleTables" name="gender" /> Show Results from Google Tables<br/>
+                <input type="radio" value="TesseractTables" name="gender" /> Tesseract Tables<br/>
+                <input type="radio" value="AzureCV" name="gender" /> Azure CV<br/>
+                <input type="radio" value="OpenCV" name="gender" /> Open CV<br/>
                 {this.state.googleTableVisible &&
                   <div style={radioBtnMainView}>
                     <div style={radioBtnSubView}>

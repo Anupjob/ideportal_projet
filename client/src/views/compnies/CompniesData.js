@@ -30,6 +30,7 @@ import DialogContent from "@material-ui/core/DialogContent";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import 'react-toastify/dist/ReactToastify.css';
+import { useHistory } from "react-router";
 
 const loader = {
   position: "fixed",
@@ -70,6 +71,7 @@ const submit_dialogBtn = {
 }
 
 const CompniesData = () => {
+  const history = useHistory();
   const [Isloader, setIsloader] = useState(false);
   const [tableData, setTableData] = useState([]);
   const [open, setOpen] = React.useState(false);
@@ -90,7 +92,7 @@ const CompniesData = () => {
     setIsloader(true)
     const headers = {
       "Content-Type": "application/json",
-      // Authorization: "Bearer " + logginUser.token,
+      Authorization: "Bearer " + localStorage.getItem('access_token'),
       // reqFrom: "ADMIN",
     };
     axios({
@@ -118,6 +120,8 @@ const CompniesData = () => {
     }).catch(err => {
       toast.error(err.message, toast_options);
       // console.log("Record Issue Error Processor Data", err)
+      localStorage.clear();
+      history.push("/");
     });
   }
   const handleClickToOpen = () => {
@@ -148,7 +152,7 @@ const CompniesData = () => {
     setIsloader(true)
     const headers = {
       "Content-Type": "application/json",
-      // Authorization: "Bearer " + logginUser.token,
+      Authorization: "Bearer " + localStorage.getItem('access_token'),
       // reqFrom: "ADMIN",
     };
     axios({
@@ -170,6 +174,8 @@ const CompniesData = () => {
     }).catch(err => {
       toast.error(err.message, toast_options);
       console.log("Company Data Issue Error", err)
+      localStorage.clear();
+      history.push("/");
     });
   }
   }

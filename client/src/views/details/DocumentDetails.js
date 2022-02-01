@@ -208,7 +208,7 @@ class DocumentDetails extends React.Component {
 
       const headers = {
         "Content-Type": "application/json",
-        // Authorization: "Bearer " + logginUser.token,
+        Authorization: "Bearer " + localStorage.getItem('access_token'),
         // reqFrom: "ADMIN",
       };
       axios({
@@ -264,7 +264,7 @@ class DocumentDetails extends React.Component {
     if (dataValid) {
       const headers = {
         "Content-Type": "application/json",
-        // Authorization: "Bearer " + logginUser.token,
+        Authorization: "Bearer " + localStorage.getItem('access_token'),
         // reqFrom: "ADMIN",
       };
       axios({

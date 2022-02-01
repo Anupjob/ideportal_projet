@@ -30,6 +30,7 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
+import { useHistory } from "react-router";
 
 const loader = {
   position: "fixed",
@@ -70,6 +71,7 @@ const submit_dialogBtn = {
   marginLeft: 10
 }
 const CompanyUserData = () => {
+  const history = useHistory();
   const [Isloader, setIsloader] = useState(false);
   const [companyId, setCompanyId] = useState('');
   const [tableData, setTableData] = useState([]);
@@ -89,7 +91,7 @@ const CompanyUserData = () => {
     console.log("===companyId in UserData:::",companyId)
     const headers = {
       "Content-Type": "application/json",
-      // Authorization: "Bearer " + logginUser.token,
+      Authorization: "Bearer " + localStorage.getItem('access_token'),
       // reqFrom: "ADMIN",
     };
     axios({
@@ -113,6 +115,8 @@ const CompanyUserData = () => {
     }).catch(err => {
       toast.error(err.message, toast_options);
       // console.log("Record Issue Error Processor Data", err)
+      localStorage.clear();
+      history.push("/");
     });
   }
   const handleClickToOpen = () => {
@@ -158,6 +162,8 @@ const CompanyUserData = () => {
       }).catch(err => {
         toast.error(err.message, toast_options);
         console.log("Company Data Issue Error", err)
+        localStorage.clear();
+        history.push("/");
       });
     }}
   return (
