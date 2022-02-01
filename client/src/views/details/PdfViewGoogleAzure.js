@@ -152,6 +152,8 @@ class PdfViewGoogleAzure extends React.Component {
       }).catch(err => {
         toast.error(err.message, toast_options);
         console.log("Record Issue Error", err)
+        localStorage.clear();
+        this.props.history.push("/");
       });
     } else {
       console.log("==pdfValid==in else", pdfValid)
@@ -212,6 +214,8 @@ class PdfViewGoogleAzure extends React.Component {
     }).catch(err => {
       toast.error(err.message, toast_options);
       console.log("Issue", err)
+      localStorage.clear();
+      this.props.history.push("/");
     });
 
   }

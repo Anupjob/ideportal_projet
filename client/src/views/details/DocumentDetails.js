@@ -228,6 +228,8 @@ class DocumentDetails extends React.Component {
         toast.error(err.message, toast_options);
         this.setState({ isLoading: false })
         console.log("Record Issue Error", err)
+        localStorage.clear();
+        this.props.history.push("/");
       });
     } else {
       console.log("==pdfValid==in else", pdfValid)
@@ -283,8 +285,9 @@ class DocumentDetails extends React.Component {
       }).catch(err => {
         toast.error(err.message, toast_options);
         this.setState({ isCsvLoading: false })
-
         console.log("Record Issue Error", err)
+        localStorage.clear();
+        this.props.history.push("/");
       });
     } else {
       this.setState({ isCsvLoading: false });
@@ -325,7 +328,9 @@ class DocumentDetails extends React.Component {
         }
       }).catch(err => {
         toast.error(err.message, toast_options);
-        console.log("Record Issue Error", err)
+        console.log("Record Issue Error", err);
+        localStorage.clear();
+        this.props.history.push("/");
       });
 
     }
