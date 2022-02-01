@@ -86,7 +86,7 @@ const pdfContentView = {
   maxHeight: 800,
   marginTop: 10,
   marginLeft: 'auto',
-  marginRight: 'auto'
+  marginRight: 'auto',
 }
 const bottom_View = {
   backgroundColor: '#fff',
@@ -107,7 +107,7 @@ const historyIssueBtn = {
   borderBottom: "1px solid #ccc",
   color: "#2352a2",
   fontSize: 10,
-  marginRight:40
+  marginRight: 40
 }
 const toast_options = {
   position: "top-center",
@@ -133,7 +133,8 @@ class DocumentDetails extends React.Component {
       pdfImage: '',
       fileType: 'pdf',
       pageNo: 1,
-
+      numPages: null,
+      pageNumber: 1
 
     }
   }
@@ -171,11 +172,13 @@ class DocumentDetails extends React.Component {
   // }
 
 
-  onPageLoad(info) {
-    const {
-      height, width, originalHeight, originalWidth
-    } = info;
-    console.log(height, width, originalHeight, originalWidth);
+  onPageLoad = ({ numPages }) => {
+    console.log("==info==", numPages)
+    this.setState({ numPages: numPages, pageNumber: this.state.pageNumber })
+    // const {
+    //   height, width, originalHeight, originalWidth
+    // } = info;
+    // console.log(height, width, originalHeight, originalWidth);
   }
   getPdfImage = () => {
     var pdfFileName = this.props.history.location.state.data.pdfFilename;
@@ -290,9 +293,9 @@ class DocumentDetails extends React.Component {
   }
   submit = () => {
     let companyId = localStorage.getItem('companyId')
-    console.log("===companyId in DocumentDetails:::",companyId)
+    console.log("===companyId in DocumentDetails:::", companyId)
     let userId = localStorage.getItem('userId')
-    console.log("===userId in DocumentDetails:::",userId)
+    console.log("===userId in DocumentDetails:::", userId)
     if (this.state.enterIssue == '' || this.state.enterIssue == null || this.state.enterIssue == undefined) {
       toast.warn("Please Enter Issue !", toast_options);
     }
@@ -302,8 +305,8 @@ class DocumentDetails extends React.Component {
         // Authorization: "Bearer " + logginUser.token,
         // reqFrom: "ADMIN",
       };
-      let requestBody = { doc_id: this.props.history.location.state.data.doc_id, errMsg: this.state.enterIssue,user_id: userId }
-      console.log("requestBody::::",requestBody)
+      let requestBody = { doc_id: this.props.history.location.state.data.doc_id, errMsg: this.state.enterIssue, user_id: userId }
+      console.log("requestBody::::", requestBody)
       axios({
         method: "POST",
         url: settings.serverUrl + "/reportIssue",
@@ -323,8 +326,13 @@ class DocumentDetails extends React.Component {
         toast.error(err.message, toast_options);
         console.log("Record Issue Error", err)
       });
+
     }
+
   }
+
+
+
   render() {
     let dateRec = moment(this.props && this.props.history && this.props.history.location && this.props.history.location.state && this.props.history.location.state.data.dateRec).format("MM/DD/YYYY hh:mm A");
     let dateProcessed = moment(this.props && this.props.history && this.props.history.location && this.props.history.location.state && this.props.history.location.state.data.dateProcessed).format("MM/DD/YYYY hh:mm A");
@@ -339,22 +347,27 @@ class DocumentDetails extends React.Component {
           <CCol>
             <div style={{ width: "100%", maxWidth: "612px", background: "rgb(108,108,108)", margin: "0px auto -9px auto" }}>
               <CRow>
-                <CCol xs="4">
+                <CCol xs="6">
                   <div style={{ width: "100px", display: "table", border: "1px solid #999", borderRadius: "5px", textAlign: "center", lineHeight: "40px", margin: "10px", color: "#fff" }}>
                     <div style={{ cursor: "pointer", width: "30px", borderRight: "1px solid #999", display: "table-cell" }}><i class="fa fa-angle-left" aria-hidden="true"></i>
                     </div>
                     <div style={{ width: "40px", display: "table-cell" }}>1</div>
                     <div style={{ cursor: "pointer", width: "30px", borderLeft: "1px solid #999", display: "table-cell" }}><i class="fa fa-angle-right" aria-hidden="true"></i>
                     </div>
+
+                  </div>
+                  <div style={{ whiteSpace: "nowrap" }}>
+                    From 11 Pages
                   </div>
                 </CCol>
-                <CCol xs="3"></CCol>
-                <CCol xs="5">
+
+                <CCol xs="6">
                   <div style={{ display: "table", borderSpacing: "10px" }}>
                     <div style={{ border: "1px solid #999", borderRadius: "50px", width: "40px", height: "40px", textAlign: "center", lineHeight: "38px", color: "#fff", display: "table-cell", cursor: "pointer" }}><i class="fa fa-expand" aria-hidden="true"></i></div>
                     <div style={{ border: "1px solid #999", borderRadius: "50px", width: "40px", height: "40px", textAlign: "center", lineHeight: "38px", color: "#fff", display: "table-cell", cursor: "pointer" }}><i class="fa fa-search-plus" aria-hidden="true"></i></div>
                     <div style={{ border: "1px solid #999", borderRadius: "50px", width: "40px", height: "40px", textAlign: "center", lineHeight: "38px", color: "#fff", display: "table-cell", cursor: "pointer" }}><i class="fa fa-search-minus" aria-hidden="true"></i></div>
                     <div style={{ border: "1px solid #999", borderRadius: "50px", width: "40px", height: "40px", textAlign: "center", lineHeight: "38px", color: "#fff", display: "table-cell", cursor: "pointer" }}><i class="fa fa-repeat" aria-hidden="true"></i></div>
+                    <div style={{ border: "1px solid #999", borderRadius: "50px", width: "40px", height: "40px", textAlign: "center", lineHeight: "38px", color: "#fff", display: "table-cell", cursor: "pointer" }}><i class="fa fa-download" aria-hidden="true"></i></div>
                   </div>
                 </CCol>
               </CRow>
@@ -372,19 +385,29 @@ class DocumentDetails extends React.Component {
             >
 
               <div style={this.state.isLoading ? { ...pdfContentView, ...{ boxShadow: "none" } } : pdfContentView}>
+                <p>Page {this.state.pageNumber} of {this.state.numPages}  </p>
                 {/* <img src={"data:image/jpeg;base64," + this.state.pdfImage} style={{width:500,height:700}}/> */}
                 {this.state.pdfImage ?
-                  <Document
-                    file={"data:image/jpeg;base64," + this.state.pdfImage}
+
+                  <Document onLoadSuccess={this.onPageLoad}
+                    file={"data:application/pdf;base64,JVBERi0xLjIgCjkgMCBvYmoKPDwKPj4Kc3RyZWFtCkJULyA5IFRmKFRlc3QpJyBFVAplbmRzdHJlYW0KZW5kb2JqCjQgMCBvYmoKPDwKL1R5cGUgL1BhZ2UKL1BhcmVudCA1IDAgUgovQ29udGVudHMgOSAwIFIKPj4KZW5kb2JqCjUgMCBvYmoKPDwKL0tpZHMgWzQgMCBSIF0KL0NvdW50IDEKL1R5cGUgL1BhZ2VzCi9NZWRpYUJveCBbIDAgMCA5OSA5IF0KPj4KZW5kb2JqCjMgMCBvYmoKPDwKL1BhZ2VzIDUgMCBSCi9UeXBlIC9DYXRhbG9nCj4+CmVuZG9iagp0cmFpbGVyCjw8Ci9Sb290IDMgMCBSCj4+CiUlRU9G"
+                      // + 
+                      //this.state.pdfImage
+                    }
                   // file='https://dgsciense.s3.amazonaws.com/raw_invoices_hubspot/6085ca5e0c876f667d354cb0.pdf'
                   // onLoadSuccess={page => console.log('page onLoadSuccess:>> ', page)}
                   // onLoadError={(error) => console.log('pdf error :>> ', error)}
                   >
-                    <Page pageNumber={1} onLoadSuccess={this.onPageLoad} />
-                  </Document> :
+                    <Page pageNumber={1} />
+                  </Document>
+
+                  :
                   <p>loading PDF</p>
+
                 }
+
               </div>
+
               <div style={bottom_View}>
                 <TableContainer component={Paper} style={{ position: "relative", zIndex: "5", overflow: 'hidden' }}>
                   <Table aria-label="simple table">
@@ -414,9 +437,9 @@ class DocumentDetails extends React.Component {
                         <TableCell style={historyIssueBtn}>
                           <Button style={viewDetailBtn}
                             onClick={() => this.props.history.push("/issueHistory")}
-                            >
-                              ISSUE HISTORY
-                              </Button>
+                          >
+                            ISSUE HISTORY
+                          </Button>
                         </TableCell>
                       </TableRow>
                       <TableRow>
@@ -444,42 +467,42 @@ class DocumentDetails extends React.Component {
                     </TableHead>
                   </Table>
                 </TableContainer>
-                {Object.keys(this.state.finalDataResult).length>0 ?
-                <TableContainer component={Paper} style={{ position: "relative", zIndex: "5" }}>
-                  <Table aria-label="simple table">
-                    <TableHead>
-                      <TableRow>
-                        {
-                          Object.keys(this.state.finalDataResult).map(key =>
-                            <TableCell style={table_header}>{key}</TableCell>
-                          )
-                        }
-                      </TableRow>
-                    </TableHead>
+                {Object.keys(this.state.finalDataResult).length > 0 ?
+                  <TableContainer component={Paper} style={{ position: "relative", zIndex: "5" }}>
+                    <Table aria-label="simple table">
+                      <TableHead>
+                        <TableRow>
+                          {
+                            Object.keys(this.state.finalDataResult).map(key =>
+                              <TableCell style={table_header}>{key}</TableCell>
+                            )
+                          }
+                        </TableRow>
+                      </TableHead>
 
 
-                    <TableBody>
-                      <TableRow>
-                        {
-                          Object.keys(this.state.finalDataResult).map((key, idex) => {
-                            return <TableCell>
-                              {
-                                this.state.finalDataResult[key].map((vObj, vIdx) => {
-                                  return <div style={table_content}><strong>{vObj}</strong> </div>
-                                })
-                              }
-                            </TableCell>
-                          })
-                        }
-                      </TableRow>
-                    </TableBody>
-                  </Table>
-                </TableContainer>:
-                <p style={{ width: "100%", display: "block", color: "#c00", margin: "12px 0", textAlign: "center", fontSize: "1.6em" }}>
-                  {(!this.state.isCsvLoading)?"No record Found!!":""}
-                </p>
+                      <TableBody>
+                        <TableRow>
+                          {
+                            Object.keys(this.state.finalDataResult).map((key, idex) => {
+                              return <TableCell>
+                                {
+                                  this.state.finalDataResult[key].map((vObj, vIdx) => {
+                                    return <div style={table_content}><strong>{vObj}</strong> </div>
+                                  })
+                                }
+                              </TableCell>
+                            })
+                          }
+                        </TableRow>
+                      </TableBody>
+                    </Table>
+                  </TableContainer> :
+                  <p style={{ width: "100%", display: "block", color: "#c00", margin: "12px 0", textAlign: "center", fontSize: "1.6em" }}>
+                    {(!this.state.isCsvLoading) ? "No record Found!!" : ""}
+                  </p>
                 }
-                
+
               </div>
             </SplitPane>
           </CCol>
