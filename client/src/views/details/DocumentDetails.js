@@ -86,7 +86,7 @@ const pdfContentView = {
   maxHeight: 800,
   marginTop: 10,
   marginLeft: 'auto',
-  marginRight: 'auto',
+  marginRight: 'auto'
 }
 const bottom_View = {
   backgroundColor: '#fff',
@@ -133,11 +133,9 @@ class DocumentDetails extends React.Component {
       pdfImage: '',
       fileType: 'pdf',
       pageNo: 1,
-      numPages: null,
-      pageNumber: 1,
-      width: 0
-
-
+      expandScreen: false,
+      zoomScreen: 0,
+      rotateScreen: 0
     }
   }
   componentDidMount = () => {
@@ -154,8 +152,9 @@ class DocumentDetails extends React.Component {
       this.getPdfImage();
       this.geCsvData();
     }
-  }
 
+
+  }
   openDialog = () => {
     this.setState({ openReportIssue: true });
   };
@@ -173,14 +172,6 @@ class DocumentDetails extends React.Component {
   // }
 
 
-  onPageLoad = ({ numPages }) => {
-    console.log("==info==", numPages)
-    this.setState({ numPages: numPages, pageNumber: this.state.pageNumber })
-    // const {
-    //   height, width, originalHeight, originalWidth
-    // } = info;
-    // console.log(height, width, originalHeight, originalWidth);
-  }
   getPdfImage = () => {
     var pdfFileName = this.props.history.location.state.data.pdfFilename;
     var processorPath = this.props.history.location.state.data.processorContainerPath;
@@ -203,7 +194,7 @@ class DocumentDetails extends React.Component {
     }
 
     if (pdfValid) {
-      console.log("==pdfValid==in if under", pdfValid)
+      console.log("==pdfValid==in if under", pdfValid, this.state.pageNo)
       this.setState({ isLoading: true })
 
       const headers = {
@@ -222,7 +213,9 @@ class DocumentDetails extends React.Component {
           // alert(response.data.err);
           toast.error(response.data.err, toast_options);
         } else {
-          this.setState({ pdfImage: response.data.result, isLoading: false })
+          let base64Data = response.data.result.base64Str
+          this.setState({ pdfImage: base64Data, isLoading: false, totalPages: response.data.result.noOfPages })
+
         }
       }).catch(err => {
         toast.error(err.message, toast_options);
@@ -285,6 +278,7 @@ class DocumentDetails extends React.Component {
       }).catch(err => {
         toast.error(err.message, toast_options);
         this.setState({ isCsvLoading: false })
+
         console.log("Record Issue Error", err)
         localStorage.clear();
         this.props.history.push("/");
@@ -328,23 +322,43 @@ class DocumentDetails extends React.Component {
         }
       }).catch(err => {
         toast.error(err.message, toast_options);
-        console.log("Record Issue Error", err);
-        localStorage.clear();
-        this.props.history.push("/");
+        console.log("Record Issue Error", err)
       });
 
     }
 
   }
 
+  pageDownClicked = () => {
+    let updatedNum = this.state.pageNo - 1;
+    console.log("minus page", updatedNum)
+    this.setState({ pageNo: updatedNum }, () => this.getPdfImage())
+  }
+  pageUpClicked = () => {
+    let updatedNum = this.state.pageNo + 1;
+    console.log("plus page", updatedNum)
+    this.setState({ pageNo: updatedNum }, () => this.getPdfImage())
+  }
+  rotatePdf = () => {
+    this.setState({ rotateScreen: this.state.rotateScreen + 1 })
+  }
+  zoomIn = () => {
+    this.setState({ zoomScreen: this.state.zoomScreen + 1 })
+  }
+  zoomOut = () => {
+    this.setState({ zoomScreen: this.state.zoomScreen - 1 })
+  }
+
+  expandPdf = () => {
+    this.setState({ expandScreen: !this.state.expandScreen })
+  }
 
 
   render() {
     let dateRec = moment(this.props && this.props.history && this.props.history.location && this.props.history.location.state && this.props.history.location.state.data.dateRec).format("MM/DD/YYYY hh:mm A");
     let dateProcessed = moment(this.props && this.props.history && this.props.history.location && this.props.history.location.state && this.props.history.location.state.data.dateProcessed).format("MM/DD/YYYY hh:mm A");
     let noOfPages = this.props && this.props.history && this.props.history.location && this.props.history.location.state && this.props.history.location.state.data.noOfPages;
-    const screenWidth = window.innerWidth;
-    // console.log("screenWidth====",screenWidth);
+    console.log("expand", this.state)
     return (
       <CCard style={cardView}>
         <CRow style={{ color: 'white', position: "fixed", top: "108px", left: "85px", zIndex: "1030", fontWeight: "bold" }}>
@@ -352,33 +366,47 @@ class DocumentDetails extends React.Component {
         </CRow>
         <CRow>
           <CCol>
-            <div style={{ width: "100%", maxWidth: "612px", background: "rgb(108,108,108)", margin: "0px auto -9px auto" }}>
+            <div style={{
+              width: "100%", maxWidth: "612px", background: "rgb(0, 117, 183)", margin: "0px auto -9px auto", borderRadius: "5px 5px 0 0", position: "relative", zIndex: "500"
+            }}>
               <CRow>
                 <CCol xs="6">
-                  <div style={{ width: "100px", display: "table", border: "1px solid #999", borderRadius: "5px", textAlign: "center", lineHeight: "40px", margin: "10px", color: "#fff" }}>
-                    <div style={{ cursor: "pointer", width: "30px", borderRight: "1px solid #999", display: "table-cell" }}><i class="fa fa-angle-left" aria-hidden="true"></i>
+
+                  <div style={{ width: "100px", display: "table", float: "left", border: "1px solid #fff", borderRadius: "5px", textAlign: "center", lineHeight: "40px", margin: "10px", color: "#fff" }}>
+                    <div style={{ cursor: "pointer", width: "30px", borderRight: "1px solid #fff", display: "table-cell" }} onClick={() => this.pageDownClicked()}><i class="fa fa-angle-left" aria-hidden="true" ></i>
                     </div>
-                    <div style={{ width: "40px", display: "table-cell" }}>1</div>
-                    <div style={{ cursor: "pointer", width: "30px", borderLeft: "1px solid #999", display: "table-cell" }}><i class="fa fa-angle-right" aria-hidden="true"></i>
+                    <div style={{ width: "40px", display: "table-cell" }}>{this.state.pageNo}</div>
+                    <div style={{ cursor: "pointer", width: "30px", borderLeft: "1px solid #fff", display: "table-cell" }} onClick={() => this.pageUpClicked()}><i class="fa fa-angle-right" aria-hidden="true"></i>
                     </div>
 
                   </div>
-                  <div style={{ whiteSpace: "nowrap" }}>
-                    From 11 Pages
+                  <div style={{ whiteSpace: "nowrap", float: "left", color: "#fff", marginTop: "20px" }}>
+                    <p>from {this.state.totalPages} Pages </p>
                   </div>
                 </CCol>
 
                 <CCol xs="6">
                   <div style={{ display: "table", borderSpacing: "10px" }}>
-                    <div style={{ border: "1px solid #999", borderRadius: "50px", width: "40px", height: "40px", textAlign: "center", lineHeight: "38px", color: "#fff", display: "table-cell", cursor: "pointer" }}><i class="fa fa-expand" aria-hidden="true"></i></div>
-                    <div style={{ border: "1px solid #999", borderRadius: "50px", width: "40px", height: "40px", textAlign: "center", lineHeight: "38px", color: "#fff", display: "table-cell", cursor: "pointer" }}><i class="fa fa-search-plus" aria-hidden="true"></i></div>
-                    <div style={{ border: "1px solid #999", borderRadius: "50px", width: "40px", height: "40px", textAlign: "center", lineHeight: "38px", color: "#fff", display: "table-cell", cursor: "pointer" }}><i class="fa fa-search-minus" aria-hidden="true"></i></div>
-                    <div style={{ border: "1px solid #999", borderRadius: "50px", width: "40px", height: "40px", textAlign: "center", lineHeight: "38px", color: "#fff", display: "table-cell", cursor: "pointer" }}><i class="fa fa-repeat" aria-hidden="true"></i></div>
-                    <div style={{ border: "1px solid #999", borderRadius: "50px", width: "40px", height: "40px", textAlign: "center", lineHeight: "38px", color: "#fff", display: "table-cell", cursor: "pointer" }}><i class="fa fa-download" aria-hidden="true"></i></div>
+
+                    <div style={{ border: "1px solid #fff", borderRadius: "50px", width: "40px", height: "40px", textAlign: "center", lineHeight: "38px", color: "#fff", display: "table-cell", cursor: "pointer" }}
+                      onClick={() => this.expandPdf()}>
+                      {this.state.expandScreen ?
+                        <i class="fa fa-compress" aria-hidden="true"></i>
+                        :
+                        <i class="fa fa-expand" aria-hidden="true"></i>
+                      }
+                    </div>
+
+                    <div style={{ border: "1px solid #fff", borderRadius: "50px", width: "40px", height: "40px", textAlign: "center", lineHeight: "38px", color: "#fff", display: "table-cell", cursor: "pointer" }} onClick={() => this.zoomIn()}><i class="fa fa-search-plus" aria-hidden="true"></i></div>
+                    <div style={{ border: "1px solid #fff", borderRadius: "50px", width: "40px", height: "40px", textAlign: "center", lineHeight: "38px", color: "#fff", display: "table-cell", cursor: "pointer" }} onClick={() => this.zoomOut()}><i class="fa fa-search-minus" aria-hidden="true"></i></div>
+                    <div style={{ border: "1px solid #fff", borderRadius: "50px", width: "40px", height: "40px", textAlign: "center", lineHeight: "38px", color: "#fff", display: "table-cell", cursor: "pointer" }} onClick={() => this.rotatePdf()}><i class="fa fa-repeat" aria-hidden="true"></i></div>
+                    <div style={{ border: "1px solid #fff", borderRadius: "50px", width: "40px", height: "40px", textAlign: "center", lineHeight: "38px", color: "#fff", display: "table-cell", cursor: "pointer" }}><i class="fa fa-download" aria-hidden="true"></i></div>
                   </div>
                 </CCol>
               </CRow>
             </div>
+
+
             <SplitPane
               split="horizontal"
               minSize={70}
@@ -390,34 +418,48 @@ class DocumentDetails extends React.Component {
               }}
               style={{ position: "static", backgroundColor: 'transparent' }}
             >
+              <div
+                style={{
+                  width: this.state.expandScreen ? "100%" : "615px",
+                  transform: (this.state.rotateScreen == 1 && "rotate(90deg)" || this.state.rotateScreen == 2 && "rotate(180deg)" || this.state.rotateScreen == 3 && "rotate(270deg)" || this.state.rotateScreen == 4 && "rotate(0deg)"),
+                  margin: "0px auto",
+                  position: "relative"
+                }}
+              >
+                <div style={{
+                  position: "absolute",
+                  width: "100%",
+                  margin: "0px auto",
+                  top: (this.state.zoomScreen == 1 && "2.8em" || this.state.zoomScreen == 2 && "5.7em" || this.state.zoomScreen == 3 && "8.5em" || this.state.zoomScreen == 4 && "11.3em" || this.state.zoomScreen == 5 && "14em" || this.state.zoomScreen == 6 && "16.9em" || this.state.zoomScreen == 7 && "19.7em" || this.state.zoomScreen == 8 && "22.5em" || this.state.zoomScreen == 9 && "25.4em" || this.state.zoomScreen == 10 && "28.2em" || this.state.zoomScreen == 11 && "31em" || this.state.zoomScreen == 12 && "33.8em" || this.state.zoomScreen == 13 && "36.6em" || this.state.zoomScreen == 14 && "39.4em" || this.state.zoomScreen == 15 && "42.2em"),
+                  transform: (this.state.zoomScreen == 1 && "scale(1.1)" || this.state.zoomScreen == 2 && "scale(1.2)" || this.state.zoomScreen == 3 && "scale(1.3)" || this.state.zoomScreen == 4 && "scale(1.4)" || this.state.zoomScreen == 5 && "scale(1.5)" || this.state.zoomScreen == 6 && "scale(1.6)" || this.state.zoomScreen == 7 && "scale(1.7)" || this.state.zoomScreen == 8 && "scale(1.8)" || this.state.zoomScreen == 9 && "scale(1.9)" || this.state.zoomScreen == 10 && "scale(2)" || this.state.zoomScreen == 11 && "scale(2.1)" || this.state.zoomScreen == 12 && "scale(2.2)" || this.state.zoomScreen == 13 && "scale(2.3)" || this.state.zoomScreen == 14 && "scale(2.4)" || this.state.zoomScreen == 15 && "scale(2.5)")
+                }}>
 
-              <div style={this.state.isLoading ? { ...pdfContentView, ...{ boxShadow: "none" } } : pdfContentView}>
-                <p>Page {this.state.pageNumber} of {this.state.numPages}  </p>
-                {/* <img src={"data:image/jpeg;base64," + this.state.pdfImage} style={{width:500,height:700}}/> */}
-                {this.state.pdfImage ?
+                  <div style={
+                    this.state.isLoading ? { ...pdfContentView, ...{ boxShadow: "none" } } : pdfContentView
+                  }>
 
-                  <Document onLoadSuccess={this.onPageLoad}
-                    file={"data:application/pdf;base64,JVBERi0xLjIgCjkgMCBvYmoKPDwKPj4Kc3RyZWFtCkJULyA5IFRmKFRlc3QpJyBFVAplbmRzdHJlYW0KZW5kb2JqCjQgMCBvYmoKPDwKL1R5cGUgL1BhZ2UKL1BhcmVudCA1IDAgUgovQ29udGVudHMgOSAwIFIKPj4KZW5kb2JqCjUgMCBvYmoKPDwKL0tpZHMgWzQgMCBSIF0KL0NvdW50IDEKL1R5cGUgL1BhZ2VzCi9NZWRpYUJveCBbIDAgMCA5OSA5IF0KPj4KZW5kb2JqCjMgMCBvYmoKPDwKL1BhZ2VzIDUgMCBSCi9UeXBlIC9DYXRhbG9nCj4+CmVuZG9iagp0cmFpbGVyCjw8Ci9Sb290IDMgMCBSCj4+CiUlRU9G"
-                      // + 
-                      //this.state.pdfImage
+                    {/* <img src={"data:image/jpeg;base64," + this.state.pdfImage} style={{width:500,height:700}}/> */}
+                    {this.state.pdfImage ?
+
+                      <Document
+
+                        file={"data:application/pdf;base64," + this.state.pdfImage}
+                      // file='https://dgsciense.s3.amazonaws.com/raw_invoices_hubspot/6085ca5e0c876f667d354cb0.pdf'
+                      // onLoadSuccess={page => console.log('page onLoadSuccess:>> ', page)}
+                      // onLoadError={(error) => console.log('pdf error :>> ', error)}
+                      >
+                        <Page pageNumber={this.state.pageNo} />
+                      </Document>
+
+                      :
+                      <p>loading PDF</p>
+
                     }
-                  // file='https://dgsciense.s3.amazonaws.com/raw_invoices_hubspot/6085ca5e0c876f667d354cb0.pdf'
-                  // onLoadSuccess={page => console.log('page onLoadSuccess:>> ', page)}
-                  // onLoadError={(error) => console.log('pdf error :>> ', error)}
-                  >
-                    <Page pageNumber={1} />
-                  </Document>
 
-                  :
-                  <p>loading PDF</p>
-
-                }
-
+                  </div>
+                </div>
               </div>
-
               <div style={bottom_View}>
-                {/* <i class="fa-window-minimize" aria-hidden="true" style={{width:100,height:15,backgroundColor:'#4EA7D8',position:'absolute',left:(screenWidth/2)-50,top:-8}} ></i> */}
-                <div style={{ width: 100, height: 15, backgroundColor: '#4EA7D8', position: 'absolute', left: (screenWidth / 2) - 50, top: -8 }}></div>
                 <TableContainer component={Paper} style={{ position: "relative", zIndex: "5", overflow: 'hidden' }}>
                   <Table aria-label="simple table">
                     <TableHead>
