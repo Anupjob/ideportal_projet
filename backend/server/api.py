@@ -389,18 +389,22 @@ async def user_login(user: UserLogin = Body(...)):
     # print("login success email")
     # mailServer.sendmail('support@vercx.com', 'saurabh.dhiman@digitalglyde.com', 'message from ideprotal')
     # print("sent success email")
+
     if user and user.otp and user.otp > 0:
         print("user found", user.email, user.otp)
         userres = checkOTP(user.email, user.otp)
         print("userres",userres)
         userfound = False
 
+        tokenRes = signJWT()
+        print("tokenRes", tokenRes)
+
         if userres:
             for user_s in userres:
                 userfound = True
                 print(user_s)
             if (userfound):
-                return {"result":"success", "err":None}
+                return {"result":tokenRes, "err":None}
             else:
                 return {"result": None, "err": "Email not found in System "}
                 # return {"error": "Email not found in System "}
@@ -459,7 +463,7 @@ async def user_login(user: UserLoginSchema = Body(...)):
         "error": "Wrong login details!"
     }
 
-@app.post("/reportIssue")
+@app.post("/reportIssue", dependencies=[Depends(JWTBearer())])
 async def report_issue(incData: IssueSchema = Body(...)):
     print("report_issue", incData)
     errMsg = incData.errMsg
@@ -495,7 +499,7 @@ async def report_issue(incData: IssueSchema = Body(...)):
     print("reportIssue  result", result)
     return {"result": "issue reported successfully", "err": None}
 
-@app.post("/getPdfFile")
+@app.post("/getPdfFile", dependencies=[Depends(JWTBearer())])
 async def get_pdf_file(incData: PdfDataSchema = Body(...)):
     fileName = incData.fileName
     containerPath = incData.containerPath
@@ -533,7 +537,7 @@ async def get_pdf_file(incData: PdfDataSchema = Body(...)):
     # else:
     #     return {"result": None, "err": data.err}
 
-@app.post("/getGoogleVisionData")
+@app.post("/getGoogleVisionData", dependencies=[Depends(JWTBearer())])
 async def get_google_vision_data(incData: GoogleVisionSchema = Body(...)):
 
     print("get_google_vision_data",incData)
@@ -653,7 +657,7 @@ async def get_google_vision_data(incData: GoogleVisionSchema = Body(...)):
     else:
         return {"result": None, "err": "No file found"}
 
-@app.post("/incomingData")
+@app.post("/incomingData", dependencies=[Depends(JWTBearer())])
 async def incoming_data(incData: IncomingData = Body(...)):
     dateRec = incData.dateRec
     dateProcessed = incData.dateProcessed
@@ -722,7 +726,7 @@ async def incoming_data(incData: IncomingData = Body(...)):
 
     return {"result": ids_dict, "err": None}
 
-@app.post("/finalData")
+@app.post("/finalData", dependencies=[Depends(JWTBearer())])
 async def final_data(incData: FinalData = Body(...)):
     print("finalData", incData)
     file_name = incData.fileName
@@ -760,7 +764,7 @@ async def final_data(incData: FinalData = Body(...)):
     else:
         return {"result": None, "err": "file not found"}
 
-@app.post("/getProcessorData")
+@app.post("/getProcessorData", dependencies=[Depends(JWTBearer())])
 async def get_processors(incData: ProcessorDataSchema = Body(...)):
     companyId = incData.companyId
 
@@ -789,7 +793,7 @@ async def get_processors(incData: ProcessorDataSchema = Body(...)):
     else:
         return {"result": None, "err": "no records found"}
 
-@app.post("/getReportHistory")
+@app.post("/getReportHistory", dependencies=[Depends(JWTBearer())])
 async def get_report_hist(incData: ReportHistSchema = Body(...)):
     companyId = incData.company_id
     userId = incData.user_id
@@ -818,7 +822,7 @@ async def get_report_hist(incData: ReportHistSchema = Body(...)):
     else:
         return {"result": None, "err": "no records found"}
 
-@app.post("/addProcessor")
+@app.post("/addProcessor", dependencies=[Depends(JWTBearer())])
 async def add_processor(incData: AddProcessorSchema = Body(...)):
     print("add_processor", incData)
 
@@ -836,7 +840,7 @@ async def add_processor(incData: AddProcessorSchema = Body(...)):
 
     return {"result": processor_ins_result, "err": None}
 
-@app.get("/getCompaniesData")
+@app.get("/getCompaniesData", dependencies=[Depends(JWTBearer())])
 async def get_companies():
 
     db_mongo = getConn()
@@ -866,7 +870,7 @@ async def get_companies():
     else:
         return {"result": None, "err": "no records found"}
 
-@app.post("/addCompany")
+@app.post("/addCompany", dependencies=[Depends(JWTBearer())])
 async def add_company(incData: CompanySchema = Body(...)):
     print("add_company", incData)
     companyName = incData.companyName
@@ -884,7 +888,7 @@ async def add_company(incData: CompanySchema = Body(...)):
 
     return {"result": comp_ins_result, "err": None}
 
-@app.post("/getUsersData")
+@app.post("/getUsersData", dependencies=[Depends(JWTBearer())])
 async def get_users(incData: UserDataSchema = Body(...)):
     companyId = incData.companyId
 
@@ -910,7 +914,7 @@ async def get_users(incData: UserDataSchema = Body(...)):
     else:
         return {"result": None, "err": "no records found"}
 
-@app.post("/addUser")
+@app.post("/addUser", dependencies=[Depends(JWTBearer())])
 async def add_user(incData: AddUserSchema = Body(...)):
     print("add_user", incData)
     company_id = incData.company_id
@@ -924,7 +928,7 @@ async def add_user(incData: AddUserSchema = Body(...)):
 
     return {"result": user_ins_result, "err": None}
 
-@app.post("/uploadFile")
+@app.post("/uploadFile", dependencies=[Depends(JWTBearer())])
 async def add_user(companyId: str = Form(...), companyName: str = Form(...), userId: str = Form(...), email: str = Form(...), fileSize: str = Form(...), doc_file: UploadFile = File(...)):
 # async def add_user(doc_file: UploadFile = File(...), incData: UploadFileSchema = Body(...)):
 
