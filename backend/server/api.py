@@ -26,6 +26,7 @@ import pandas as pd
 from io import BytesIO, StringIO
 import base64
 import json
+import re
 
 folderFileProcessing = "fileprocessing/"
 container = "incomingfiles"
@@ -173,20 +174,22 @@ def pdf_blob_azure_buffer(complete_file_name):
             my_blob.seek(0)
 
             base64Str = base64.b64encode(my_blob.getvalue())
-        return {"result":base64Str, "err":None}
-
+        # return {"result":base64Str, "err":None}
+            return base64Str
         # download_stream = blob_client.download_blob()
         # return download_stream.readall()
 
     except Exception as e:
         print(f"pdf_blob_azure_buffer Error {complete_file_name} due to {e}")
-        return {"result":None, "err": e}
+        # return {"result":None, "err": e}
+        return ""
         # print('Error in downloading', complete_file_name, local_path)
 
 def upload_blob_azure_process(fileName, file, folder_name_process):
     print("upload_blob_azure_process", fileName, folder_name_process)
     #     try:
-    container_path = folderFileProcessing + str(folder_name_process) + '/' + str(fileName)
+    # container_path = folderFileProcessing + str(folder_name_process) + '/' + str(fileName)
+    container_path = str(folder_name_process) + '/' + str(fileName)
     print("container_path", container_path)
     # file_url = local_file_comp
     blob_service_client = blob_connection()
@@ -363,6 +366,13 @@ def getDataForPage(data, pageNo):
 
     return dataret
 
+def cleanFileName(text):
+    # print("cleanFileName", text)
+    if (text is None):
+        text = "temp"
+        text = str(text).replace(" ", "")
+    return re.sub('[^\w_.)( -]', '', text)
+
 @app.get("/")
 async def root():
     return {"message": "Welcome to IDE Portal"}
@@ -496,8 +506,10 @@ async def get_pdf_file(incData: PdfDataSchema = Body(...)):
 
     db_mongo = getConn()
     files_incoming_breakup_c = db_mongo.files_incoming_breakup
+    files_incoming_c = db_mongo.files_incoming
 
     files_incoming_breakup_p = files_incoming_breakup_c.find_one({"filenameprocessing": fileName, "pageNo": pageNum})
+    files_incoming_p = files_incoming_c.find_one({"filenameprocessing": fileName})
     print("files_incoming_breakup_p",files_incoming_breakup_p)
 
     if files_incoming_breakup_p :
@@ -509,10 +521,10 @@ async def get_pdf_file(incData: PdfDataSchema = Body(...)):
             file_type_str = "img_rotated"
         completeFileName = containerPath + "/" + files_incoming_breakup_p[file_type_str]
 
-        data = pdf_blob_azure_buffer(completeFileName)
-        print("getPdfFile data", data)
-
-        return data
+        base64Str = pdf_blob_azure_buffer(completeFileName)
+        print("getPdfFile data", base64Str)
+        return {"result": {"base64Str" : base64Str, "noOfPages": files_incoming_p["noOfPages"]}, "err": None}
+        # return data
     else:
         return {"result": None, "err": "No file found"}
 
@@ -923,6 +935,7 @@ async def add_user(companyId: str = Form(...), companyName: str = Form(...), use
     print("uploadFile doc_file size", fileSize)
     print("uploadFile type", doc_file.content_type)
 
+    companyName = "manual"
 # if userId is not None and companyId is not None:
     if userId != "null" and companyId != "null" and companyName != "null" and email != "null":
         print("reading data from file")
@@ -937,7 +950,10 @@ async def add_user(companyId: str = Form(...), companyName: str = Form(...), use
         #     # needed to reset the buffer, otherwise, panda won't read from the start
         #     my_blob.seek(0)
         # print("my_blob",my_blob)
-        file_upload_res = upload_blob_azure_process(doc_file.filename, content, companyName)
+        cleanFile = cleanFileName(doc_file.filename)
+        print("cleanFile", cleanFile)
+
+        file_upload_res = upload_blob_azure_process(cleanFile, content, companyName)
         print("file_upload_res", file_upload_res)
         db_mongo = getConn()
         files_incoming_c = db_mongo.files_incoming
@@ -947,16 +963,27 @@ async def add_user(companyId: str = Form(...), companyName: str = Form(...), use
                 "companyId": ObjectId(companyId),
                 "userId": ObjectId(userId),
                 "content_type": doc_file.content_type,
+                "container_path": container + "/" + cleanFile,
                 "companyName": companyName,
-                "filename": doc_file.filename,
+                "original_filename": doc_file.filename,
+                "filename": cleanFile,
                 # "size": doc_file.size,
                 "size": fileSize,
                 "container": "idedata",
                 "createdOn": datetime.datetime.now(),
+                # "created_on": datetime.datetime.now(),
                 "file_date": datetime.datetime.now(),
                 "uploaded_by": email,
                 "status": "Uploaded",
             }
+
+            # ins_obj = {"content_type":"application/pdf", "container_path":containe + "/" + cleanFile,
+            # "filename": cleanFile, "original_filename": files, "container" : "idedata",
+            # "status" : "Uploaded",
+            # "uploaded_by": "josiah.babu@digitalglyde.com",
+            # "created_on" : datetime.datetime.now(),
+            # "file_date": datetime.datetime.now()}
+
             print("fileObj", fileObj)
 
             files_incoming_ins_result = files_incoming_c.insert_one(fileObj)
