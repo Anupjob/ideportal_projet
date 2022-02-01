@@ -327,6 +327,8 @@ class Login extends React.Component {
         localStorage.setItem('companyId', response.data.result.companyId)
         localStorage.setItem('name', response.data.result.name)
         localStorage.setItem('userId', response.data.result.userId)
+        localStorage.setItem('email', response.data.result.email)
+
 
         if (response.data.err) {
           toast.error(response.data.err, {toast_options});         

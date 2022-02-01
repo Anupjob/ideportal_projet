@@ -2,9 +2,9 @@ import os
 import subprocess
 from datetime import datetime, date
 import sys
-from fastapi import FastAPI, Body, Depends
+from fastapi import FastAPI, Body, Depends, UploadFile, Form, File
 from pydantic import BaseModel, Field, EmailStr
-from typing import Optional
+from typing import Optional, List
 
 from server.model import PostSchema, UserLoginSchema
 from server.auth.auth_bearer import JWTBearer
@@ -19,7 +19,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from azure.core.credentials import AzureKeyCredential
 import smtplib
 from fastapi_mail import FastMail, MessageSchema,ConnectionConfig
-from typing import List
+# from typing import List
 from bson.objectid import ObjectId
 from azure.storage.blob import BlobServiceClient
 import pandas as pd
@@ -109,6 +109,11 @@ class ReportHistSchema(BaseModel):
    company_id: str
    user_id: str
 
+class UploadFileSchema(BaseModel):
+   doc_file = UploadFile
+   companyId: str
+   userId: str
+
 def download_blob_azure(local_path, complete_file_name):
     print("download_blob_azure", local_path, complete_file_name);
 
@@ -178,22 +183,29 @@ def pdf_blob_azure_buffer(complete_file_name):
         return {"result":None, "err": e}
         # print('Error in downloading', complete_file_name, local_path)
 
-def upload_blob_azure_process(fileName, local_file_comp, folder_name_process):
+def upload_blob_azure_process(fileName, file, folder_name_process):
+    print("upload_blob_azure_process", fileName, folder_name_process)
     #     try:
     container_path = folderFileProcessing + str(folder_name_process) + '/' + str(fileName)
-    file_url = local_file_comp
+    print("container_path", container_path)
+    # file_url = local_file_comp
     blob_service_client = blob_connection()
     blob_client_upload = blob_service_client.get_blob_client(container=container, blob=container_path)
+
+    print("blob_client_upload.exists()", blob_client_upload.exists())
+    res_msg = ""
     if (blob_client_upload.exists()):
         print("already exists", container_path, container, fileName)
+        res_msg = "file already exists"
     else:
         print(container_path, container, fileName)
-        #     try:
-        with open(local_file_comp, "rb") as data:
-            blob_client_upload.upload_blob(data, overwrite=True)
-    #     except:
-    #         print(container_path,' doesnot exsist')
-    return container_path
+        try:
+            blob_client_upload.upload_blob(file, overwrite=True)
+            res_msg = "file uploaded successfully"
+        except:
+            print(container_path,' doesnot exsist')
+            res_msg = "some error"
+    return res_msg
 
 def getUserForEmail(emailStr):
     print("getUserForEmail",emailStr)
@@ -899,6 +911,60 @@ async def add_user(incData: AddUserSchema = Body(...)):
     user_ins_result = users_c.insert_one({"companyId": ObjectId(company_id), "email": email, "name": name})
 
     return {"result": user_ins_result, "err": None}
+
+@app.post("/uploadFile")
+async def add_user(companyId: str = Form(...), companyName: str = Form(...), userId: str = Form(...), email: str = Form(...), fileSize: str = Form(...), doc_file: UploadFile = File(...)):
+# async def add_user(doc_file: UploadFile = File(...), incData: UploadFileSchema = Body(...)):
+
+    print("uploadFile userId", userId)
+    print("uploadFile companyId", companyId)
+    print("uploadFile companyName", companyName)
+    print("uploadFile doc_file", doc_file.filename)
+    print("uploadFile doc_file size", fileSize)
+    print("uploadFile type", doc_file.content_type)
+
+# if userId is not None and companyId is not None:
+    if userId != "null" and companyId != "null" and companyName != "null" and email != "null":
+        print("reading data from file")
+        content = await doc_file.read()  # async read
+        print("after reading data")
+        # print("content", content)
+        # with BytesIO() as my_blob:
+        #     # Download as a stream
+        #     # download_stream.readinto(my_blob)
+        #     my_blob.write(content)
+        #
+        #     # needed to reset the buffer, otherwise, panda won't read from the start
+        #     my_blob.seek(0)
+        # print("my_blob",my_blob)
+        file_upload_res = upload_blob_azure_process(doc_file.filename, content, companyName)
+        print("file_upload_res", file_upload_res)
+        db_mongo = getConn()
+        files_incoming_c = db_mongo.files_incoming
+
+        if file_upload_res != "file already exists":
+            fileObj = {
+                "companyId": ObjectId(companyId),
+                "userId": ObjectId(userId),
+                "content_type": doc_file.content_type,
+                "companyName": companyName,
+                "filename": doc_file.filename,
+                # "size": doc_file.size,
+                "size": fileSize,
+                "container": "idedata",
+                "createdOn": datetime.datetime.now(),
+                "file_date": datetime.datetime.now(),
+                "uploaded_by": email,
+                "status": "Uploaded",
+            }
+            print("fileObj", fileObj)
+
+            files_incoming_ins_result = files_incoming_c.insert_one(fileObj)
+            print("files_incoming_ins_result", files_incoming_ins_result)
+
+        return {"result": file_upload_res, "err": None}
+    else:
+        return {"result": None, "err": "invalid request"}
 
 @app.get("/provider/{id}", dependencies=[Depends(JWTBearer())], tags=["posts"])
 async def add_post(id: int) -> dict:
