@@ -181,6 +181,8 @@ const Dashboard = () => {
     console.log("Edate:::", Edate)
     console.log("status:::", Status)
     console.log("Document:::", Document)
+    console.log("access_token==>>",localStorage.getItem('access_token'))
+
     const headers = {
       "Content-Type": "application/json",
        Authorization: "Bearer " + localStorage.getItem('access_token'),
@@ -200,12 +202,12 @@ const Dashboard = () => {
       if (response.data.result == 0) {
         setArrNull(true)
       }
-      // this.setState({ isLoading: false })
       setIncomingArr(response.data.result)
       // setIsloader(false)
       setTimeout(() => {
         setIsloader(false)
       }, 1000);
+      
 
       // if (response.data.err) {
       //   alert(response.data.err);
@@ -216,15 +218,13 @@ const Dashboard = () => {
 
     }).catch(err => {
       toast.error(err.message, { toast_options });
-      console.log("Record Issue Error", err);
-      localStorage.clear();
-      history.push("/");
+      console.log("Record Issue Error", err.message);
+      if(err.message.includes("403")){
+        localStorage.clear();
+        history.push("/");
+      }
     });
-    setTimeout(() => {
-      setIsloader(false)
-
-    }, 1000);
-
+    
   }
   const uploadBtn = (event) =>{
     setIsloader(true)
@@ -274,11 +274,14 @@ const Dashboard = () => {
         toast.error(response.data.err, toast_options);
       }, 500);
       } else {
-        setIsloader(false)
         toast.success(response.data.result, toast_options);
-    }}).catch(err => {
-      localStorage.clear();
-      history.push("/");
+      }
+      setIsloader(false)
+  }).catch(err => {
+      if(err.message.includes("403")){
+        localStorage.clear();
+        history.push("/");
+      }
     })
 
     }

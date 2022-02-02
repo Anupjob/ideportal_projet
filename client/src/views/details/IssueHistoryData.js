@@ -86,14 +86,16 @@ const IssueHistoryData=()=>
       }else{
         if(response.data.result){
           setHistoryData(response.data.result)
-          setIsloader(false)
         }
       }
+      setIsloader(false)
     }).catch(err => {
       toast.error(err.message, toast_options);
       // console.log("Record Issue Error Processor Data", err)
+      if(err.message.includes("403")){
       localStorage.clear();
       history.push("/");
+      }
     });
 
     }

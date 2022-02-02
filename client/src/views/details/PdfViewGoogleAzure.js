@@ -70,7 +70,10 @@ const toast_options = {
 }
 const viewDetailBtn = {
   backgroundColor: '#4EA7D8',
-  fontSize: 14, color: 'white',height:45,
+  fontSize: 10, 
+  color: 'white',
+  marginLeft:10,
+  height:35
   // width: 130
 }
 class PdfViewGoogleAzure extends React.Component {
@@ -150,13 +153,16 @@ class PdfViewGoogleAzure extends React.Component {
         } else {
           // this.setState({ pdfImage: response.data.result, isLoading: false })
           let base64Data = response.data.result.base64Str
-          this.setState({ pdfImage: base64Data, isLoading: false, totalPages: response.data.result.noOfPages })
+          this.setState({ pdfImage: base64Data, totalPages: response.data.result.noOfPages })
         }
+        this.setState({isLoading: false})
       }).catch(err => {
         toast.error(err.message, toast_options);
         console.log("Record Issue Error", err)
+        if(err.message.includes("403")){
         localStorage.clear();
         this.props.history.push("/");
+        }
       });
     } else {
       console.log("==pdfValid==in else", pdfValid)
@@ -214,11 +220,14 @@ class PdfViewGoogleAzure extends React.Component {
 
           }
       }
+      this.setState({isLoading: false})
     }).catch(err => {
       toast.error(err.message, toast_options);
       console.log("Issue", err)
+      if(err.message.includes("403")){
       localStorage.clear();
       this.props.history.push("/");
+      }
     });
 
   }
@@ -259,16 +268,18 @@ class PdfViewGoogleAzure extends React.Component {
           {this.props.history.location.state.fileName ? this.props.history.location.state.fileName : ""}
         </CRow>
         <CRow style={{ borderBottom: "1px solid #999", marginBottom: "40px", paddingTop: "20px" }}>
-          <CCol xs="8" style={{ backgroundColor: 'white', height: 50 }}>
+          <CCol xs="6" style={{ backgroundColor: 'white', height: 50 }}>
             <div style={{ width: "100%", display: 'table' }} onChange={this.onChangeRadioValue}>
               <input type="radio" value="PDF" name="check" defaultChecked style={{ margin: 10 }} /> PDF
               <input type="radio" value="Image" name="check" style={{ margin: 10 }} /> Image
               <input type="radio" value="RotatedImage" name="check" style={{ margin: 10 }} /> Rotated Image
             </div>
           </CCol>
-          <CCol xs='4'>
-          <Button style={viewDetailBtn} onClick={console.log("==")}><i class="fa fa-code fa-lg" aria-hidden="true"></i>Header Mapping</Button>
-          <Button style={{backgroundColor: '#4EA7D8',fontSize: 14, color: 'white',marginLeft:10,height:45}} onClick={console.log("==")}><i class="fa fa-code fa-lg" aria-hidden="true"></i>Table Mapping</Button>
+          <CCol xs='6'>
+          <Button style={viewDetailBtn} onClick={console.log("==Reprocess Extraction Click::")}><i class="fa fa-repeat fa-lg" aria-hidden="true" style={{padding:'5px'}}></i>Reprocess Extraction</Button>
+          <Button style={viewDetailBtn} onClick={console.log("==Reprocess Mapping Click::")}><i class="fa fa-repeat fa-lg" aria-hidden="true" style={{padding:'5px'}}></i>Reprocess Mapping</Button>          
+          <Button style={viewDetailBtn} onClick={console.log("==Header Mapping Click::")}><i class="fa fa-code fa-lg" aria-hidden="true"></i>Header Mapping</Button>
+          <Button style={viewDetailBtn} onClick={console.log("==Table Mapping Click::")}><i class="fa fa-code fa-lg" aria-hidden="true"></i>Table Mapping</Button>
           </CCol>
         </CRow>
 

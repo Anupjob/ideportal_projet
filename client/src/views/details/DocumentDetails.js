@@ -34,8 +34,17 @@ import { width } from '@mui/system';
 import { ToastContainer, toast } from 'react-toastify';
 // import 'react-toastify/dist/ReactToastify.css';
 import 'react-toastify/dist/ReactToastify.min.css';
+import 'react-toastify/dist/ReactToastify.min.css';
+import * as wjCore from '@grapecity/wijmo';
+import { FlexGrid, FlexGridColumn, FlexGridCellTemplate } from '@grapecity/wijmo.react.grid';
+import * as wjFilter from "@grapecity/wijmo.react.grid.filter";
+import * as wjGrid from '@grapecity/wijmo.react.grid';
+import '@grapecity/wijmo.styles/wijmo.css';
+import * as wjcCore from "@grapecity/wijmo";
+import Grid from "@material-ui/core/Grid";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
+
 
 const table_header = {
   borderBottom: "1px solid #ccc",
@@ -91,8 +100,8 @@ const pdfContentView = {
 const bottom_View = {
   backgroundColor: '#fff',
   padding: 20,
-  maxHeight: 400,
-  overflowY: 'scroll'
+  maxHeight: 600,
+  // overflowY: 'scroll'
 }
 const dateTimeView = {
   fontSize: 12,
@@ -129,7 +138,7 @@ class DocumentDetails extends React.Component {
       isLoading: false,
       isCsvLoading: false,
       ShowError: false,
-      finalDataResult: {},
+      finalDataResult: [],
       pdfImage: '',
       fileType: 'pdf',
       pageNo: 1,
@@ -209,20 +218,25 @@ class DocumentDetails extends React.Component {
         headers,
       }).then((response) => {
         console.log("Respone from post getPdfImage==", response.data.result);
+
+        let stateToUpdate = { isLoading: false  }
         if (response.data.err) {
           // alert(response.data.err);
           toast.error(response.data.err, toast_options);
         } else {
           let base64Data = response.data.result.base64Str
-          this.setState({ pdfImage: base64Data, isLoading: false, totalPages: response.data.result.noOfPages })
-
+          stateToUpdate["pdfImage"] = base64Data;
+          stateToUpdate["totalPages"] = response.data.result.noOfPages;
         }
+        this.setState(stateToUpdate)
       }).catch(err => {
         toast.error(err.message, toast_options);
         this.setState({ isLoading: false })
         console.log("Record Issue Error", err)
-        localStorage.clear();
-        this.props.history.push("/");
+        if(err.message.includes("403")){
+          localStorage.clear();
+          this.props.history.push("/");
+        }
       });
     } else {
       console.log("==pdfValid==in else", pdfValid)
@@ -242,6 +256,7 @@ class DocumentDetails extends React.Component {
     // console.log("===You are in geCsvData")
     var fileName = this.props.history.location.state.data.finalFileName;
     var processPath = this.props.history.location.state.data.processorContainerPath;
+    
     this.setState({ isCsvLoading: true })
     var dataValid = true;
     if (fileName) {
@@ -272,16 +287,22 @@ class DocumentDetails extends React.Component {
         if (response.data.err) {
           // alert(response.data.err);
           toast.error(response.data.err, toast_options);
+          this.setState({ isCsvLoading: false })
+
         } else {
           this.setState({ finalDataResult: response.data.result, isCsvLoading: false })
         }
+
       }).catch(err => {
         toast.error(err.message, toast_options);
-        this.setState({ isCsvLoading: false })
+        this.setState({ isCsvLoading: false, isLoading: false })
 
         console.log("Record Issue Error", err)
-        localStorage.clear();
-        this.props.history.push("/");
+        console.log("Record Issue Error err.message::::", err.message)
+        if(err && err.message && err.message.includes("403")){
+          localStorage.clear();
+          this.props.history.push("/");
+        }
       });
     } else {
       this.setState({ isCsvLoading: false });
@@ -323,6 +344,10 @@ class DocumentDetails extends React.Component {
       }).catch(err => {
         toast.error(err.message, toast_options);
         console.log("Record Issue Error", err)
+        if(err.message.includes("403")){
+          localStorage.clear();
+          this.props.history.push("/");
+        }
       });
 
     }
@@ -353,6 +378,40 @@ class DocumentDetails extends React.Component {
     this.setState({ expandScreen: !this.state.expandScreen })
   }
 
+  // renderWizmoGrid(){
+  //   return (
+  //     <Grid className="container-fluid">
+  //       <Grid item xs={12} style={{ marginTop: 25}}>
+             
+  //            <FlexGrid
+  //             headersVisibility="Column"
+  //             autoGenerateColumns={false}
+  //             itemsSource={this.state.finalDataResult}
+  //             style={{
+  //               height: "auto",
+  //               maxHeight: 400,
+  //               margin: 0,
+  //             }}
+  //           >
+  //             {this.state.finalDataResult.length>0 && Object.keys(this.state.finalDataResult[0]).map(key =>
+  //             <FlexGridColumn
+  //             binding={key}
+  //             header={key}
+  //             cssClass="cell-header"
+  //             width="*"
+  //             minWidth={100}
+  //             // visible={key != "user_id"}
+  //             style={{backgroundColor:'grey'}}
+  //             ></FlexGridColumn>
+
+  //             )}  
+
+  //             <wjFilter.FlexGridFilter></wjFilter.FlexGridFilter>
+  //           </FlexGrid>
+  //       </Grid>
+  //     </Grid>
+  //   )
+  // }
 
   render() {
     let dateRec = moment(this.props && this.props.history && this.props.history.location && this.props.history.location.state && this.props.history.location.state.data.dateRec).format("MM/DD/YYYY hh:mm A");
@@ -459,6 +518,7 @@ class DocumentDetails extends React.Component {
                   </div>
                 </div>
               </div>
+
               <div style={bottom_View}>
                 <TableContainer component={Paper} style={{ position: "relative", zIndex: "5", overflow: 'hidden' }}>
                   <Table aria-label="simple table">
@@ -518,7 +578,10 @@ class DocumentDetails extends React.Component {
                     </TableHead>
                   </Table>
                 </TableContainer>
-                {Object.keys(this.state.finalDataResult).length > 0 ?
+                {/* {Object.keys(this.state.finalDataResult).length > 0 &&
+                  this.renderWizmoGrid()
+                } */}
+                {/* {Object.keys(this.state.finalDataResult).length > 0 ?
                   <TableContainer component={Paper} style={{ position: "relative", zIndex: "5" }}>
                     <Table aria-label="simple table">
                       <TableHead>
@@ -552,12 +615,45 @@ class DocumentDetails extends React.Component {
                   <p style={{ width: "100%", display: "block", color: "#c00", margin: "12px 0", textAlign: "center", fontSize: "1.6em" }}>
                     {(!this.state.isCsvLoading) ? "No record Found!!" : ""}
                   </p>
-                }
+                } */}
+                {Object.keys(this.state.finalDataResult).length > 0 ?
+                <Grid className="container-fluid">
+                <Grid item xs={12} style={{ marginTop: 25}}>
+             
+                    <FlexGrid
+                      headersVisibility="Column"
+                      autoGenerateColumns={false}
+                      itemsSource={this.state.finalDataResult}
+                      style={{
+                        height: "auto",
+                        maxHeight: 400,
+                        margin: 0,
+                      }}
+                    >
+                      {this.state.finalDataResult.length>0 && Object.keys(this.state.finalDataResult[0]).map(key =>
+                      <FlexGridColumn
+                      binding={key}
+                      header={key}
+                      cssClass="cell-header"
+                      width="*"
+                      minWidth={100}
+                      // visible={key != "user_id"}
+                      style={{backgroundColor:'grey'}}
+                      ></FlexGridColumn>
+                      )}  
 
+                      <wjFilter.FlexGridFilter></wjFilter.FlexGridFilter>
+                    </FlexGrid>
+                </Grid>
+              </Grid>:
+               <p style={{ width: "100%", display: "block", color: "#c00", margin: "12px 0", textAlign: "center", fontSize: "1.6em" }}>
+               {(!this.state.isCsvLoading) ? "No record Found!!" : ""}
+             </p>
+              }
               </div>
             </SplitPane>
           </CCol>
-          {this.state.isLoading || this.state.isCsvLoading &&
+          {(this.state.isLoading || this.state.isCsvLoading) &&
             <div style={loader}>
 
               <CircularProgress style={{ margin: "26% auto", display: "block" }} />

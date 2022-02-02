@@ -109,14 +109,16 @@ const CompanyUserData = () => {
       }else{
         if(response.data.result){
           setTableData(response.data.result)
-          setIsloader(false)
         }
       }
+      setIsloader(false)
     }).catch(err => {
       toast.error(err.message, toast_options);
       // console.log("Record Issue Error Processor Data", err)
+      if(err.message.includes("403")){
       localStorage.clear();
       history.push("/");
+      }
     });
   }
   const handleClickToOpen = () => {
@@ -154,16 +156,18 @@ const CompanyUserData = () => {
           toast.error(response.data.err, toast_options);
         } else {
           // this.setState({ pdfImage: response.data.result, isLoading: false })
-          setIsloader(false)
           setTableData([])
           getUsersData()
           handleToClose()
         }
+        setIsloader(false)
       }).catch(err => {
         toast.error(err.message, toast_options);
         console.log("Company Data Issue Error", err)
+        if(err.message.includes("403")){
         localStorage.clear();
         history.push("/");
+        }
       });
     }}
   return (
