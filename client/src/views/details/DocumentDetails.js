@@ -109,14 +109,15 @@ const dateTimeView = {
 }
 const viewDetailBtn = {
   backgroundColor: '#4EA7D8',
-  fontSize: 14, color: 'white',
-  width: 130
+  fontSize: 14,
+  color: 'white',
+  whiteSpace: "nowrap",
+  margin: "10px"
 }
 const historyIssueBtn = {
   borderBottom: "1px solid #ccc",
   color: "#2352a2",
-  fontSize: 10,
-  marginRight: 40
+  fontSize: 10
 }
 const toast_options = {
   position: "top-center",
@@ -127,6 +128,27 @@ const toast_options = {
   draggable: true,
   progress: undefined,
 }
+const drag_arrow = {
+  textAlign: "center",
+  position: "absolute",
+  zIndex: "0",
+  width: "100%",
+  display: "table",
+  top: "-20px",
+  fontSize: "1.8em",
+  color: "#000"
+}
+
+// const useStyles = makeStyles(theme => ({
+//   title_text: {
+//     color: 'white',
+//     position: "fixed",
+//     top: "108px",
+//     left: "85px",
+//     zIndex: "1030",
+//     fontWeight: "bold"
+//   }
+// }));
 class DocumentDetails extends React.Component {
 
   constructor(props) {
@@ -365,13 +387,28 @@ class DocumentDetails extends React.Component {
     this.setState({ pageNo: updatedNum }, () => this.getPdfImage())
   }
   rotatePdf = () => {
-    this.setState({ rotateScreen: this.state.rotateScreen + 1 })
+    if (this.state.rotateScreen >= 4) {
+      this.setState({ rotateScreen: 0 })
+    }
+    else {
+      this.setState({ rotateScreen: this.state.rotateScreen + 1 })
+    }
   }
   zoomIn = () => {
-    this.setState({ zoomScreen: this.state.zoomScreen + 1 })
+    if (this.state.zoomScreen >= 15) {
+      this.setState({ zoomScreen: 15 })
+    }
+    else {
+      this.setState({ zoomScreen: this.state.zoomScreen + 1 })
+    }
   }
   zoomOut = () => {
-    this.setState({ zoomScreen: this.state.zoomScreen - 1 })
+    if (this.state.zoomScreen <= 0) {
+      this.setState({ zoomScreen: 0 })
+    }
+    else {
+      this.setState({ zoomScreen: this.state.zoomScreen - 1 })
+    }
   }
 
   expandPdf = () => {
@@ -507,7 +544,7 @@ class DocumentDetails extends React.Component {
                       // onLoadSuccess={page => console.log('page onLoadSuccess:>> ', page)}
                       // onLoadError={(error) => console.log('pdf error :>> ', error)}
                       >
-                        <Page pageNumber={this.state.pageNo} />
+                        <Page pageNumber={1} />
                       </Document>
 
                       :
@@ -520,6 +557,7 @@ class DocumentDetails extends React.Component {
               </div>
 
               <div style={bottom_View}>
+                <div style={drag_arrow}><i class="fa fa-arrows-v" aria-hidden="true"></i></div>
                 <TableContainer component={Paper} style={{ position: "relative", zIndex: "5", overflow: 'hidden' }}>
                   <Table aria-label="simple table">
                     <TableHead>
@@ -550,6 +588,13 @@ class DocumentDetails extends React.Component {
                             onClick={() => this.props.history.push("/issueHistory")}
                           >
                             ISSUE HISTORY
+                          </Button>
+                        </TableCell>
+                        <TableCell style={historyIssueBtn}>
+                          <Button style={viewDetailBtn}
+                          //onClick={() => this.props.history.push("/issueHistory")}
+                          >
+                            Export Data &nbsp;  <i class="fa fa-download" aria-hidden="true"></i>
                           </Button>
                         </TableCell>
                       </TableRow>
