@@ -750,17 +750,14 @@ async def final_data(incData: FinalData = Body(...)):
         # data = pd.read_csv(file_buffer)
         data = data.drop("index", axis=1)
         data = data.fillna(0)
-        data_dict = data.to_dict("list")
+        # data_dict = data.to_dict("list")
+        data_dict = data.to_dict(orient='index')
 
-        # data_keys =
-        # data_values =
+        final_csv_arr = []
+        for value in data_dict.values():
+            final_csv_arr.append(value)
 
-        # df = pd.DataFrame(data)
-        # print("df",df)
-        # print("dict(df.values)",dict(df.values))
-        # print("dict(df.keys)",dict(df.keys))
-
-        return {"result": data_dict, "err": None}
+        return {"result": final_csv_arr, "err": None}
     else:
         return {"result": None, "err": "file not found"}
 
@@ -795,6 +792,7 @@ async def get_processors(incData: ProcessorDataSchema = Body(...)):
 
 @app.post("/getReportHistory", dependencies=[Depends(JWTBearer())])
 async def get_report_hist(incData: ReportHistSchema = Body(...)):
+    print("get_report_hist",incData)
     companyId = incData.company_id
     userId = incData.user_id
 
