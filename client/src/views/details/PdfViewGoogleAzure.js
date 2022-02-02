@@ -89,7 +89,8 @@ class PdfViewGoogleAzure extends React.Component {
       pdfImage: '',
       isCheckedPdf: false,
       isCheckedImage: false,
-      isCheckedRotateImg: false
+      isCheckedRotateImg: false,
+      totalPages:0
     }
     // this.onChangeValue = this.onChangeValue.bind(this);
   }
@@ -147,7 +148,9 @@ class PdfViewGoogleAzure extends React.Component {
           // alert(response.data.err);
           toast.error(response.data.err, toast_options);
         } else {
-          this.setState({ pdfImage: response.data.result, isLoading: false })
+          // this.setState({ pdfImage: response.data.result, isLoading: false })
+          let base64Data = response.data.result.base64Str
+          this.setState({ pdfImage: base64Data, isLoading: false, totalPages: response.data.result.noOfPages })
         }
       }).catch(err => {
         toast.error(err.message, toast_options);

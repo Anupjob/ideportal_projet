@@ -132,6 +132,11 @@ const Dashboard = () => {
 
 
     }
+    if(localStorage.getItem('access_token') === null){
+      // console.log("===localStorage token::",localStorage.getItem('access_token'))
+      localStorage.clear();
+      history.push("/");
+    }
   }, [])
 
 
@@ -222,6 +227,7 @@ const Dashboard = () => {
 
   }
   const uploadBtn = (event) =>{
+    setIsloader(true)
     event.preventDefault();
     let companyId = localStorage.getItem('companyId')
     console.log("companyId in dashboard==",companyId)
@@ -268,8 +274,12 @@ const Dashboard = () => {
         toast.error(response.data.err, toast_options);
       }, 500);
       } else {
+        setIsloader(false)
         toast.success(response.data.result, toast_options);
-    }})
+    }}).catch(err => {
+      localStorage.clear();
+      history.push("/");
+    })
 
     }
   }
