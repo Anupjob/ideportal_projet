@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {createRef} from 'react'
 import {
   CCard,
   CCol,
@@ -38,10 +38,13 @@ import 'react-toastify/dist/ReactToastify.min.css';
 import * as wjCore from '@grapecity/wijmo';
 import { FlexGrid, FlexGridColumn, FlexGridCellTemplate } from '@grapecity/wijmo.react.grid';
 import * as wjFilter from "@grapecity/wijmo.react.grid.filter";
-import * as wjGrid from '@grapecity/wijmo.react.grid';
+// import * as wjGrid from '@grapecity/wijmo.react.grid';
+import * as wjGrid from "@grapecity/wijmo.grid";
 import '@grapecity/wijmo.styles/wijmo.css';
 import * as wjcCore from "@grapecity/wijmo";
 import Grid from "@material-ui/core/Grid";
+import CheckIcon from '@mui/icons-material/Check';
+import ClearIcon from '@mui/icons-material/Clear';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
@@ -166,15 +169,24 @@ class DocumentDetails extends React.Component {
       pageNo: 1,
       expandScreen: false,
       zoomScreen: 0,
-      rotateScreen: 0
+      rotateScreen: 0,
+      docValidated:false
     }
-  }
+
+      // this.gridObject = null;
+      this.theGrid = createRef();
+    }
+
   componentDidMount = () => {
 
     localStorage.setItem('splitPos', 350)
     let details = JSON.parse(localStorage.getItem("details"))
     console.log("=== history.location.state:::", this.props)
     if (this.props.history.location && this.props.history.location.state && this.props.history.location.state.data) {
+      
+     let docValidatedRec = this.props.history.location.state.data.docValidated? this.props.history.location.state.data.docValidated:false;
+      
+      this.setState({docValidated:docValidatedRec})
       this.getPdfImage();
       this.geCsvData();
     }
@@ -343,7 +355,7 @@ class DocumentDetails extends React.Component {
     else {
       const headers = {
         "Content-Type": "application/json",
-        // Authorization: "Bearer " + logginUser.token,
+        Authorization: "Bearer " + localStorage.getItem('access_token'),
         // reqFrom: "ADMIN",
       };
       let requestBody = { doc_id: this.props.history.location.state.data.doc_id, errMsg: this.state.enterIssue, user_id: userId }
@@ -375,6 +387,161 @@ class DocumentDetails extends React.Component {
     }
 
   }
+
+  downloadPdf = () =>{
+    var pdfFileName = this.props.history.location.state.data.pdfFilename;
+    var processorPath = this.props.history.location.state.data.processorContainerPath;
+    var pdfValid = true;
+    console.log("==pdfFileName==", pdfFileName)
+    console.log("==processorPath==", processorPath)
+
+
+    if (pdfFileName) {
+
+    } else {
+      pdfValid = false
+      // toast.warning("FileName is invalid", toast_options);
+    }
+    if (processorPath) {
+
+    } else {
+      pdfValid = false
+      // toast.warning("FileName is invalid", toast_options);
+    }
+
+    if (pdfValid) {
+      console.log("==pdfValid==in if under", pdfValid, this.state.pageNo)
+      this.setState({ isLoading: true })
+
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + localStorage.getItem('access_token'),
+        // reqFrom: "ADMIN",
+      };
+      axios({
+        method: "POST",
+        url: settings.serverUrl + "/downloadPdf",
+        data: JSON.stringify({ fileName: pdfFileName, containerPath: processorPath }),
+        headers,
+      }).then((response) => {
+        console.log("Respone from post downloadPdf==", response.data.result);
+
+        let stateToUpdate = { isLoading: false  }
+        if (response.data.err) {
+          // alert(response.data.err);
+          toast.error(response.data.err, toast_options);
+        } else {
+          let base64Data = response.data.result;
+          const linkSource = `data:application/pdf;base64,${base64Data}`;
+          const downloadLink = document.createElement("a");
+          downloadLink.href = linkSource;
+          downloadLink.download = pdfFileName;
+          downloadLink.click();
+
+        }
+        this.setState(stateToUpdate)
+      }).catch(err => {
+        toast.error(err.message, toast_options);
+        this.setState({ isLoading: false })
+        console.log("Record Issue Error", err)
+        if(err.message.includes("403")){
+          localStorage.clear();
+          this.props.history.push("/");
+        }
+      });
+    } else {
+      console.log("==pdfValid==in else", pdfValid)
+
+      setTimeout(() => {
+        toast.warn("Request is invalid", toast_options);
+        setTimeout(() => {
+
+          this.props.history.goBack()
+        }, 1000);
+
+      }, 500);
+
+    }
+
+  }
+
+  validateData = () => {
+
+    console.log("==Validate data===")
+    let valDoc = this.state.docValidated
+    this.setState({docValidated:!valDoc},()=>{this.validateDoc()})
+  }
+
+  validateDoc = () => {
+
+    console.log("==Validate data===")
+    const headers = {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + localStorage.getItem('access_token'),
+      // reqFrom: "ADMIN",
+    };
+    let requestBody = { doc_id: this.props.history.location.state.data.doc_id,validated:this.state.docValidated}
+    console.log("requestBody for validate ::::", requestBody)
+    axios({
+      method: "POST",
+      url: settings.serverUrl + "/validateDoc",
+      data: JSON.stringify(requestBody),
+      headers,
+    }).then((response) => {
+      console.log("Response on validate Api:::::",response)
+
+    }).catch(err => {
+      toast.error(err.message, toast_options);
+      // console.log("Record Issue Error", err)
+      if(err.message.includes("403")){
+        localStorage.clear();
+        this.props.history.push("/");
+      }
+    });
+
+  }
+
+  exportFileToCSV = (csv, fileName) => {
+    var fileType = "txt/csv;charset=utf-8";
+    if (navigator.msSaveBlob) {
+      // IE
+      navigator.msSaveBlob(
+        new Blob([csv], {
+          type: fileType,
+        }),
+        fileName
+      );
+    } else {
+      var e = document.createElement("a");
+      e.setAttribute(
+        "href",
+        "data:" + fileType + "," + encodeURIComponent(csv)
+      );
+      e.setAttribute("download", fileName);
+      e.style.display = "none";
+      document.body.appendChild(e);
+      e.click();
+      document.body.removeChild(e);
+    }
+  };
+
+  exportCSV = () => {
+
+    let csvFileNameSplited = this.props.history.location.state.data.pdfFilename.split(".");
+    let csvFileName = csvFileNameSplited[0];
+    //export grid to CSV
+    var rng = new wjGrid.CellRange(
+        0,
+        0,
+        this.gridObject.rows.length - 1,
+        this.gridObject.columns.length - 1
+      ),
+      csv = this.gridObject.getClipString(rng, true, true);
+      this.exportFileToCSV(
+      csv,
+      csvFileName?csvFileName+".csv":"file_"+new Date().getTime()+".csv"
+    );
+  };
 
   pageDownClicked = () => {
     let updatedNum = this.state.pageNo - 1;
@@ -415,41 +582,10 @@ class DocumentDetails extends React.Component {
     this.setState({ expandScreen: !this.state.expandScreen })
   }
 
-  // renderWizmoGrid(){
-  //   return (
-  //     <Grid className="container-fluid">
-  //       <Grid item xs={12} style={{ marginTop: 25}}>
-             
-  //            <FlexGrid
-  //             headersVisibility="Column"
-  //             autoGenerateColumns={false}
-  //             itemsSource={this.state.finalDataResult}
-  //             style={{
-  //               height: "auto",
-  //               maxHeight: 400,
-  //               margin: 0,
-  //             }}
-  //           >
-  //             {this.state.finalDataResult.length>0 && Object.keys(this.state.finalDataResult[0]).map(key =>
-  //             <FlexGridColumn
-  //             binding={key}
-  //             header={key}
-  //             cssClass="cell-header"
-  //             width="*"
-  //             minWidth={100}
-  //             // visible={key != "user_id"}
-  //             style={{backgroundColor:'grey'}}
-  //             ></FlexGridColumn>
-
-  //             )}  
-
-  //             <wjFilter.FlexGridFilter></wjFilter.FlexGridFilter>
-  //           </FlexGrid>
-  //       </Grid>
-  //     </Grid>
-  //   )
-  // }
-
+  initializeGrid = (gridObj) =>{
+    // flex.rows.defaultSize = 40;
+    this.gridObject = gridObj;
+  }
   render() {
     let dateRec = moment(this.props && this.props.history && this.props.history.location && this.props.history.location.state && this.props.history.location.state.data.dateRec).format("MM/DD/YYYY hh:mm A");
     let dateProcessed = moment(this.props && this.props.history && this.props.history.location && this.props.history.location.state && this.props.history.location.state.data.dateProcessed).format("MM/DD/YYYY hh:mm A");
@@ -496,7 +632,14 @@ class DocumentDetails extends React.Component {
                     <div style={{ border: "1px solid #fff", borderRadius: "50px", width: "40px", height: "40px", textAlign: "center", lineHeight: "38px", color: "#fff", display: "table-cell", cursor: "pointer" }} onClick={() => this.zoomIn()}><i class="fa fa-search-plus" aria-hidden="true"></i></div>
                     <div style={{ border: "1px solid #fff", borderRadius: "50px", width: "40px", height: "40px", textAlign: "center", lineHeight: "38px", color: "#fff", display: "table-cell", cursor: "pointer" }} onClick={() => this.zoomOut()}><i class="fa fa-search-minus" aria-hidden="true"></i></div>
                     <div style={{ border: "1px solid #fff", borderRadius: "50px", width: "40px", height: "40px", textAlign: "center", lineHeight: "38px", color: "#fff", display: "table-cell", cursor: "pointer" }} onClick={() => this.rotatePdf()}><i class="fa fa-repeat" aria-hidden="true"></i></div>
-                    <div style={{ border: "1px solid #fff", borderRadius: "50px", width: "40px", height: "40px", textAlign: "center", lineHeight: "38px", color: "#fff", display: "table-cell", cursor: "pointer" }}><i class="fa fa-download" aria-hidden="true"></i></div>
+                    <div style={{ border: "1px solid #fff", borderRadius: "50px", width: "40px", height: "40px", textAlign: "center", lineHeight: "38px", color: "#fff", display: "table-cell", cursor: "pointer" }}>
+                      {/* <a style={{color:'white'}} href={"data:application/pdf;base64," + this.state.pdfImage} download={this.props.history.location.state.data.pdfFilename ? this.props.history.location.state.data.pdfFilename : "file_"+new Date().getTime()+".pdf"}>
+                      <i class="fa fa-download" aria-hidden="true"></i>
+                      </a> */}
+                      <a style={{color:'white'}}  onClick={() => this.downloadPdf()}>
+                      <i class="fa fa-download" aria-hidden="true"></i>
+                      </a>
+                    </div>
                   </div>
                 </CCol>
               </CRow>
@@ -593,8 +736,18 @@ class DocumentDetails extends React.Component {
                         <TableCell style={historyIssueBtn}>
                           <Button style={viewDetailBtn}
                           //onClick={() => this.props.history.push("/issueHistory")}
+                          onClick={() => this.exportCSV()}
                           >
                             Export Data &nbsp;  <i class="fa fa-download" aria-hidden="true"></i>
+                          </Button>
+                        </TableCell>
+                        <TableCell style={historyIssueBtn}>
+                          <Button style={viewDetailBtn} 
+                          startIcon= {this.state.docValidated?<CheckIcon/>:<ClearIcon/>}
+                          color={this.state.docValidated?"green":"red"}
+                          onClick={() => {this.validateData()}}
+                          >
+                          Validate
                           </Button>
                         </TableCell>
                       </TableRow>
@@ -623,9 +776,7 @@ class DocumentDetails extends React.Component {
                     </TableHead>
                   </Table>
                 </TableContainer>
-                {/* {Object.keys(this.state.finalDataResult).length > 0 &&
-                  this.renderWizmoGrid()
-                } */}
+                
                 {/* {Object.keys(this.state.finalDataResult).length > 0 ?
                   <TableContainer component={Paper} style={{ position: "relative", zIndex: "5" }}>
                     <Table aria-label="simple table">
@@ -669,6 +820,8 @@ class DocumentDetails extends React.Component {
                       headersVisibility="Column"
                       autoGenerateColumns={false}
                       itemsSource={this.state.finalDataResult}
+                      initialized={this.initializeGrid}
+                      ref={this.theGrid}
                       style={{
                         height: "auto",
                         maxHeight: 400,

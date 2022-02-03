@@ -78,8 +78,9 @@ const toast_options = {
   draggable: true,
   progress: undefined,
 }
+
 const upload_file = {
-  textIndent: "-200px",
+  textIndent: "-2000px",
   padding: "62px 0",
   borderRadius: "5px",
  // background: "none",
@@ -92,6 +93,7 @@ const upload_file = {
   backgroundPosition: "50%",
   marginBottom:"10px",marginTop:"42px"
 }
+
 
 const Dashboard = () => {
 
