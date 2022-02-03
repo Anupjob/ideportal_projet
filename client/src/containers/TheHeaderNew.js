@@ -73,6 +73,12 @@ const useStyles = makeStyles(theme => ({
     position: "absolute",
     left: "30px",
     bottom: "0px",
+    "@media (max-width: 1200px)": {
+      bottom: "34px"
+    },
+    "@media (max-width: 767px)": {
+      bottom: "67px"
+    }
   },
   header_bg1: {
     background: "rgb(131,73,191)",
