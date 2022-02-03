@@ -111,9 +111,17 @@ class ReportHistSchema(BaseModel):
    user_id: str
 
 class UploadFileSchema(BaseModel):
-   doc_file = UploadFile
+   doc_file: UploadFile
    companyId: str
    userId: str
+
+class ValidateDocSchema(BaseModel):
+   doc_id: str
+   validated: bool
+
+class DownloadPdfSchema(BaseModel):
+   fileName: str
+   containerPath: str
 
 def download_blob_azure(local_path, complete_file_name):
     print("download_blob_azure", local_path, complete_file_name);
@@ -678,6 +686,7 @@ async def incoming_data(incData: IncomingData = Body(...)):
         filenameProcessing = ""
         fromEmail = ""
         toEmail = ""
+        docValidated = False
 
         if 'noOfPages' in ids_s:
             noOfPages = ids_s["noOfPages"]
@@ -706,6 +715,9 @@ async def incoming_data(incData: IncomingData = Body(...)):
         if 'to_main' in ids_s:
             toEmail = ids_s["to_main"]
 
+        if 'docValidated' in ids_s:
+            docValidated = ids_s["docValidated"]
+
         ids_dict.append({
             "doc_id":str(ids_s["_id"]),
             "docStatus":ids_s["status"],
@@ -721,7 +733,8 @@ async def incoming_data(incData: IncomingData = Body(...)):
             "pdfFilename": filenameProcessing,
             "errMsg": errMsg,
             "fromEmail":fromEmail,
-            "toEmail":toEmail
+            "toEmail":toEmail,
+            "docValidated": docValidated
         })
 
     return {"result": ids_dict, "err": None}
@@ -994,6 +1007,35 @@ async def add_user(companyId: str = Form(...), companyName: str = Form(...), use
         return {"result": file_upload_res, "err": None}
     else:
         return {"result": None, "err": "invalid request"}
+
+
+@app.post("/validateDoc", dependencies=[Depends(JWTBearer())])
+async def validate_doc(incData: ValidateDocSchema = Body(...)):
+    print("validateDoc", incData)
+    doc_id = incData.doc_id
+    validated = incData.validated
+
+    db_mongo = getConn()
+    files_incoming_c = db_mongo.files_incoming
+
+    # validatedVal = "false"
+    # if validated == True:
+    #     validatedVal = "true"
+    doc_validated_result = files_incoming_c.update_one({"_id": ObjectId(doc_id)}, {"$set": {"docValidated": validated}})
+
+    return {"result": doc_validated_result, "err": None}
+
+@app.post("/downloadPdf", dependencies=[Depends(JWTBearer())])
+async def download_pdf(incData: DownloadPdfSchema = Body(...)):
+    print("downloadPdf", incData)
+    fileName = incData.fileName
+    containerPath = incData.containerPath
+
+    completeFileName = containerPath + "/" + fileName
+
+    base64Str = pdf_blob_azure_buffer(completeFileName)
+
+    return {"result": base64Str, "err": None}
 
 @app.get("/provider/{id}", dependencies=[Depends(JWTBearer())], tags=["posts"])
 async def add_post(id: int) -> dict:

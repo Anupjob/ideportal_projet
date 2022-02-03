@@ -45,6 +45,9 @@ import * as wjcCore from "@grapecity/wijmo";
 import Grid from "@material-ui/core/Grid";
 import CheckIcon from '@mui/icons-material/Check';
 import ClearIcon from '@mui/icons-material/Clear';
+import docStyle from "./docDetailStyle.css"
+import { doc_styles } from "./documentDetailStyle";
+import { withStyles } from "@material-ui/core/styles";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
@@ -141,6 +144,7 @@ const drag_arrow = {
   fontSize: "1.8em",
   color: "#000"
 }
+
 
 // const useStyles = makeStyles(theme => ({
 //   title_text: {
@@ -544,15 +548,25 @@ class DocumentDetails extends React.Component {
   };
 
   pageDownClicked = () => {
+    if(this.state.pageNo >= 2){
     let updatedNum = this.state.pageNo - 1;
     console.log("minus page", updatedNum)
     this.setState({ pageNo: updatedNum }, () => this.getPdfImage())
+    }
+    else{
+      alert("This is First Page");
+    }
   }
   pageUpClicked = () => {
+    if(this.state.pageNo <= this.state.totalPages - 1){
     let updatedNum = this.state.pageNo + 1;
     console.log("plus page", updatedNum)
     this.setState({ pageNo: updatedNum }, () => this.getPdfImage())
   }
+  else{
+    alert("This is Last Page");
+  }
+}
   rotatePdf = () => {
     if (this.state.rotateScreen >= 4) {
       this.setState({ rotateScreen: 0 })
@@ -587,19 +601,22 @@ class DocumentDetails extends React.Component {
     this.gridObject = gridObj;
   }
   render() {
+    
+    const { classes } = this.props;
+
     let dateRec = moment(this.props && this.props.history && this.props.history.location && this.props.history.location.state && this.props.history.location.state.data.dateRec).format("MM/DD/YYYY hh:mm A");
     let dateProcessed = moment(this.props && this.props.history && this.props.history.location && this.props.history.location.state && this.props.history.location.state.data.dateProcessed).format("MM/DD/YYYY hh:mm A");
     let noOfPages = this.props && this.props.history && this.props.history.location && this.props.history.location.state && this.props.history.location.state.data.noOfPages;
     console.log("expand", this.state)
     return (
       <CCard style={cardView}>
-        <CRow style={{ color: 'white', position: "fixed", top: "108px", left: "85px", zIndex: "1030", fontWeight: "bold" }}>
+        <CRow className={classes.title_text }>
           {this.props.history.location.state.data.pdfFilename ? this.props.history.location.state.data.pdfFilename : ""}
         </CRow>
         <CRow>
           <CCol>
             <div style={{
-              width: "100%", maxWidth: "612px", background: "rgb(0, 117, 183)", margin: "0px auto -9px auto", borderRadius: "5px 5px 0 0", position: "relative", zIndex: "500"
+              width: "100%", maxWidth: "615px", background: "rgb(0, 117, 183)", margin: "0px auto -9px auto", borderRadius: "5px 5px 0 0", position: "relative", zIndex: "500"
             }}>
               <CRow>
                 <CCol xs="6">
@@ -879,5 +896,6 @@ class DocumentDetails extends React.Component {
 //   mapDispatchToProps()
 // )(DocumentDetails);
 
-export default
-  (DocumentDetails)
+// export default
+//   (DocumentDetails)
+export default withStyles(doc_styles, { withTheme: true })(DocumentDetails);
