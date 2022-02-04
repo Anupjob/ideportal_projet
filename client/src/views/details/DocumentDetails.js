@@ -166,7 +166,8 @@ class DocumentDetails extends React.Component {
       rotateScreen: 0,
       docValidated:false,
       value: 1,
-      pageNoToShow:"1"
+      pageNoToShow:"1",
+      docValidated:"No"
     }
 
       // this.gridObject = null;
@@ -180,7 +181,7 @@ class DocumentDetails extends React.Component {
     console.log("=== history.location.state:::", this.props)
     if (this.props.history.location && this.props.history.location.state && this.props.history.location.state.data) {
       
-     let docValidatedRec = this.props.history.location.state.data.docValidated? this.props.history.location.state.data.docValidated:false;
+     let docValidatedRec = this.props.history.location.state.data.docValidated? this.props.history.location.state.data.docValidated:"No";
       
       this.setState({docValidated:docValidatedRec})
       this.getPdfImage();
@@ -388,8 +389,8 @@ class DocumentDetails extends React.Component {
     var pdfFileName = this.props.history.location.state.data.pdfFilename;
     var processorPath = this.props.history.location.state.data.processorContainerPath;
     var pdfValid = true;
-    console.log("==pdfFileName==", pdfFileName)
-    console.log("==processorPath==", processorPath)
+    // console.log("==pdfFileName==", pdfFileName)
+    // console.log("==processorPath==", processorPath)
 
 
     if (pdfFileName) {
@@ -462,21 +463,18 @@ class DocumentDetails extends React.Component {
   }
 
   validateData = () => {
-
-    console.log("==Validate data===")
     let valDoc = this.state.docValidated
-    this.setState({docValidated:!valDoc},()=>{this.validateDoc()})
+    this.setState({docValidated:valDoc === "Yes"?"No":"Yes"},()=>{this.validateDoc()})
   }
 
   validateDoc = () => {
-
-    console.log("==Validate data===")
+    this.setState({ isLoading: true })
     const headers = {
       "Content-Type": "application/json",
       Authorization: "Bearer " + localStorage.getItem('access_token'),
       // reqFrom: "ADMIN",
     };
-    let requestBody = { doc_id: this.props.history.location.state.data.doc_id,validated:this.state.docValidated}
+    let requestBody = { doc_id: this.props.history.location.state.data.doc_id,validated:this.state.docValidated === "Yes"}
     console.log("requestBody for validate ::::", requestBody)
     axios({
       method: "POST",
@@ -485,6 +483,13 @@ class DocumentDetails extends React.Component {
       headers,
     }).then((response) => {
       console.log("Response on validate Api:::::",response)
+      if (response.data.err) {
+        // alert(response.data.err);
+        toast.error(response.data.err, toast_options);
+      } else {
+
+      }
+      this.setState({ isLoading: false })
 
     }).catch(err => {
       toast.error(err.message, toast_options);
@@ -523,6 +528,7 @@ class DocumentDetails extends React.Component {
 
   exportCSV = () => {
 
+    this.setState({ isLoading: true })
     let csvFileNameSplited = this.props.history.location.state.data.pdfFilename.split(".");
     let csvFileName = csvFileNameSplited[0];
     //export grid to CSV
@@ -535,7 +541,8 @@ class DocumentDetails extends React.Component {
       csv = this.gridObject.getClipString(rng, true, true);
       this.exportFileToCSV(
       csv,
-      csvFileName?csvFileName+".csv":"file_"+new Date().getTime()+".csv"
+      csvFileName?csvFileName+".csv":"file_"+new Date().getTime()+".csv",
+      this.setState({ isLoading: true })
     );
   };
 
@@ -606,7 +613,7 @@ class DocumentDetails extends React.Component {
     this.gridObject = gridObj;
   }
   render() {
-    
+    console.log('this.state.docValidated :>> ', this.state.docValidated);
     const { classes } = this.props;
 
     let dateRec = moment(this.props && this.props.history && this.props.history.location && this.props.history.location.state && this.props.history.location.state.data.dateRec).format("MM/DD/YYYY hh:mm A");
@@ -774,8 +781,8 @@ class DocumentDetails extends React.Component {
                         </TableCell>
                         <TableCell style={historyIssueBtn}>
                           <Button style={viewDetailBtn} 
-                          startIcon= {this.state.docValidated?<CheckIcon/>:<ClearIcon/>}
-                          color={this.state.docValidated?"green":"red"}
+                          startIcon= {this.state.docValidated.toLowerCase() === "yes"?<CheckIcon/>:<ClearIcon/>}
+                          // color={this.state.docValidated?"green":"red"}
                           onClick={() => {this.validateData()}}
                           >
                           Validate
@@ -875,9 +882,9 @@ class DocumentDetails extends React.Component {
                     </FlexGrid>
                 </Grid>
               </Grid>:
-               <p style={{ width: "100%", display: "block", color: "#c00", margin: "12px 0", textAlign: "center", fontSize: "1.6em" }}>
+              <div style={{height:300}}> <p style={{ width: "100%", display: "block", color: "#c00", margin: "12px 0", textAlign: "center", fontSize: "1.6em" }}>
                {(!this.state.isCsvLoading) ? "No record Found!!" : ""}
-             </p>
+             </p></div>
               }
               </div>
             </SplitPane>
