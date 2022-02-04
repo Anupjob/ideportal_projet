@@ -13,6 +13,7 @@ import settings from 'src/config/settings';
 import axios from "axios";
 import { useHistory } from "react-router";
 import Button from "@material-ui/core/Button";
+//import { doc_styles } from "./documentDetailStyle";
 
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
@@ -264,7 +265,9 @@ class PdfViewGoogleAzure extends React.Component {
     // console.log("===PdfViewGoogleAzure doc_id in render :::",this.props.history.location.state.data.doc_id)
     return (
       <CCard style={pdfMainView}>
-        <CRow style={{ color: 'white', position: "fixed", top: "108px", left: "85px", zIndex: "1030", fontWeight: "bold" }}>
+        <CRow 
+        //className={classes.title_text }
+        >
           {this.props.history.location.state.fileName ? this.props.history.location.state.fileName : ""}
         </CRow>
         <CRow style={{ borderBottom: "1px solid #999", marginBottom: "40px", paddingTop: "20px" }}>

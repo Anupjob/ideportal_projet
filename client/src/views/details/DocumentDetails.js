@@ -2,6 +2,7 @@ import React, {createRef} from 'react'
 import {
   CCard,
   CCol,
+  CInput,
   CProgress,
   CRow,
 } from '@coreui/react'
@@ -145,17 +146,6 @@ const drag_arrow = {
   color: "#000"
 }
 
-
-// const useStyles = makeStyles(theme => ({
-//   title_text: {
-//     color: 'white',
-//     position: "fixed",
-//     top: "108px",
-//     left: "85px",
-//     zIndex: "1030",
-//     fontWeight: "bold"
-//   }
-// }));
 class DocumentDetails extends React.Component {
 
   constructor(props) {
@@ -174,7 +164,9 @@ class DocumentDetails extends React.Component {
       expandScreen: false,
       zoomScreen: 0,
       rotateScreen: 0,
-      docValidated:false
+      docValidated:false,
+      value: 1,
+      pageNoToShow:"1"
     }
 
       // this.gridObject = null;
@@ -547,6 +539,19 @@ class DocumentDetails extends React.Component {
     );
   };
 
+  changePage = (e) =>{
+    //let pageSet = this.state.pageNo;
+
+    let valFromInput = Number(e.target.value)
+    if(valFromInput >= 1 && valFromInput <= this.state.totalPages){
+
+      this.setState({pageNo: valFromInput, pageNoToShow :valFromInput}, () => this.getPdfImage());
+    }else{
+      this.setState({pageNoToShow: ""});
+      toast.info("Request is invalid", toast_options);
+    }
+  }
+
   pageDownClicked = () => {
     if(this.state.pageNo >= 2){
     let updatedNum = this.state.pageNo - 1;
@@ -554,7 +559,7 @@ class DocumentDetails extends React.Component {
     this.setState({ pageNo: updatedNum }, () => this.getPdfImage())
     }
     else{
-      alert("This is First Page");
+      toast.info("Request is invalid", toast_options);
     }
   }
   pageUpClicked = () => {
@@ -564,7 +569,7 @@ class DocumentDetails extends React.Component {
     this.setState({ pageNo: updatedNum }, () => this.getPdfImage())
   }
   else{
-    alert("This is Last Page");
+    toast.info("Request is invalid", toast_options);
   }
 }
   rotatePdf = () => {
@@ -615,16 +620,28 @@ class DocumentDetails extends React.Component {
         </CRow>
         <CRow>
           <CCol>
-            <div style={{
-              width: "100%", maxWidth: "615px", background: "rgb(0, 117, 183)", margin: "0px auto -9px auto", borderRadius: "5px 5px 0 0", position: "relative", zIndex: "500"
+            <div style={{ background: "rgb(0, 117, 183)", borderRadius: "5px 5px 0 0", position: "fixed", zIndex: "500", right:"30px", left:"30px",
             }}>
-              <CRow>
-                <CCol xs="6">
 
-                  <div style={{ width: "100px", display: "table", float: "left", border: "1px solid #fff", borderRadius: "5px", textAlign: "center", lineHeight: "40px", margin: "10px", color: "#fff" }}>
+
+                  <div style={{ width: "130px", display: "table", float: "left", border: "1px solid #fff", borderRadius: "5px", textAlign: "center", lineHeight: "40px", margin: "10px", color: "#fff" }}>
                     <div style={{ cursor: "pointer", width: "30px", borderRight: "1px solid #fff", display: "table-cell" }} onClick={() => this.pageDownClicked()}><i class="fa fa-angle-left" aria-hidden="true" ></i>
                     </div>
-                    <div style={{ width: "40px", display: "table-cell" }}>{this.state.pageNo}</div>
+                    <div style={{  display: "table-cell", verticalAlign:"middle" }}>
+                      <CInput type='text' 
+                      value={this.state.pageNoToShow} 
+                      onChange={this.changePage}
+                      style={{
+                        background: "none",
+                        color: "#fff",
+                        borderRadius: "0",
+                        margin: "3px auto",
+                        width: "50px",
+                        border: "1px solid #fff",
+                        textAlign:"center"
+                      }}
+                      />
+                      </div>
                     <div style={{ cursor: "pointer", width: "30px", borderLeft: "1px solid #fff", display: "table-cell" }} onClick={() => this.pageUpClicked()}><i class="fa fa-angle-right" aria-hidden="true"></i>
                     </div>
 
@@ -632,10 +649,8 @@ class DocumentDetails extends React.Component {
                   <div style={{ whiteSpace: "nowrap", float: "left", color: "#fff", marginTop: "20px" }}>
                     <p>from {this.state.totalPages} Pages </p>
                   </div>
-                </CCol>
 
-                <CCol xs="6">
-                  <div style={{ display: "table", borderSpacing: "10px" }}>
+                  <div style={{ display: "table", borderSpacing: "10px", float:"right" }}>
 
                     <div style={{ border: "1px solid #fff", borderRadius: "50px", width: "40px", height: "40px", textAlign: "center", lineHeight: "38px", color: "#fff", display: "table-cell", cursor: "pointer" }}
                       onClick={() => this.expandPdf()}>
@@ -658,8 +673,7 @@ class DocumentDetails extends React.Component {
                       </a>
                     </div>
                   </div>
-                </CCol>
-              </CRow>
+
             </div>
 
 
@@ -672,7 +686,7 @@ class DocumentDetails extends React.Component {
                   localStorage.setItem('splitPos', size)
                 }
               }}
-              style={{ position: "static", backgroundColor: 'transparent' }}
+              style={{ position: "static", backgroundColor: 'transparent', marginTop:"60px" }}
             >
               <div
                 style={{

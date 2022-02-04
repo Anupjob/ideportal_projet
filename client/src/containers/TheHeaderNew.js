@@ -72,7 +72,7 @@ const useStyles = makeStyles(theme => ({
   back_icon: {
     position: "absolute",
     left: "30px",
-    bottom: "0px",
+    bottom: "22px",
     "@media (max-width: 1200px)": {
       bottom: "34px"
     },
@@ -203,21 +203,37 @@ const responsive = {
     items: 3
   }
 };
-
 const TheHeaderNew = (props) => {
   const history = useHistory()
-
+  
   const [urlVal, SetUrlVal] = useState("")
   // const [urlValTrue, SetUrlValTrue] = useState(false)
   const [sliderData, SetSliderData] = useState(["./canvas.png", "./canvas.png", "./canvas.png", "./canvas.png", "./canvas.png", "./canvas.png", "./canvas.png", "./canvas.png", "./canvas.png", "./canvas.png", "./canvas.png"])
+ 
+  const [counter, setCounter] = useState()
+  const changeCounter = (event) => {
+    console.log("event.target.value",event.target.value)
+    setCounter(event.target.value)
+    let valcountInput = Number(event.target.value)
+    
+    if(valcountInput >= 1 && valcountInput <= sliderData.length){
 
-  const [counter, setCounter] = useState(0)
+      setCounter(valcountInput);
+      // setCounter(event.target.value)
+    }
+    else{
+      setCounter(valcountInput = "");
+      //toast.info("Request is invalid", toast_options);
+    }
+  }
 
   const [Toggle, setToggle] = useState(false)
 
   useEffect(() => {
     // console.log("url props::", props)
   }, [])
+
+
   console.log("url props::", props)
   // console.log("urlVal", urlVal);
   // console.log("useEffect")
@@ -274,7 +290,7 @@ const TheHeaderNew = (props) => {
     } = rest;
     console.log("currentSlide: ", currentSlide);
     console.log("deviceType: ", deviceType);
-    setCounter(currentSlide)
+    //setCounter(currentSlide)
     // onMove means if dragging or swiping in progress.
     return <button onClick={() => {
       onClick();
@@ -287,7 +303,7 @@ const TheHeaderNew = (props) => {
       onMove,
       carouselState: { currentSlide, deviceType }
     } = rest;
-    setCounter(currentSlide)
+    //setCounter(currentSlide)
     // onMove means if dragging or swiping in progress.
     return <button onClick={() => {
       onClick();
@@ -387,7 +403,21 @@ const TheHeaderNew = (props) => {
                         ))}
 
                       </Carousel>
-                      <div style={{ color: "#fff", textAlign: "right", marginTop: "15px" }}>Pages {counter} of {sliderData.length}</div>
+                      <div style={{ color: "#fff", textAlign: "right", marginTop: "15px" }}>Pages 
+                      <CInput type='text' 
+                      value={counter} 
+                      onChange={changeCounter}
+                      style={{
+                        background: "none",
+                        color: "#fff",
+                        borderRadius: "0",
+                        margin: "0 7px",
+                        width: "50px",
+                        border: "1px solid #fff",
+                        textAlign:"center",
+                        display:'inline-block'
+                      }}
+                      /> of {sliderData.length}</div>
                     </div>
                   }
 
