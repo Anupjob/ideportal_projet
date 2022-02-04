@@ -45,7 +45,7 @@ import * as wjcCore from "@grapecity/wijmo";
 import Grid from "@material-ui/core/Grid";
 import CheckIcon from '@mui/icons-material/Check';
 import ClearIcon from '@mui/icons-material/Clear';
-import docStyle from "./docDetailStyle.css"
+// import docStyle from "./docDetailStyle.css"
 import { doc_styles } from "./documentDetailStyle";
 import { withStyles } from "@material-ui/core/styles";
 
