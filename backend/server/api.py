@@ -687,6 +687,7 @@ async def incoming_data(incData: IncomingData = Body(...)):
         fromEmail = ""
         toEmail = ""
         docValidated = False
+        docValidatedStr = "No"
 
         if 'noOfPages' in ids_s:
             noOfPages = ids_s["noOfPages"]
@@ -718,6 +719,9 @@ async def incoming_data(incData: IncomingData = Body(...)):
         if 'docValidated' in ids_s:
             docValidated = ids_s["docValidated"]
 
+        if docValidated == True:
+            docValidatedStr = "Yes"
+
         ids_dict.append({
             "doc_id":str(ids_s["_id"]),
             "docStatus":ids_s["status"],
@@ -734,7 +738,7 @@ async def incoming_data(incData: IncomingData = Body(...)):
             "errMsg": errMsg,
             "fromEmail":fromEmail,
             "toEmail":toEmail,
-            "docValidated": docValidated
+            "docValidated": docValidatedStr
         })
 
     return {"result": ids_dict, "err": None}
