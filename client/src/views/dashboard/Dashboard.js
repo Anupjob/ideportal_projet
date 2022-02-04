@@ -200,7 +200,7 @@ const Dashboard = () => {
       }),
       headers,
     }).then((response) => {
-      console.log("Response", response.data.result);
+      console.log("Response incomingData::::", response.data.result);
       if (response.data.result == 0) {
         setArrNull(true)
       }
@@ -517,7 +517,13 @@ const Dashboard = () => {
                 header="STATUS"
                 cssClass="cell-header"
                 width="*"
-                style={{ backgroundColor: 'grey' }} />
+                style={{ backgroundColor: 'grey' }}/>
+                <FlexGridColumn
+                binding="docValidated"
+                header="VALIDATED"
+                cssClass="cell-header"
+                width="*"
+                style={{ backgroundColor: 'grey' }}/>
               <FlexGridColumn
                 binding="fromEmail"
                 header="FROM"
