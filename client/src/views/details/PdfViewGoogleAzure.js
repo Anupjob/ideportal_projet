@@ -77,6 +77,10 @@ const viewDetailBtn = {
   height:35
   // width: 130
 }
+
+let xPercentageChange = 0.40;
+let yPercentageChange = 0.393;
+
 class PdfViewGoogleAzure extends React.Component {
 
   constructor(props) {
@@ -112,8 +116,8 @@ class PdfViewGoogleAzure extends React.Component {
   getPdfImageRotate = () => {
     // console.log("===PdfViewGoogleAzure doc_id :::GoogleAzure",this.props)
 
-    var pdfFileName = this.props.history.location.state.fileName;
-    var processorPath = this.props.history.location.state.containerPath;
+    var pdfFileName = this.props.history.location.state && this.props.history.location.state.fileName;
+    var processorPath = this.props.history.location.state && this.props.history.location.state.containerPath;
     var pdfValid = true;
     console.log("==pdfFileName==PdfViewGoogleAzure", pdfFileName)
     console.log("==processorPath==PdfViewGoogleAzure", processorPath)
@@ -270,7 +274,7 @@ class PdfViewGoogleAzure extends React.Component {
       <CCard style={pdfMainView}>
         
         <CRow style={{ color: 'white', position: "fixed", top: "108px", left: "85px", zIndex: "1030", fontWeight: "bold" }}>
-          {this.props.history.location.state.fileName ? this.props.history.location.state.fileName : ""}
+          {this.props.history.location && this.props.history.location.state && this.props.history.location.state.fileName ? this.props.history.location.state.fileName : ""}
         </CRow>
         <CRow style={{ borderBottom: "1px solid #999", marginBottom: "40px", paddingTop: "20px" }}>
           <CCol xs="6" style={{ backgroundColor: 'white', height: 50 }}>
@@ -306,10 +310,10 @@ class PdfViewGoogleAzure extends React.Component {
                   {
                     this.state.finalDataResult && Object.keys(this.state.finalDataResult).length > 0 && this.state.finalDataResult.pages[0].blocks.map((blockData, blockIdx) =>
                     <div style={{
-                      top:blockData.boundingBox.vertices[0].y, 
-                      left:blockData.boundingBox.vertices[0].x, 
-                      width:blockData.boundingBox.vertices[1].x - blockData.boundingBox.vertices[0].x, 
-                      height:blockData.boundingBox.vertices[2].y - blockData.boundingBox.vertices[0].y, 
+                      top:blockData.boundingBox.vertices[0].y * yPercentageChange, 
+                      left:blockData.boundingBox.vertices[0].x * xPercentageChange, 
+                      width:blockData.boundingBox.vertices[1].x * xPercentageChange - blockData.boundingBox.vertices[0].x * xPercentageChange, 
+                      height:blockData.boundingBox.vertices[2].y * yPercentageChange - blockData.boundingBox.vertices[0].y * yPercentageChange, 
                       border: '2px solid #FF0000',
                       position: "absolute"}}>
                         {

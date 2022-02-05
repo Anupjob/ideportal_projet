@@ -519,11 +519,18 @@ const Dashboard = () => {
                 width="*"
                 style={{ backgroundColor: 'grey' }}/>
                 <FlexGridColumn
-                binding="docValidated"
-                header="VALIDATED"
+                binding="validatedOn"
+                header="VALIDATED ON"
                 cssClass="cell-header"
                 width="*"
-                style={{ backgroundColor: 'grey' }}/>
+                style={{ backgroundColor: 'grey' }}>
+                  <FlexGridCellTemplate cellType="Cell" template={ctx =>
+                  <React.Fragment>
+                    {ctx.item.validatedOn &&
+                      <span>{moment(ctx.item.validatedOn).format("MM/DD/YYYY hh:mm A")}</span>
+                    }
+                  </React.Fragment>} />
+                </FlexGridColumn>
               <FlexGridColumn
                 binding="fromEmail"
                 header="FROM"

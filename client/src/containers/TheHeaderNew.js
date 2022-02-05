@@ -472,7 +472,7 @@ const TheHeaderNew = (props) => {
                       </div>
                     </CCol>
                   </CRow>
-                  <div className={classes.header_icon}>
+                  {/* <div className={classes.header_icon}>
                     <CRow>
                       <CCol xs="4">
                       </CCol>
@@ -483,7 +483,7 @@ const TheHeaderNew = (props) => {
                         <Link to="" class="fa fa-download" aria-hidden="true" style={{ color: "#fff", fontSize: "2em" }}></Link>
                       </CCol>
                     </CRow>
-                  </div>
+                  </div> */}
                 </div>
               }
 

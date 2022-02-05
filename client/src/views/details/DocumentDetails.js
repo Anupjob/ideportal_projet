@@ -181,7 +181,8 @@ class DocumentDetails extends React.Component {
     console.log("=== history.location.state:::", this.props)
     if (this.props.history.location && this.props.history.location.state && this.props.history.location.state.data) {
       
-     let docValidatedRec = this.props.history.location.state.data.docValidated? this.props.history.location.state.data.docValidated:"No";
+    //  let docValidatedRec = this.props.history.location.state.data.docValidated? this.props.history.location.state.data.docValidated:"No";
+     let docValidatedRec = this.props.history.location.state.data.docStatus? this.props.history.location.state.data.docStatus.toLowerCase() === "validated"?"Yes":"No":"No";
       
       this.setState({docValidated:docValidatedRec})
       this.getPdfImage();
@@ -623,7 +624,7 @@ class DocumentDetails extends React.Component {
     return (
       <CCard style={cardView}>
         <CRow className={classes.title_text }>
-          {this.props.history.location.state.data.pdfFilename ? this.props.history.location.state.data.pdfFilename : ""}
+          {this.props.history.location &&this.props.history.location.state && this.props.history.location.state.data.pdfFilename ? this.props.history.location.state.data.pdfFilename : ""}
         </CRow>
         <CRow>
           <CCol>
