@@ -28,7 +28,7 @@ const pdfContentView = {
   backgroundColor: 'white',
   //boxShadow: '0px 4px 32px 1px #00000029',
   //minWidth: 600,
-  width: "100%"
+   width: "90%"
 }
 const radioBtnDiv = {
   backgroundColor: 'white',
@@ -209,6 +209,8 @@ class PdfViewGoogleAzure extends React.Component {
        
         if(this.state.visionType == 'googlev'){
           var pardedResp = JSON.parse(respdata)
+         var blockOne = pardedResp.fullTextAnnotation.pages[0].blocks[1];
+         console.log('blockOne :>> ', blockOne);
           this.setState({ googleVisionVisible: true, azureTableVisible: false, googleTableVisible: false ,finalDataResult: pardedResp.fullTextAnnotation,isLoading: false })
           }else if(this.state.visionType == 'azuret'){
 
@@ -255,19 +257,19 @@ class PdfViewGoogleAzure extends React.Component {
   }
 
   onPageLoad(info) {
+    // pdf org size ::::::::::  width: 826px; height: 1066px;
     const {
       height, width, originalHeight, originalWidth
     } = info;
-    console.log(height, width, originalHeight, originalWidth);
+    console.log("Screen resolution:::",height, width, originalHeight, originalWidth);
   }
 
   render() {
     // console.log("===PdfViewGoogleAzure doc_id in render :::",this.props.history.location.state.data.doc_id)
     return (
       <CCard style={pdfMainView}>
-        <CRow 
-        //className={classes.title_text }
-        >
+        
+        <CRow style={{ color: 'white', position: "fixed", top: "108px", left: "85px", zIndex: "1030", fontWeight: "bold" }}>
           {this.props.history.location.state.fileName ? this.props.history.location.state.fileName : ""}
         </CRow>
         <CRow style={{ borderBottom: "1px solid #999", marginBottom: "40px", paddingTop: "20px" }}>
@@ -289,7 +291,7 @@ class PdfViewGoogleAzure extends React.Component {
         <CRow style={{ marginTop: 5 }}>
           <CCol xs="8">
             <div style={pdfContentView}>
-
+            
               {this.state.fileType == 'pdf' ?
                 <div style={this.state.isLoading ? { ...pdfContentView, ...{ boxShadow: "none" } } : pdfContentView}>
                   {this.state.pdfImage ?
@@ -300,6 +302,29 @@ class PdfViewGoogleAzure extends React.Component {
                     </Document> :
                     <p>loading PDF</p>
                   }
+
+                  {
+                    this.state.finalDataResult && Object.keys(this.state.finalDataResult).length > 0 && this.state.finalDataResult.pages[0].blocks.map((blockData, blockIdx) =>
+                    <div style={{
+                      top:blockData.boundingBox.vertices[0].y, 
+                      left:blockData.boundingBox.vertices[0].x, 
+                      width:blockData.boundingBox.vertices[1].x - blockData.boundingBox.vertices[0].x, 
+                      height:blockData.boundingBox.vertices[2].y - blockData.boundingBox.vertices[0].y, 
+                      border: '2px solid #FF0000',
+                      position: "absolute"}}>
+                        {
+                          blockData.paragraphs.map((paraData) =>
+                            paraData.words.map((wordData, wordIndex) =>
+                              console.log('wordData.symbols.map((symbolData, symbolIndex)====', wordData.symbols.map((symbolData, symbolIndex) => symbolData.text).join(''))
+                            )
+                          )
+                        }
+                        {console.log('blockData.boundingBox.vertices[0].y :>> ', blockData.boundingBox.vertices[0].y)}
+                        {console.log('left:blockData.boundingBox.vertices[0].x :>> ', blockData.boundingBox.vertices[0].x)}
+                        {console.log('blockData.boundingBox.vertices[1].x - blockData.boundingBox.vertices[0].x :>> ', blockData.boundingBox.vertices[1].x - blockData.boundingBox.vertices[0].x)}
+                        {console.log('blockData.boundingBox.vertices[2].y - blockData.boundingBox.vertices[0].y :>> ', blockData.boundingBox.vertices[2].y - blockData.boundingBox.vertices[0].y)}
+                    </div>
+                    )}
                 </div> :
                 <div style={this.state.isLoading ? { ...pdfContentView, ...{ boxShadow: "none" } } : pdfContentView}>
                   {this.state.pdfImage ?
