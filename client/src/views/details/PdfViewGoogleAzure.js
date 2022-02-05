@@ -13,7 +13,13 @@ import settings from 'src/config/settings';
 import axios from "axios";
 import { useHistory } from "react-router";
 import Button from "@material-ui/core/Button";
-//import { doc_styles } from "./documentDetailStyle";
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormControl from '@material-ui/core/FormControl';
+import FormLabel from '@material-ui/core/FormLabel';
+import { doc_styles } from "./documentDetailStyle";
+import { withStyles } from "@material-ui/core/styles";
 
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
@@ -29,6 +35,15 @@ const pdfContentView = {
   //boxShadow: '0px 4px 32px 1px #00000029',
   //minWidth: 600,
    width: "90%"
+}
+const pdfContentBox = {
+  display: "table",
+backgroundColor: "white",
+width: "100%",
+boxShadow: "0px 0px 8px #0000001c",
+padding: "30px",
+border: "1px solid #dbdbdb",
+marginBottom:"20px"
 }
 const radioBtnDiv = {
   backgroundColor: 'white',
@@ -269,14 +284,15 @@ class PdfViewGoogleAzure extends React.Component {
   }
 
   render() {
+    const { classes } = this.props;
     // console.log("===PdfViewGoogleAzure doc_id in render :::",this.props.history.location.state.data.doc_id)
     return (
       <CCard style={pdfMainView}>
         
-        <CRow style={{ color: 'white', position: "fixed", top: "108px", left: "85px", zIndex: "1030", fontWeight: "bold" }}>
+        <CRow className={classes.title_text }>
           {this.props.history.location && this.props.history.location.state && this.props.history.location.state.fileName ? this.props.history.location.state.fileName : ""}
         </CRow>
-        <CRow style={{ borderBottom: "1px solid #999", marginBottom: "40px", paddingTop: "20px" }}>
+        <CRow style={{ borderBottom: "1px solid #999", marginBottom: "20px", paddingTop: "20px" }}>
           <CCol xs="6" style={{ backgroundColor: 'white', height: 50 }}>
             <div style={{ width: "100%", display: 'table' }} onChange={this.onChangeRadioValue}>
               <input type="radio" value="PDF" name="check" defaultChecked style={{ margin: 10 }} /> PDF
@@ -294,12 +310,12 @@ class PdfViewGoogleAzure extends React.Component {
 
         <CRow style={{ marginTop: 5 }}>
           <CCol xs="8">
-            <div style={pdfContentView}>
-            
+            <div style={pdfContentBox}>
+
               {this.state.fileType == 'pdf' ?
                 <div style={this.state.isLoading ? { ...pdfContentView, ...{ boxShadow: "none" } } : pdfContentView}>
                   {this.state.pdfImage ?
-                    <Document
+                    <Document 
                       file={"data:image/jpeg;base64," + this.state.pdfImage}
                     >
                       <Page pageNumber={1} onLoadSuccess={this.onPageLoad} />
@@ -342,9 +358,24 @@ class PdfViewGoogleAzure extends React.Component {
             </div>
           </CCol>
           <CCol xs="4">
+            
+            {/* <div style={{position:"fixed", width:"200px", right:"-200px"}}> */}
+            {/* <div style={}><i class="fa fa-chevron-left" aria-hidden="true"></i></div> */}
             <div style={radioBtnDiv}>
               <div onChange={this.onChangeValue} >
-                <input type="radio" value="GoogleVision" name="gender" /> Show Results from Google Vision<br />
+              <FormControl component="fieldset">
+      {/* <FormLabel component="legend">labelPlacement</FormLabel> */}
+      <RadioGroup row aria-label="position" name="position" defaultValue="top">
+
+      <FormControlLabel
+          value="GoogleVision"
+          control={<Radio color="primary" />}
+          label="Show Results from Google Vision"
+          labelPlacement="Show Results from Google Vision"
+          name="gender"
+        />
+
+                {/* <input type="radio" value="GoogleVision" name="gender" /> Show Results from Google Vision<br /> */}
                 
                 {this.state.googleVisionVisible &&
                   <div style={radioBtnMainView}>
@@ -385,10 +416,35 @@ class PdfViewGoogleAzure extends React.Component {
 
                   </div>
                 }
-                <input type="radio" value="SimpleGoogleVision" name="gender" /> Simple Google Vision<br />
-                <input type="radio" value="AdvancedGoogleVision" name="gender" /> Advanced Google Vision<br />
+
+<FormControlLabel
+          value="SimpleGoogleVision"
+          control={<Radio color="primary" />}
+          label="Simple Google Vision"
+          labelPlacement="Simple Google Vision"
+          name="gender"
+        />
+
+<FormControlLabel
+          value="AdvancedGoogleVision"
+          control={<Radio color="primary" />}
+          label="Advanced Google Vision"
+          labelPlacement="Advanced Google Vision"
+          name="gender"
+        />
+                
+                {/* <input type="radio" value="SimpleGoogleVision" name="gender" /> Simple Google Vision<br /> */}
+                {/* <input type="radio" value="AdvancedGoogleVision" name="gender" /> Advanced Google Vision<br /> */}
                 {/* <hr style={horizontalLine} /> */}
-                <input type="radio" value="AzureTables" name="gender" /> Show Results from Azure Tables<br />
+
+<FormControlLabel
+          value="AzureTables"
+          control={<Radio color="primary" />}
+          label="Show Results from Azure Tables"
+          labelPlacement="Show Results from Azure Tables"
+          name="gender"
+        />
+                {/* <input type="radio" value="AzureTables" name="gender" /> Show Results from Azure Tables<br /> */}
                 
                 {this.state.azureTableVisible &&
                   <div style={radioBtnMainView}>
@@ -402,13 +458,58 @@ class PdfViewGoogleAzure extends React.Component {
                     } */}
 
                   </div>}
-                <input type="radio" value="AzureForm" name="gender" /> Azure Form<br />
-                <input type="radio" value="AzureDocAnalyzer" name="gender" /> Azure Document Analyzer<br />
+
+                  <FormControlLabel
+          value="AzureForm"
+          control={<Radio color="primary" />}
+          label="Azure Form"
+          labelPlacement="Azure Form"
+          name="gender"
+        />
+                {/* <input type="radio" value="AzureForm" name="gender" /> Azure Form<br /> */}
+                <FormControlLabel
+          value="AzureDocAnalyzer"
+          control={<Radio color="primary" />}
+          label="Azure Document Analyzer"
+          labelPlacement="Azure Document Analyzer"
+          name="gender"
+        />
+                {/* <input type="radio" value="AzureDocAnalyzer" name="gender" /> Azure Document Analyzer<br /> */}
+
+                <FormControlLabel
+          value="GoogleTables"
+          control={<Radio color="primary" />}
+          label="Show Results from Google Tables"
+          labelPlacement="Show Results from Google Tables"
+          name="gender"
+        />
                 {/* <hr style={horizontalLine} /> */}
-                <input type="radio" value="GoogleTables" name="gender" /> Show Results from Google Tables<br/>
-                <input type="radio" value="TesseractTables" name="gender" /> Tesseract Tables<br/>
-                <input type="radio" value="AzureCV" name="gender" /> Azure CV<br/>
-                <input type="radio" value="OpenCV" name="gender" /> Open CV<br/>
+                {/* <input type="radio" value="GoogleTables" name="gender" /> Show Results from Google Tables<br/> */}
+                <FormControlLabel
+          value="TesseractTables"
+          control={<Radio color="primary" />}
+          label="Tesseract Tables"
+          labelPlacement="Tesseract Tables"
+          name="gender"
+        />
+                {/* <input type="radio" value="TesseractTables" name="gender" /> Tesseract Tables<br/> */}
+
+                <FormControlLabel
+          value="AzureCV"
+          control={<Radio color="primary" />}
+          label="Azure CV"
+          labelPlacement="Azure CV"
+          name="gender"
+        />
+                {/* <input type="radio" value="AzureCV" name="gender" /> Azure CV<br/> */}
+                <FormControlLabel
+          value="OpenCV"
+          control={<Radio color="primary" />}
+          label="Open CV"
+          labelPlacement="Open CV"
+          name="gender"
+        />  
+                {/* <input type="radio" value="OpenCV" name="gender" /> Open CV<br/> */}
                 {this.state.googleTableVisible &&
                   <div style={radioBtnMainView}>
                     <div style={radioBtnSubView}>
@@ -423,6 +524,8 @@ class PdfViewGoogleAzure extends React.Component {
                     </div>
                   </div>
                 }
+                </RadioGroup>
+    </FormControl>
                 {this.state.isLoading && (
                   <div style={loader}>
 
@@ -443,6 +546,7 @@ class PdfViewGoogleAzure extends React.Component {
                 /></div>
               </div>
             </div>
+            {/* </div> */}
           </CCol>
 
         </CRow>
@@ -450,4 +554,4 @@ class PdfViewGoogleAzure extends React.Component {
     );
   }
 }
-export default PdfViewGoogleAzure
+export default withStyles(doc_styles, { withTheme: true }) (PdfViewGoogleAzure)
