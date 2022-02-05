@@ -63,7 +63,7 @@ const useStyles = makeStyles(theme => ({
     width: "200px",
     display: "block",
     position: "absolute",
-    bottom: "0px",
+    bottom: "10px",
     right: "10px",
     "@media (max-width: 767px)": {
       marginTop: "0",
@@ -210,22 +210,8 @@ const TheHeaderNew = (props) => {
   // const [urlValTrue, SetUrlValTrue] = useState(false)
   const [sliderData, SetSliderData] = useState(["./canvas.png", "./canvas.png", "./canvas.png", "./canvas.png", "./canvas.png", "./canvas.png", "./canvas.png", "./canvas.png", "./canvas.png", "./canvas.png", "./canvas.png"])
  
-  const [counter, setCounter] = useState()
-  const changeCounter = (event) => {
-    console.log("event.target.value",event.target.value)
-    setCounter(event.target.value)
-    let valcountInput = Number(event.target.value)
-    
-    if(valcountInput >= 1 && valcountInput <= sliderData.length){
+  const [counter, setCounter] = useState(0)
 
-      setCounter(valcountInput);
-      // setCounter(event.target.value)
-    }
-    else{
-      setCounter(valcountInput = "");
-      //toast.info("Request is invalid", toast_options);
-    }
-  }
 
   const [Toggle, setToggle] = useState(false)
 
@@ -290,7 +276,7 @@ const TheHeaderNew = (props) => {
     } = rest;
     console.log("currentSlide: ", currentSlide);
     console.log("deviceType: ", deviceType);
-    //setCounter(currentSlide)
+    setCounter(currentSlide)
     // onMove means if dragging or swiping in progress.
     return <button onClick={() => {
       onClick();
@@ -303,14 +289,41 @@ const TheHeaderNew = (props) => {
       onMove,
       carouselState: { currentSlide, deviceType }
     } = rest;
-    //setCounter(currentSlide)
+    setCounter(currentSlide)
     // onMove means if dragging or swiping in progress.
     return <button onClick={() => {
       onClick();
       //LeftArrow();
     }} className={classes.carousel_arrow_left} ><i class="fa fa-chevron-left" aria-hidden="true"></i></button>;
   };
-
+  const ButtonGroup = ({ next, previous, goToSlide, ...rest }) => {
+    const { carouselState: { currentSlide } } = rest;
+    return (
+      <div className="carousel-button-group" style={{position: "absolute",  zIndex: "1", bottom: "12px", right: "40px"}}>
+        {/* <CButton className={currentSlide === 0 ? 'disable' : ''} onClick={() => previous()} />
+        <CButton onClick={() => next()} /> */}
+ <div style={{ color: "#fff", textAlign: "right", marginTop: "15px" }}>Pages 
+                      <CInput type='text' 
+                      value={counter} 
+                      onChange={(e) => {
+                        goToSlide(e.target.value);
+                        setCounter(e.target.value)
+                      }}
+                      style={{
+                        background: "none",
+                        color: "#fff",
+                        borderRadius: "0",
+                        margin: "0 7px",
+                        width: "50px",
+                        border: "1px solid #fff",
+                        textAlign:"center",
+                        display:'inline-block'
+                      }}
+                      /> of {sliderData.length}</div>
+        {/* <CButton onClick={() => goToSlide(currentSlide + 4)} > Go to any slide </CButton> */}
+      </div>
+    );
+  };
   const sliderClick = () => {
     setToggle(!Toggle)
   }
@@ -387,11 +400,12 @@ const TheHeaderNew = (props) => {
                   <h4 className={classes.report_title} onClick={() => sliderClick()}>PDF VIEWER <i class="fa fa-chevron-down" aria-hidden="true"></i>
                   </h4>
                   {Toggle &&
-                    <div style={{ width: "400px", padding: "20px 50px", position: "fixed", right: "20px", background: '#8349bf', boxShadow: "0px 4px 6px rgba(0,0,0,0.5)", border: "1px solid #fff", borderRadius: "5px" }}>
+                    <div style={{ width: "400px", padding: "20px 50px", position: "fixed", right: "20px", background: '#8349bf', boxShadow: "0px 4px 6px rgba(0,0,0,0.5)", border: "1px solid #fff", borderRadius: "5px", paddingBottom: "60px" }}>
 
                       {/* <div style={{ width: "100px", height: "100px", position: "absolute", background: "#f00" }}></div> */}
                       <Carousel responsive={responsive} focusOnSelect={true}
-                        //focusOnSelect={true}
+                        customButtonGroup={<ButtonGroup />}
+                        // arrows={false}
                         customLeftArrow={<CustomLeftArrow />}
                         customRightArrow={<CustomRightArrow />}
                         style={{ display: "table" }}
@@ -403,21 +417,7 @@ const TheHeaderNew = (props) => {
                         ))}
 
                       </Carousel>
-                      <div style={{ color: "#fff", textAlign: "right", marginTop: "15px" }}>Pages 
-                      <CInput type='text' 
-                      value={counter} 
-                      onChange={changeCounter}
-                      style={{
-                        background: "none",
-                        color: "#fff",
-                        borderRadius: "0",
-                        margin: "0 7px",
-                        width: "50px",
-                        border: "1px solid #fff",
-                        textAlign:"center",
-                        display:'inline-block'
-                      }}
-                      /> of {sliderData.length}</div>
+                     
                     </div>
                   }
 

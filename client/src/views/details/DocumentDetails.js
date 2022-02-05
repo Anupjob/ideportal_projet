@@ -563,7 +563,7 @@ class DocumentDetails extends React.Component {
     if(this.state.pageNo >= 2){
     let updatedNum = this.state.pageNo - 1;
     console.log("minus page", updatedNum)
-    this.setState({ pageNo: updatedNum }, () => this.getPdfImage())
+    this.setState({ pageNo: updatedNum, pageNoToShow :updatedNum }, () => this.getPdfImage())
     }
     else{
       toast.info("Request is invalid", toast_options);
@@ -573,7 +573,7 @@ class DocumentDetails extends React.Component {
     if(this.state.pageNo <= this.state.totalPages - 1){
     let updatedNum = this.state.pageNo + 1;
     console.log("plus page", updatedNum)
-    this.setState({ pageNo: updatedNum }, () => this.getPdfImage())
+    this.setState({ pageNo: updatedNum, pageNoToShow :updatedNum }, () => this.getPdfImage())
   }
   else{
     toast.info("Request is invalid", toast_options);
