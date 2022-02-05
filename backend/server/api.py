@@ -686,8 +686,9 @@ async def incoming_data(incData: IncomingData = Body(...)):
         filenameProcessing = ""
         fromEmail = ""
         toEmail = ""
-        docValidated = False
-        docValidatedStr = "No"
+        validatedOn = ""
+        # docValidated = False
+        # docValidatedStr = "No"
 
         if 'noOfPages' in ids_s:
             noOfPages = ids_s["noOfPages"]
@@ -716,11 +717,14 @@ async def incoming_data(incData: IncomingData = Body(...)):
         if 'to_main' in ids_s:
             toEmail = ids_s["to_main"]
 
-        if 'docValidated' in ids_s:
-            docValidated = ids_s["docValidated"]
+        if 'validatedOn' in ids_s:
+            validatedOn = ids_s["validatedOn"]
 
-        if docValidated == True:
-            docValidatedStr = "Yes"
+        # if 'docValidated' in ids_s:
+        #     docValidated = ids_s["docValidated"]
+
+        # if docValidated == True:
+        #     docValidatedStr = "Yes"
 
         ids_dict.append({
             "doc_id":str(ids_s["_id"]),
@@ -738,7 +742,8 @@ async def incoming_data(incData: IncomingData = Body(...)):
             "errMsg": errMsg,
             "fromEmail":fromEmail,
             "toEmail":toEmail,
-            "docValidated": docValidatedStr
+            "validatedOn": validatedOn
+            # "docValidated": docValidatedStr
         })
 
     return {"result": ids_dict, "err": None}
@@ -1025,7 +1030,8 @@ async def validate_doc(incData: ValidateDocSchema = Body(...)):
     # validatedVal = "false"
     # if validated == True:
     #     validatedVal = "true"
-    doc_validated_result = files_incoming_c.update_one({"_id": ObjectId(doc_id)}, {"$set": {"docValidated": validated}})
+    # doc_validated_result = files_incoming_c.update_one({"_id": ObjectId(doc_id)}, {"$set": {"docValidated": validated}})
+    doc_validated_result = files_incoming_c.update_one({"_id": ObjectId(doc_id)}, {"$set": {"status": "Validated", "validatedOn":datetime.datetime.now()}})
 
     return {"result": doc_validated_result, "err": None}
 
