@@ -376,7 +376,7 @@ class PdfViewGoogleAzure extends React.Component {
                           console.log("afterChange currentSlide",currentSlide)
                           let newPageNum = currentSlide+1;
                           if(newPageNum>=1 && newPageNum <= this.state.sliderData.length){
-                            this.setState({pageNum: newPageNum})
+                            this.setState({pageNum: newPageNum}, ()=>this.getPdfImageRotate())
                           }
                         }}
                         style={{ display: "table" }}
