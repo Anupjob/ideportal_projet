@@ -24,6 +24,13 @@ import FormControl from '@material-ui/core/FormControl';
 import FormLabel from '@material-ui/core/FormLabel';
 import { doc_styles } from "./documentDetailStyle";
 import { withStyles } from "@material-ui/core/styles";
+import * as wjCore from '@grapecity/wijmo';
+import { FlexGrid, FlexGridColumn, FlexGridCellTemplate } from '@grapecity/wijmo.react.grid';
+import * as wjFilter from "@grapecity/wijmo.react.grid.filter";
+import * as wjGrid from '@grapecity/wijmo.react.grid';
+import '@grapecity/wijmo.styles/wijmo.css';
+import * as wjcCore from "@grapecity/wijmo";
+import Grid from "@material-ui/core/Grid";
 
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
@@ -280,6 +287,7 @@ class PdfViewGoogleAzure extends React.Component {
 
           this.setState({azureTableVisible: true, googleVisionVisible: false, googleTableVisible: false ,
             // azureDataResults:pardedResp.cells,
+            azureDataResults:response.data.result,
              isLoading: false })
 
           }else{
@@ -315,8 +323,8 @@ class PdfViewGoogleAzure extends React.Component {
       this.setState({ fileType: 'pdf' }, () => { this.getPdfImageRotate() })
     } else if (event.target.value == "Image") {
       this.setState({ fileType: 'image' }, () => { this.getPdfImageRotate() })
-    } else if (event.target.value == "RotatedImage") {
-      this.setState({ fileType: 'image_rotated' }, () => { this.getPdfImageRotate() })
+    // } else if (event.target.value == "RotatedImage") {
+    //   this.setState({ fileType: 'image_rotated' }, () => { this.getPdfImageRotate() })
     }
   }
 
@@ -562,7 +570,31 @@ class PdfViewGoogleAzure extends React.Component {
                       </div>
                     )
                     } */}
-
+                    <Grid>
+                      <FlexGrid
+                      headersVisibility="Column"
+                      autoGenerateColumns={false}
+                      itemsSource={this.state.azureDataResults}
+                      style={{
+                        height: "auto",
+                        maxHeight: 400,
+                        margin: 0,
+                        maxWidth:400
+                      }}>
+                      {this.state.azureDataResults.length>0 && Object.keys(this.state.azureDataResults[0]).map(key =>
+                        <FlexGridColumn
+                      binding={key}
+                      header={key}
+                      cssClass="cell-header"
+                      // width="*"
+                      // minWidth={20}
+                      // visible={key != "user_id"}
+                      style={{backgroundColor:'grey'}}
+                      ></FlexGridColumn>
+                     )}
+                      <wjFilter.FlexGridFilter></wjFilter.FlexGridFilter>
+                      </FlexGrid>
+                      </Grid>
                   </div>}
 
                   <FormControlLabel
