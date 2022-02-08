@@ -167,7 +167,8 @@ class DocumentDetails extends React.Component {
       docValidated:false,
       value: 1,
       pageNoToShow:"1",
-      docValidated:"No"
+      docValidated:"No",
+      Toggle:false
     }
 
       // this.gridObject = null;
@@ -580,6 +581,9 @@ class DocumentDetails extends React.Component {
     toast.info("Request is invalid", toast_options);
   }
 }
+sliderClick = () => {
+  this.setState({Toggle:!this.state.Toggle})
+}
   rotatePdf = () => {
     if (this.state.rotateScreen >= 4) {
       this.setState({ rotateScreen: 0 })
@@ -619,10 +623,36 @@ class DocumentDetails extends React.Component {
 
     let dateRec = moment(this.props && this.props.history && this.props.history.location && this.props.history.location.state && this.props.history.location.state.data.dateRec).format("MM/DD/YYYY hh:mm A");
     let dateProcessed = moment(this.props && this.props.history && this.props.history.location && this.props.history.location.state && this.props.history.location.state.data.dateProcessed).format("MM/DD/YYYY hh:mm A");
+    let dateRec2 = moment(this.props && this.props.history && this.props.history.location && this.props.history.location.state && this.props.history.location.state.data.dateRec).format("MM/DD/YYYY");
+    let dateProcessed2 = moment(this.props && this.props.history && this.props.history.location && this.props.history.location.state && this.props.history.location.state.data.dateProcessed).format("MM/DD/YYYY");
     let noOfPages = this.props && this.props.history && this.props.history.location && this.props.history.location.state && this.props.history.location.state.data.noOfPages;
     console.log("expand", this.state)
     return (
       <CCard style={cardView}>
+        <div className={classes.report_block}>
+<h4 className={classes.report_title} onClick={() => this.sliderClick()}>DOCUMENT REPORT CARD <i class="fa fa-chevron-down" aria-hidden="true"></i>
+</h4>
+{this.state.Toggle &&
+        <div style={{ width: "400px", padding: "20px", position: "fixed", right: "20px", background: '#8349bf', boxShadow: "0px 4px 6px rgba(0,0,0,0.5)", border: "1px solid #fff", borderRadius: "5px" }}>
+                          <div className={classes.report_box}>
+                            RECIEVED<br/>
+                            {dateRec2}
+                          </div>
+                          <div className={classes.report_box}>
+                            PROCESSED<br/>
+                            {dateProcessed2}
+                          </div>
+                          <div className={classes.report_box}>
+                            COMPLETED<br/>
+                            12/12/21
+                          </div>
+                          <div className={classes.report_box} style={{ boxShadow: "none" }}>
+                            REPORTED<br/>
+                            12/12/21
+                          </div>
+                        </div>
+  }
+                        </div>
         <CRow className={classes.title_text }>
           {this.props.history.location &&this.props.history.location.state && this.props.history.location.state.data.pdfFilename ? this.props.history.location.state.data.pdfFilename : ""}
         </CRow>

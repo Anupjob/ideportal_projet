@@ -2,9 +2,13 @@ import React from 'react'
 import {
   CCard,
   CCol,
-  CProgress,
   CRow,
-} from '@coreui/react';
+  CInput
+  //CImg,
+} from '@coreui/react'
+import { CImg } from '@coreui/react'
+import Carousel from "react-multi-carousel";
+import "react-multi-carousel/lib/styles.css";
 import { Document, Page, pdfjs } from 'react-pdf';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.min.css';
@@ -36,6 +40,40 @@ const pdfContentView = {
   //minWidth: 600,
    width: "90%"
 }
+const carousel_arrow_right= {
+  color: "rgb(255, 255, 255)",
+  background: "none",
+  position: "absolute",
+  right: "20px",
+  border: "none",
+}
+const carousel_arrow_left= {
+  color: "rgb(255, 255, 255)",
+  background: "none",
+  position: "absolute",
+  left: "20px",
+  border: "none",
+}
+const responsive = {
+  superLargeDesktop: {
+    // the naming can be any, depends on you.
+    breakpoint: { max: 4000, min: 3000 },
+    items: 5
+  },
+  desktop: {
+    breakpoint: { max: 3000, min: 1024 },
+    items: 3
+  },
+  tablet: {
+    breakpoint: { max: 1024, min: 464 },
+    items: 3
+  },
+  mobile: {
+    breakpoint: { max: 464, min: 0 },
+    items: 3
+  }
+};
+
 const pdfContentBox = {
   display: "table",
 backgroundColor: "white",
@@ -107,13 +145,15 @@ class PdfViewGoogleAzure extends React.Component {
       finalDataResult: {},
       azureDataResults: [],
       visionType: "googlev",
-      pageNo: 1,
+      pageNum: 1,
       fileType: "pdf",
       pdfImage: '',
       isCheckedPdf: false,
       isCheckedImage: false,
       isCheckedRotateImg: false,
-      totalPages:0
+      totalPages:0,
+      Toggle: false,
+      sliderData: []
     }
     // this.onChangeValue = this.onChangeValue.bind(this);
   }
@@ -121,6 +161,9 @@ class PdfViewGoogleAzure extends React.Component {
 
     // console.log("===PdfViewGoogleAzure doc_id :::GoogleAzure",this.props)
     this.getPdfImageRotate();
+  }
+  sliderClick = () => {
+    this.setState({Toggle:!this.state.Toggle})
   }
   onPageLoad(info) {
     const {
@@ -163,7 +206,7 @@ class PdfViewGoogleAzure extends React.Component {
       axios({
         method: "POST",
         url: settings.serverUrl + "/getPdfFile",
-        data: JSON.stringify({ fileName: pdfFileName, containerPath: processorPath, fileType: this.state.fileType, pageNum: this.state.pageNo }),
+        data: JSON.stringify({ fileName: pdfFileName, containerPath: processorPath, fileType: this.state.fileType, pageNum: this.state.pageNum }),
         headers,
       }).then((response) => {
         console.log("Respone from post getPdfImage==", response.data.result);
@@ -171,9 +214,14 @@ class PdfViewGoogleAzure extends React.Component {
           // alert(response.data.err);
           toast.error(response.data.err, toast_options);
         } else {
+          let sliderDataArr = []
           // this.setState({ pdfImage: response.data.result, isLoading: false })
+          for (let index = 0; index < response.data.result.noOfPages; index++) {
+            sliderDataArr.push("./canvas.png")
+          }
+          
           let base64Data = response.data.result.base64Str
-          this.setState({ pdfImage: base64Data, totalPages: response.data.result.noOfPages })
+          this.setState({ pdfImage: base64Data, totalPages: response.data.result.noOfPages, sliderData: sliderDataArr })
         }
         this.setState({isLoading: false})
       }).catch(err => {
@@ -215,7 +263,7 @@ class PdfViewGoogleAzure extends React.Component {
       axios({
         method: "POST",
         url: settings.serverUrl + "/getGoogleVisionData",
-        data: JSON.stringify({ docId: doc_id, resType: this.state.visionType,pageNum: this.state.pageNo }),
+        data: JSON.stringify({ docId: doc_id, resType: this.state.visionType, pageNum: this.state.pageNum }),
         headers,
       }).then((response) => {
         console.log("response getGoogleVisionData===",response)
@@ -282,12 +330,72 @@ class PdfViewGoogleAzure extends React.Component {
     } = info;
     console.log("Screen resolution:::",height, width, originalHeight, originalWidth);
   }
+  
+  sliderClick = () => {
+    this.setState({Toggle:!this.state.Toggle})
+  }
 
   render() {
     const { classes } = this.props;
+    
     // console.log("===PdfViewGoogleAzure doc_id in render :::",this.props.history.location.state.data.doc_id)
     return (
       <CCard style={pdfMainView}>
+
+<div className={classes.report_block}>
+                  <h4 className={classes.report_title} onClick={() => this.sliderClick()}>PDF VIEWER <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                  </h4>
+                  {this.state.Toggle &&
+                    <div style={{ width: "400px", padding: "20px 50px", position: "fixed", right: "20px", background: '#8349bf', boxShadow: "0px 4px 6px rgba(0,0,0,0.5)", border: "1px solid #fff", borderRadius: "5px", paddingBottom: "60px" }}>
+
+                      <Carousel responsive={responsive} focusOnSelect={true} ref={el => (this.Carousel = el)}
+                        customButtonGroup={<div className="carousel-button-group" style={{position: "absolute",  zIndex: "1", bottom: "12px", right: "40px"}}>
+ 
+                  <div style={{ color: "#fff", textAlign: "right", marginTop: "15px" }}>Pages 
+                                      <CInput type='text' 
+                                      value={this.state.pageNum} 
+                                      onChange={(e) => {
+                                        let pageToChange = Number(e.target.value)
+                                        if(pageToChange>=1 && pageToChange <= this.state.sliderData.length){
+                                          this.Carousel.goToSlide(pageToChange-1);
+                                          // this.setState({pageNum: e.target.value})
+                                        }
+                                      }}
+                                      style={{
+                                        background: "none",
+                                        color: "#fff",
+                                        borderRadius: "0",
+                                        margin: "0 7px",
+                                        width: "50px",
+                                        border: "1px solid #fff",
+                                        textAlign:"center",
+                                        display:'inline-block'
+                                      }}
+                                      /> of {this.state.sliderData.length}</div>
+                        {/* <CButton onClick={() => goToSlide(currentSlide + 4)} > Go to any slide </CButton> */}
+                      </div>}
+                     
+                        afterChange={(previousSlide, { currentSlide, onMove }) => {
+                          console.log("afterChange currentSlide",currentSlide)
+                          let newPageNum = currentSlide+1;
+                          if(newPageNum>=1 && newPageNum <= this.state.sliderData.length){
+                            this.setState({pageNum: newPageNum})
+                          }
+                        }}
+                        style={{ display: "table" }}
+                      >
+                        {this.state.sliderData.length > 0 && this.state.sliderData.map((obj, idx) => (
+
+                          <div style={{ background: idx == this.state.pageNum ? "rgb(5, 162, 210)" : 'none', margin: "5px" }} >
+                            <CImg src={obj} style={{ width: "100%", opacity: idx+1 == this.state.pageNum ? "0.6" : '1' }} /></div>
+                        ))}
+
+                      </Carousel>
+                     
+                    </div>
+                  }
+
+                </div>
         
         <CRow className={classes.title_text }>
           {this.props.history.location && this.props.history.location.state && this.props.history.location.state.fileName ? this.props.history.location.state.fileName : ""}

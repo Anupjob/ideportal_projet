@@ -72,13 +72,13 @@ const useStyles = makeStyles(theme => ({
   back_icon: {
     position: "absolute",
     left: "30px",
-    bottom: "22px",
+    bottom: "12px",
     "@media (max-width: 1200px)": {
-      bottom: "34px"
+      bottom: "25px"
     },
-    "@media (max-width: 767px)": {
-      bottom: "67px"
-    }
+    // "@media (max-width: 767px)": {
+    //   bottom: "67px"
+    // }
   },
   header_bg1: {
     background: "rgb(131,73,191)",
@@ -394,18 +394,15 @@ const TheHeaderNew = (props) => {
             </CCol>
 
             <CCol md="4">
-              {change == 'detail page' &&
+              {/* {change == 'detail page' &&
 
                 <div className={classes.report_block}>
                   <h4 className={classes.report_title} onClick={() => sliderClick()}>PDF VIEWER <i class="fa fa-chevron-down" aria-hidden="true"></i>
                   </h4>
                   {Toggle &&
                     <div style={{ width: "400px", padding: "20px 50px", position: "fixed", right: "20px", background: '#8349bf', boxShadow: "0px 4px 6px rgba(0,0,0,0.5)", border: "1px solid #fff", borderRadius: "5px", paddingBottom: "60px" }}>
-
-                      {/* <div style={{ width: "100px", height: "100px", position: "absolute", background: "#f00" }}></div> */}
                       <Carousel responsive={responsive} focusOnSelect={true}
                         customButtonGroup={<ButtonGroup />}
-                        // arrows={false}
                         customLeftArrow={<CustomLeftArrow />}
                         customRightArrow={<CustomRightArrow />}
                         style={{ display: "table" }}
@@ -423,10 +420,10 @@ const TheHeaderNew = (props) => {
 
                 </div>
 
-              }
+              } */}
               {/* <div style={{ fontSize: "3em", color: "#f00" }}>Change{change}</div> */}
 
-              {change == 'details page' &&
+              {/* {change == 'details page' &&
                 <CRow>
                   <CCol>
 
@@ -459,7 +456,7 @@ const TheHeaderNew = (props) => {
                     </div>
                   </CCol>
                 </CRow>
-              }
+              } */}
 
               {
                 change == 'incoming page' &&
