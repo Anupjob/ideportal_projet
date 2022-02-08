@@ -649,11 +649,16 @@ async def get_google_vision_data(incData: GoogleVisionSchema = Body(...)):
 
                     # df_table = df_table.drop("index", axis=1)
                     df_table = df_table.fillna("0")
-                    data_dict = df_table.to_dict("list")
+                    # data_dict = df_table.to_dict("list")
+                    data_dict = df_table.to_dict(orient='index')
 
-                    print(df_table)
-                    print("data_dict",data_dict)
-                return {"result": data_dict, "err": None}
+                    final_csv_arr = []
+                    for value in data_dict.values():
+                        final_csv_arr.append(value)
+
+                    # print(df_table)
+                    print("final_csv_arr",final_csv_arr)
+                return {"result": final_csv_arr, "err": None}
 
             # download_stream = blob_client.download_blob()
             # return download_stream.readall()
