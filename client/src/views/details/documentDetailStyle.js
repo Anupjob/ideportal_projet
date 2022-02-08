@@ -13,12 +13,11 @@ export const doc_styles = theme => ({
       },
     },
     report_block: {
-      width: "350px",
 display: "table",
 marginBottom: "20px",
 position: "fixed",
 zIndex: "500000",
-right: "20px",
+right: "8px",
 top: "80px",
 "@media (max-width: 1200px)": {
   top: '135px'
@@ -43,7 +42,9 @@ top: "80px",
       textAlign: "right",
       fontWeight: "700",
       margin: "0 20px 20px 0",
-      cursor: "pointer"
+      cursor: "pointer",
+      width:200,
+      
     },
     
 
