@@ -23,6 +23,15 @@ import { withStyles } from "@material-ui/core/styles";
 
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
+
+let pagePadding = 30;
+let xPercentageChange = 0.36;
+let yPercentageChange = 0.36;
+let boxLeftMargin = 13;
+let boxTopMargin = 1;
+let boxExtraWidth = 5;
+let boxExtraHeight = 2;
+
 const pdfMainView = {
   backgroundColor: '#fff',
   border: 0,
@@ -34,16 +43,16 @@ const pdfContentView = {
   backgroundColor: 'white',
   //boxShadow: '0px 4px 32px 1px #00000029',
   //minWidth: 600,
-   width: "90%"
+  //  width: "90%"
 }
 const pdfContentBox = {
   display: "table",
 backgroundColor: "white",
-width: "100%",
+// width: "100%",
 boxShadow: "0px 0px 8px #0000001c",
-padding: "30px",
+padding: pagePadding+"px",
 border: "1px solid #dbdbdb",
-marginBottom:"20px"
+// marginBottom:"20px"
 }
 const radioBtnDiv = {
   backgroundColor: 'white',
@@ -92,10 +101,6 @@ const viewDetailBtn = {
   height:35
   // width: 130
 }
-
-let xPercentageChange = 0.40;
-let yPercentageChange = 0.393;
-
 class PdfViewGoogleAzure extends React.Component {
 
   constructor(props) {
@@ -122,12 +127,7 @@ class PdfViewGoogleAzure extends React.Component {
     // console.log("===PdfViewGoogleAzure doc_id :::GoogleAzure",this.props)
     this.getPdfImageRotate();
   }
-  onPageLoad(info) {
-    const {
-      height, width, originalHeight, originalWidth
-    } = info;
-    console.log(height, width, originalHeight, originalWidth);
-  }
+
   getPdfImageRotate = () => {
     // console.log("===PdfViewGoogleAzure doc_id :::GoogleAzure",this.props)
 
@@ -228,6 +228,7 @@ class PdfViewGoogleAzure extends React.Component {
        
         if(this.state.visionType == 'googlev'){
           var pardedResp = JSON.parse(respdata)
+          console.log('pardedResp :>> ', pardedResp);
          var blockOne = pardedResp.fullTextAnnotation.pages[0].blocks[1];
          console.log('blockOne :>> ', blockOne);
           this.setState({ googleVisionVisible: true, azureTableVisible: false, googleTableVisible: false ,finalDataResult: pardedResp.fullTextAnnotation,isLoading: false })
@@ -326,23 +327,24 @@ class PdfViewGoogleAzure extends React.Component {
                   {
                     this.state.finalDataResult && Object.keys(this.state.finalDataResult).length > 0 && this.state.finalDataResult.pages[0].blocks.map((blockData, blockIdx) =>
                     <div style={{
-                      top:blockData.boundingBox.vertices[0].y * yPercentageChange, 
-                      left:blockData.boundingBox.vertices[0].x * xPercentageChange, 
-                      width:blockData.boundingBox.vertices[1].x * xPercentageChange - blockData.boundingBox.vertices[0].x * xPercentageChange, 
-                      height:blockData.boundingBox.vertices[2].y * yPercentageChange - blockData.boundingBox.vertices[0].y * yPercentageChange, 
-                      border: '2px solid #FF0000',
+                      top:(blockData.boundingBox.vertices[0].y * yPercentageChange)+boxTopMargin+pagePadding, 
+                      left:(blockData.boundingBox.vertices[0].x * xPercentageChange)+boxLeftMargin+pagePadding , 
+                      width:(blockData.boundingBox.vertices[1].x * xPercentageChange - blockData.boundingBox.vertices[0].x * xPercentageChange)+boxExtraWidth, 
+                      height:(blockData.boundingBox.vertices[2].y * yPercentageChange - blockData.boundingBox.vertices[0].y * yPercentageChange)+boxExtraHeight, 
+                      border: '0.2px solid #FF0000',
                       position: "absolute"}}>
-                        {
+                        { blockIdx == 0 &&
                           blockData.paragraphs.map((paraData) =>
                             paraData.words.map((wordData, wordIndex) =>
                               console.log('wordData.symbols.map((symbolData, symbolIndex)====', wordData.symbols.map((symbolData, symbolIndex) => symbolData.text).join(''))
                             )
                           )
                         }
-                        {console.log('blockData.boundingBox.vertices[0].y :>> ', blockData.boundingBox.vertices[0].y)}
-                        {console.log('left:blockData.boundingBox.vertices[0].x :>> ', blockData.boundingBox.vertices[0].x)}
-                        {console.log('blockData.boundingBox.vertices[1].x - blockData.boundingBox.vertices[0].x :>> ', blockData.boundingBox.vertices[1].x - blockData.boundingBox.vertices[0].x)}
-                        {console.log('blockData.boundingBox.vertices[2].y - blockData.boundingBox.vertices[0].y :>> ', blockData.boundingBox.vertices[2].y - blockData.boundingBox.vertices[0].y)}
+                        {blockIdx == 0 && console.log('blockData :>> ', blockData)}
+                        {blockIdx == 0 && console.log('blockData.boundingBox.vertices[0].y :>> ', blockData.boundingBox.vertices[0].y)}
+                        {blockIdx == 0 && console.log('left:blockData.boundingBox.vertices[0].x :>> ', blockData.boundingBox.vertices[0].x)}
+                        {blockIdx == 0 && console.log('blockData.boundingBox.vertices[1].x - blockData.boundingBox.vertices[0].x :>> ', blockData.boundingBox.vertices[1].x - blockData.boundingBox.vertices[0].x)}
+                        {blockIdx == 0 && console.log('blockData.boundingBox.vertices[2].y - blockData.boundingBox.vertices[0].y :>> ', blockData.boundingBox.vertices[2].y - blockData.boundingBox.vertices[0].y)}
                     </div>
                     )}
                 </div> :
@@ -388,7 +390,7 @@ class PdfViewGoogleAzure extends React.Component {
                               <div style={{ padding: 10 }}>
                                 <div>
                                   <span style={{ backgroundColor: '#824CC0', color: 'white', flexWrap: 'wrap', padding: 5, marginTop: 5, borderRadius: 10 }}>
-                                    +Block {blockIdx + 1}
+                                    +Block {blockIdx + 1} (score : {blockData.confidence})
                                   </span>
                                 </div>
                                 {
