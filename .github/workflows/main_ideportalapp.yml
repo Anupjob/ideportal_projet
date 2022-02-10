@@ -18,7 +18,7 @@ jobs:
 #             working-directory: ../client
             
     steps:
-#       - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 #         with:
 #           persist-credentials: false
           
