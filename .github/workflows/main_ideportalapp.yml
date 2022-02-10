@@ -34,7 +34,7 @@ jobs:
       - name: npm install, build, and test
 #         run: |
 #           npm install ideportal/client
-        working-directory: ./client
+        working-directory: client
         run: |
             npm install
           
