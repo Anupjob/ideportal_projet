@@ -32,8 +32,12 @@ jobs:
 #           git config --global url."https://@github.com/".insteadOf ssh://git@github.com/
       
       - name: npm install, build, and test
+#         run: |
+#           npm install ideportal/client
+
         run: |
-          npm install ideportal/client
+            npm install --prefix ../../client
+          
 #         run: |
 #           npm install --prefix ../../client
 #           npm run build --if-present
