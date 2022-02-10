@@ -13,9 +13,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    defaults:
-          run:
-            working-directory: ../client
+#     defaults:
+#           run:
+#             working-directory: ../client
             
     steps:
 #       - uses: actions/checkout@v2
@@ -35,11 +35,18 @@ jobs:
 #       - run: |
 #           git config --global url."https://@github.com/".insteadOf ssh://git@github.com/
       
-      - name: npm install, build, and test
+      - name: list directories
 #         run: |
 #           npm install ideportal/client
 #         working-directory: client
+        run: ls -R
+            
+      - name: npm install, build, and test 
+#         run: |
+#           npm install ideportal/client
+        working-directory: client
         run: |
+            ls -R
             npm install
           
 #         run: |
