@@ -39,14 +39,14 @@ jobs:
 #         run: |
 #           npm install ideportal/client
 #         working-directory: client
-        run: ls -R
+        run: ls -lrt
             
       - name: npm install, build, and test 
 #         run: |
 #           npm install ideportal/client
         working-directory: client
         run: |
-            ls -R
+            ls -lrt
             npm install
           
 #         run: |
