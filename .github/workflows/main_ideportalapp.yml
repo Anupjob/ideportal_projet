@@ -14,19 +14,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
-        with:
-          persist-credentials: false
+#       - uses: actions/checkout@v2
+#         with:
+#           persist-credentials: false
           
       - name: Set up Node.js version
         uses: actions/setup-node@v1
         with:
           node-version: '16.x'
           
-      - name: Reconfigure git to use HTTP authentication
-        run: >
-          git config --global url."https://github.com/".insteadOf
-          ssh://git@github.com/
+#       - name: Reconfigure git to use HTTP authentication
+#         run: >
+#           git config --global url."https://github.com/".insteadOf
+#           ssh://git@github.com/
 
 #       - run: |
 #           git config --global url."https://@github.com/".insteadOf ssh://git@github.com/
@@ -34,9 +34,9 @@ jobs:
       - name: npm install, build, and test
 #         run: |
 #           npm install ideportal/client
-
+        working-directory: ./client
         run: |
-            npm install --prefix ../../client
+            npm install
           
 #         run: |
 #           npm install --prefix ../../client
