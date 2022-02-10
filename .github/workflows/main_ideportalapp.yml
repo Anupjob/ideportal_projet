@@ -13,6 +13,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    defaults:
+          run:
+            working-directory: ./client
+            
     steps:
 #       - uses: actions/checkout@v2
 #         with:
@@ -34,7 +38,7 @@ jobs:
       - name: npm install, build, and test
 #         run: |
 #           npm install ideportal/client
-        working-directory: client
+#         working-directory: client
         run: |
             npm install
           
