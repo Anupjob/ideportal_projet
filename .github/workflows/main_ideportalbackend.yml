@@ -2,7 +2,7 @@
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 # More info on Python, GitHub Actions, and Azure App Service: https://aka.ms/python-webapps-actions
 
-name: Build and deploy Python app to Azure Web App - ideportal
+name: Build and deploy Python app to Azure Web App - ideportalbackend
 
 on:
   push:
@@ -28,6 +28,7 @@ jobs:
           source venv/bin/activate
       
       - name: Install dependencies
+        working-directory: backend
         run: pip install -r requirements.txt
         
       # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
@@ -58,6 +59,6 @@ jobs:
         uses: azure/webapps-deploy@v2
         id: deploy-to-webapp
         with:
-          app-name: 'ideportal'
+          app-name: 'ideportalbackend'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_66639B496AC64ECB85F3C515B04E8271 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_4DC966D6BDC0495C9F5FC36E1E623401 }}
