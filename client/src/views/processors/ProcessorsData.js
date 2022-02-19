@@ -9,8 +9,7 @@ import {
     CSelect,
     CCardHeader,
     CCardBody,
-    CForm
-  } from '@coreui/react';
+    CForm  } from '@coreui/react';
 import CircularProgress from "@material-ui/core/CircularProgress";
 import * as wjCore from '@grapecity/wijmo';
 import { FlexGrid, FlexGridColumn, FlexGridCellTemplate } from '@grapecity/wijmo.react.grid';
@@ -31,6 +30,7 @@ import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import 'react-toastify/dist/ReactToastify.css';
 import { useHistory } from "react-router";
+import { CFormSelect } from "@coreui/react";
 
 const loader = {
   position: "fixed",
@@ -69,6 +69,11 @@ const submit_dialogBtn = {
   fontSize: 14, color: 'white',
   marginLeft: 10
 }
+const addMore = {
+  backgroundColor: '#4EA7D8',
+  fontSize: 14, color: 'white',
+  marginLeft: 10,marginTop:10
+}
 const ProcessorsData = () => {
   const history = useHistory();
   const [Isloader, setIsloader] = useState(false);
@@ -80,6 +85,16 @@ const ProcessorsData = () => {
   const [folder, setFolder] = useState('');
   const [processor, setProcessor] = useState('');
   const [collection, setCollection] = useState('');
+  const [googleVisionVal, setGoogleVisionVal] = useState('');
+  const [azureFormVal, setAzureFormVal] = useState('');
+  const [textractVal, setTextract] = useState('');
+  const [keywordsField, setkeywordsField] = useState([""]);
+  
+
+  const CompanyList = ["Digital Glyde","Maverick","Questa Energy Corporation","Demo Resources"]
+  const GoogleVisionList = ["Yes","No","All","First","Last"];
+  const AzureFormList =["Yes","No","All","First","Last"];
+  const TextractList =["Yes","No","All","First","Last"];
   
   
   useEffect(() => {
@@ -140,7 +155,17 @@ const ProcessorsData = () => {
 
   const handleToClose = () => {
     setOpen(false);
+    setGroup("");
+    setName("");
+    setFolder("");
+    setProcessor("");
+    setCollection("");
+    setGoogleVisionVal("");
+    setAzureFormVal("");
+    setTextract("");
+    setkeywordsField([""])
   };
+
   const submit = () => {
     if (group == '' || group == null || group == undefined) {
       toast.warn("Please Enter Group !", {toast_options});
@@ -163,10 +188,25 @@ const ProcessorsData = () => {
 
       let companyId = localStorage.getItem('companyId')
       console.log("===companyId:::",companyId)
+      let userType = localStorage.getItem('master')
+      console.log('userType is:::::>>', userType);
+    
+      let requestBody = {company_id:companyId, 
+                          name: name, 
+                          group: group, 
+                          folder: folder ,
+                          processor: processor,
+                          collection:collection,
+                          googlevision:googleVisionVal,
+                          azure:azureFormVal,
+                          textract:textractVal,
+                          keywords:keywordsField
+                        }
+                console.log('requestBody to add processor :>> ', requestBody);        
       axios({
         method: "POST",
         url: settings.serverUrl + "/addProcessor",
-        data: JSON.stringify({company_id:companyId, name: name, group: group, folder: folder ,processor: processor,collection:collection}),
+        data: JSON.stringify(requestBody),
         headers,
       }).then((response) => {
         console.log("Respone from post Processor Data==", response.data.result);
@@ -189,8 +229,27 @@ const ProcessorsData = () => {
         }
       });
     }}
+    
+    const handleGoogleVisionChange = (e) => {
+      setGoogleVisionVal(e.target.value)
+    }
+    const handleAzureFormChange = (e) => {
+      setAzureFormVal(e.target.value)
+    }
+    const handleTextractChange = (e) => {
+      setTextract(e.target.value)
+    }
 
+   const setIdentifykeywords =(text,idx) =>{
+
+    console.log("Add More index==",idx)
+
+    let keywordsFieldCpy = [...keywordsField]
+    keywordsFieldCpy[idx] = text;
+      setkeywordsField(keywordsFieldCpy)
+    }
   return (
+    
       <Grid className="container-fluid" style={{marginTop:55}}>
         <CButton type="submit" color="primary" size="lg" style={btn_style} onClick={() => handleClickToOpen()}>Add Processor</CButton>
           <Grid item xs={12} style={{ marginTop: 25}}>
@@ -208,7 +267,7 @@ const ProcessorsData = () => {
                 {tableData.length>0 && Object.keys(tableData[0]).map(key =>
                 <FlexGridColumn
                 binding={key}
-                header={key}
+                header={key.toUpperCase()}
                 cssClass="cell-header"
                 width="*"
                 visible={key != "processor_id"}
@@ -235,7 +294,7 @@ const ProcessorsData = () => {
               pauseOnHover
             /></div>
             <Dialog open={open} onClose={handleToClose}>
-          <DialogTitle>Add Company</DialogTitle>
+          <DialogTitle>Add Processor</DialogTitle>
                           <DialogContent style={{ minWidth: 500 }}>
                             <DialogContentText>
                             
@@ -258,7 +317,108 @@ const ProcessorsData = () => {
                                 value={collection}
                                 onChange={e => setCollection(e.target.value)} 
                               />
-                              
+                                
+                          <select
+                            style={{
+                              width: "100%",
+                              background: "none",
+                              border: "1px solid #999",
+                              fontSize: "11px",
+                              padding: "10px 0",
+                              marginTop:"10px"
+                            }}
+                            value={googleVisionVal}
+                            name="processor"
+                            onChange={handleGoogleVisionChange}
+                          >
+                            <option value="">Select For Google Vision</option>
+                            {GoogleVisionList.map((curr, index) => {
+                              return (
+                                <>
+                                  <option>{curr}</option>
+                                </>
+                              );
+                            })}
+                          </select>
+                          <select
+                            style={{
+                              width: "100%",
+                              background: "none",
+                              border: "1px solid #999",
+                              fontSize: "11px",
+                              padding: "10px 0",
+                              marginTop:"10px"
+                            }}
+                            value={azureFormVal}
+                            name="azureForm"
+                            onChange={handleAzureFormChange}
+                          >
+                            <option value="">Select For Azure Form</option>
+                            {AzureFormList.map((curr, index) => {
+                              return (
+                                <>
+                                  <option>{curr}</option>
+                                </>
+                              );
+                            })}
+                          </select>
+                          <select
+                            style={{
+                              width: "100%",
+                              background: "none",
+                              border: "1px solid #999",
+                              fontSize: "11px",
+                              padding: "10px 0",
+                              marginTop:"10px"
+                            }}
+                            value={textractVal}
+                            name="textract"
+                            onChange={handleTextractChange}
+                          >
+                            <option value="">Select For textract</option>
+                            {TextractList.map((curr, index) => {
+                              return (
+                                <>
+                                  <option>{curr}</option>
+                                </>
+                              );
+                            })}
+                          </select>
+                          
+                          { keywordsField.map((kf,idx)=>
+                            <div style={{ flexDirection: 'row'}}>
+                            <TextField 
+                              id="outlined-basic" 
+                              label="Enter Identify keywords"
+                              type="text" variant="outlined" 
+                              style={{ width: "95%",marginTop:10 }}
+                              value={kf}
+                              onChange={e => setIdentifykeywords(e.target.value, idx)} 
+                            />
+                            {idx>0 &&
+                              <i class="fa fa-minus-circle fa-sm" aria-hidden="true" style={{padding:'5px',color:"red",marginTop:25}}
+                              onClick={()=>{
+                                console.log('idx of delete :>> ', idx);
+                                let keywordsFieldCpy = [...keywordsField]
+                                let deleteVal = keywordsFieldCpy.splice(idx,1)
+                                console.log('deleteVal==== :>> ', deleteVal);
+                                setkeywordsField(keywordsFieldCpy)
+                              }}
+                              >
+
+                              </i>
+                            }
+                            </div>
+                          )}
+
+                          <div style={{ flexDirection: 'row',marginRight:30 }}>
+                          <Button style={addMore} onClick={()=>{
+                          let keywordsFieldCpy = [...keywordsField]
+                          keywordsFieldCpy.push("")
+                          setkeywordsField(keywordsFieldCpy)
+                          }
+                            }>Add More</Button>
+                          </div>
                             </DialogContentText>
                           </DialogContent>
                           <DialogActions>

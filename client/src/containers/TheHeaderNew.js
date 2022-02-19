@@ -3,6 +3,10 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useSelector, useDispatch } from 'react-redux';
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.min.css';
+import settings from 'src/config/settings';
+import axios from "axios";
 import {
   CForm,
   CInputGroup,
@@ -182,7 +186,15 @@ const useStyles = makeStyles(theme => ({
     border: "none",
   }
 }));
-
+const toast_options = {
+  position: "top-center",
+  autoClose: 5000,
+  hideProgressBar: true,
+  closeOnClick: true,
+  pauseOnHover: true,
+  draggable: true,
+  progress: undefined,
+}
 
 const responsive = {
   superLargeDesktop: {
@@ -214,11 +226,46 @@ const TheHeaderNew = (props) => {
 
 
   const [Toggle, setToggle] = useState(false)
+  const [CompanyDropdown, setCompanyDropdownValue] = useState('');
+
+  const [CompanyListData, setCompanyListData] = useState([]);
+
 
   useEffect(() => {
     // console.log("url props::", props)
+    getCompanyData();
   }, [])
 
+  const getCompanyData = () => {
+
+    
+    const headers = {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + localStorage.getItem('access_token'),
+      // reqFrom: "ADMIN",
+    };
+    axios({
+      method: "GET",
+      url: settings.serverUrl + "/getCompaniesData",
+      headers,
+    }).then((response) => {
+      console.log("Response from header company list===", response.data.result);
+      if (response.data.err) {
+        toast.error(response.data.err, toast_options);
+      }else{
+        if(response.data.result){
+          setCompanyListData(response.data.result)
+        }
+      }
+    }).catch(err => {
+      toast.error(err.message, toast_options);
+      // console.log("Record Issue Error Processor Data", err)
+      if(err.message.includes("403")){
+      localStorage.clear();
+      history.push("/");
+      }
+    });
+  }
 
   console.log("url props::", props)
   // console.log("urlVal", urlVal);
@@ -242,7 +289,9 @@ const TheHeaderNew = (props) => {
 
   //   dispatch({ type: 'set', sidebarShow: val })
   // }
-
+  const handleCompanyChange = (e) => {
+    setCompanyDropdownValue(e.target.value)
+  }
   const toggleSidebar = () => {
     const val = [true, 'responsive'].includes(sidebarShow) ? false : 'responsive'
     dispatch({ type: 'set', sidebarShow: val })
@@ -353,6 +402,49 @@ const TheHeaderNew = (props) => {
             </Link>
           </CHeaderNavItem>
 
+{console.log('header rendewrlocalStorage.getItem(master) :>> ', localStorage.getItem('master'))}
+
+
+          {
+          localStorage.getItem('master') && JSON.parse(localStorage.getItem('master')) &&
+
+
+            <select
+            style={{
+              // width: "100%",
+              background: "white",
+              // border: "1px solid #999",
+              border:"none",
+              fontSize: "11px",
+              padding: "8px 0",
+              marginTop:"0px",
+              marginLeft:"10px"
+            }}
+            value={CompanyDropdown}
+            name="company"
+            onChange={handleCompanyChange}
+          >
+            <option value="">Select Company</option>
+            {CompanyListData.map((curr, index) => {
+              return (
+                <>
+                  <option>{curr.name}</option>
+                </>
+              );
+            })}
+          </select>   
+          }
+        <div><ToastContainer
+                  position="top-center"
+                  autoClose={5000}
+                  hideProgressBar
+                  newestOnTop={false}
+                  closeOnClick
+                  rtl={false}
+                  pauseOnFocusLoss
+                  draggable
+                  pauseOnHover
+                /></div>              
         </CHeaderNav>
         <CHeaderNav className={classes.right_content}>
           <CInputGroup>

@@ -328,6 +328,7 @@ class Login extends React.Component {
         localStorage.setItem('name', response.data.result.name)
         localStorage.setItem('userId', response.data.result.userId)
         localStorage.setItem('email', response.data.result.email)
+        localStorage.setItem('master', response.data.result.master)
 
 
         if (response.data.err) {
