@@ -39,7 +39,7 @@ const loader = {
   right: "0",
   bottom: "0",
   background: "rgba(255,255,255,0.4)",
-  zIndex: "100",
+  zIndex: "9999",
   display: "table",
   width: "100%",
   height: "100%"
@@ -220,15 +220,23 @@ const CompanyUserData = () => {
             <DialogTitle>Add User</DialogTitle>
                           <DialogContent style={{ minWidth: 500 }}>
                             <DialogContentText>
-                            
-                              <TextField id="outlined-basic" label="Enter Email" type="text" variant="outlined" style={{ width: "100%",marginTop:10 }}
+                              <CRow>
+                                <CCol md="6">
+                                <TextField id="outlined-basic" label="Enter Email" type="text" variant="outlined" style={{ width: "100%",marginTop:20 }}
                                 value={email}
                                 onChange={e => setEmail(e.target.value)}
                               />
-                              <TextField id="outlined-basic" label="Enter Name" type="text" variant="outlined" style={{ width: "100%",marginTop:10 }}
+                                </CCol>
+                                <CCol md="6">
+                                <TextField id="outlined-basic" label="Enter Name" type="text" variant="outlined" style={{ width: "100%",marginTop:20 }}
                               value={name}
                               onChange={e => setName(e.target.value)}
                               />
+                                </CCol>
+                              </CRow>
+                            
+                              
+                              
                                
                             </DialogContentText>
                           </DialogContent>

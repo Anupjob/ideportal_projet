@@ -31,6 +31,20 @@ import TextField from "@material-ui/core/TextField";
 import 'react-toastify/dist/ReactToastify.css';
 import { useHistory } from "react-router";
 import { CFormSelect } from "@coreui/react";
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
+import InputLabel from '@material-ui/core/InputLabel';
+import FormControl from '@material-ui/core/FormControl';
+import { makeStyles } from '@material-ui/core/styles';
+
+
+
+
+//const [age, setAge] = React.useState('');
+
+const handleChange = (event) => {
+  //setAge(event.target.value);
+};
 
 const loader = {
   position: "fixed",
@@ -39,7 +53,7 @@ const loader = {
   right: "0",
   bottom: "0",
   background: "rgba(255,255,255,0.4)",
-  zIndex: "100",
+  zIndex: "9999",
   display: "table",
   width: "100%",
   height: "100%"
@@ -70,11 +84,36 @@ const submit_dialogBtn = {
   marginLeft: 10
 }
 const addMore = {
-  backgroundColor: '#4EA7D8',
-  fontSize: 14, color: 'white',
-  marginLeft: 10,marginTop:10
+  color: "rgb(78, 167, 216)",
+  fontSize: "2em",
+  // position: "absolute",
+  // right: 0,
+  // top: 0
 }
+const removebtn = {
+  color: "rgb(255, 0, 0)",
+fontSize: "2em",
+position: "relative",
+top: "25px"
+}
+
+const useStyles  = makeStyles((theme) => ({
+  formControl: {
+    //margin: theme.spacing(1),
+    width:"100%",
+    marginTop:"20px"
+  },
+  selectEmpty: {
+    marginTop: theme.spacing(2),
+  },
+  title:{
+    background:"#fff",
+    //padding: "18.5px 14px"
+  }
+}));
+
 const ProcessorsData = () => {
+  const classes = useStyles();
   const history = useHistory();
   const [Isloader, setIsloader] = useState(false);
   const [companyId, setCompanyId] = useState('');
@@ -291,32 +330,130 @@ const ProcessorsData = () => {
               draggable
               pauseOnHover
             /></div>
-            <Dialog open={open} onClose={handleToClose}>
+            <Dialog open={open} onClose={handleToClose} style={{ Width: "100%" }}>
           <DialogTitle>Add Processor</DialogTitle>
-                          <DialogContent style={{ minWidth: 500 }}>
+                          <DialogContent>
                             <DialogContentText>
-                            
-                              <TextField id="outlined-basic" label="Enter Group" type="text" variant="outlined" style={{ width: "100%",marginTop:10 }}
+                              <CRow>
+                                <CCol md="4">
+                                <TextField id="outlined-basic" label="Enter Group" type="text" variant="outlined" style={{ width: "100%",marginTop:20 }}
                                 value={group}
                                 onChange={e => setGroup(e.target.value)}
                               />
-                              <TextField id="outlined-basic" label="Enter Name" type="text" variant="outlined" style={{ width: "100%",marginTop:10 }}
+                                </CCol>
+                                <CCol md="4">
+                                <TextField id="outlined-basic" label="Enter Name" type="text" variant="outlined" style={{ width: "100%",marginTop:20 }}
                               value={name}
                               onChange={e => setName(e.target.value)}
                               />
-                               <TextField id="outlined-basic" label="Enter Folder" type="text" variant="outlined" style={{ width: "100%",marginTop:10 }}
+                                </CCol>
+
+                                <CCol md="4">
+                                <TextField id="outlined-basic" label="Enter Folder" type="text" variant="outlined" style={{ width: "100%",marginTop:20 }}
                                 value={folder}
                                 onChange={e => setFolder(e.target.value)}                              
                                 />
-                               <TextField id="outlined-basic" label="Enter Processor" type="text" variant="outlined" style={{ width: "100%",marginTop:10 }}
+                                </CCol>
+                              </CRow>
+
+                              <CRow>
+                                
+                                <CCol md="4">
+                                <TextField id="outlined-basic" label="Enter Processor" type="text" variant="outlined" style={{ width: "100%",marginTop:20 }}
                                 value={processor}
-                                onChange={e => setProcessor(e.target.value)}                               />
-                              <TextField id="outlined-basic" label="Enter Collection" type="text" variant="outlined" style={{ width: "100%",marginTop:10 }}
+                                onChange={e => setProcessor(e.target.value)}  />
+                                </CCol>
+
+                                <CCol md="4">
+                                <TextField id="outlined-basic" label="Enter Collection" type="text" variant="outlined" style={{ width: "100%",marginTop:20 }}
                                 value={collection}
                                 onChange={e => setCollection(e.target.value)} 
                               />
+                                </CCol>
+                                <CCol md="4">
+                                <FormControl variant="outlined" className={classes.formControl}>
+<InputLabel id="company" className={classes.title}>Select Company</InputLabel>
+        <Select
+          labelId="company"
+          id="company"
+          value={CompanyDropdown}
+          name="company"
+          onChange={handleCompanyChange}
+        >
+          {CompanyList.map((curr, index) => (
+                              
+                                  <MenuItem value={curr}>{curr}</MenuItem>
+                               
+                              ) )}
+
+        </Select>
+        </FormControl>
+                                </CCol>
+                              </CRow>
+
+                              <CRow>
+                                <CCol md="4">
+                                <FormControl variant="outlined" className={classes.formControl}>
+<InputLabel id="processor" className={classes.title}>Select For Google Vision</InputLabel>
+        <Select
+          labelId="processor"
+          id="processor"
+          value={googleVisionVal}
+                            name="processor"
+                            onChange={handleGoogleVisionChange}
+        >
+          {GoogleVisionList.map((curr, index) => (
+                                  <MenuItem value={curr}>{curr}</MenuItem>
+                               
+                              ))}
+
+        </Select>
+        </FormControl>
+                                </CCol>
+                                <CCol md="4">
+                                <FormControl variant="outlined" className={classes.formControl}>
+<InputLabel id="azureForm" className={classes.title}>Select For Azure Form</InputLabel>
+        <Select
+          labelId="azureForm"
+          id="azureForm"
+          value={azureFormVal}
+                            name="azureForm"
+                            onChange={handleAzureFormChange}
+        >
+          {AzureFormList.map((curr, index) => (
+       
+                                  <MenuItem value={curr}>{curr}</MenuItem>
+                        
+                   
+          ))}
+
+        </Select>
+        </FormControl>
+                                </CCol>
+                                <CCol md="4"><FormControl variant="outlined" className={classes.formControl}>
+<InputLabel id="textract" className={classes.title}>Select For textract</InputLabel>
+        <Select
+          labelId="textract"
+          id="textract"
+          value={textractVal}
+          name="textract"
+          onChange={handleTextractChange}
+        >
+
+          {TextractList.map((curr, index) => (
+
+                                  <MenuItem value={curr}>{curr}</MenuItem>
+ 
+          ))}
+
+        </Select>
+        </FormControl>
+        </CCol>
+                              </CRow>
+
+                           
                           
-                          <select
+                          {/* <select
                             style={{
                               width: "100%",
                               background: "none",
@@ -337,8 +474,8 @@ const ProcessorsData = () => {
                                 </>
                               );
                             })}
-                          </select>
-                          <select
+                          </select> */}
+                          {/* <select
                             style={{
                               width: "100%",
                               background: "none",
@@ -359,8 +496,8 @@ const ProcessorsData = () => {
                                 </>
                               );
                             })}
-                          </select>
-                          <select
+                          </select> */}
+                          {/* <select
                             style={{
                               width: "100%",
                               background: "none",
@@ -381,8 +518,8 @@ const ProcessorsData = () => {
                                 </>
                               );
                             })}
-                          </select>
-                          <select
+                          </select> */}
+                          {/* <select
                             style={{
                               width: "100%",
                               background: "none",
@@ -403,42 +540,52 @@ const ProcessorsData = () => {
                                 </>
                               );
                             })}
-                          </select>
-                          
+                          </select> */}
+                          <hr/>
                           { keywordsField.map((kf,idx)=>
-                            <div style={{ flexDirection: 'row'}}>
+                          <div style={{position:"relative"}}>
+                            <div style={{ flexDirection: 'row', display:"table", width:"100%"}}>
+                              <div style={{display:"table-cell", width:"100%"}}>
                             <TextField 
                               id="outlined-basic" 
                               label="Enter Identify keywords"
                               type="text" variant="outlined" 
-                              style={{ width: "95%",marginTop:10 }}
+                              style={{ marginTop:10, width:"100%" }}
                               value={kf}
                               onChange={e => setIdentifykeywords(e.target.value, idx)} 
+                              
                             />
+                            </div>
                             {idx>0 &&
-                              <i class="fa fa-minus-circle fa-sm" aria-hidden="true" style={{padding:'5px',color:"red",marginTop:25}}
-                              onClick={()=>{
+                            <div style={{display:"table-cell"}}>
+                               <Button style={removebtn} onClick={()=>{
                                 console.log('idx of delete :>> ', idx);
                                 let keywordsFieldCpy = [...keywordsField]
                                 let deleteVal = keywordsFieldCpy.splice(idx,1)
                                 console.log('deleteVal==== :>> ', deleteVal);
                                 setkeywordsField(keywordsFieldCpy)
-                              }}
-                              >
+                              }}>
+                              <i class="fa fa-times-circle-o" aria-hidden="true"></i>
 
-                              </i>
+                              </Button>
+                              </div>
                             }
+
+                            </div>
+                            
                             </div>
                           )}
+<div style={{ flexDirection: 'row', marginRight:30}}>
+                            <Button style={addMore} onClick={()=>{
+                            let keywordsFieldCpy = [...keywordsField]
+                            keywordsFieldCpy.push("")
+                            setkeywordsField(keywordsFieldCpy)
+                            }
+                              }><i class="fa fa-plus-circle" aria-hidden="true"></i>
 
-                          <div style={{ flexDirection: 'row',marginRight:30 }}>
-                          <Button style={addMore} onClick={()=>{
-                          let keywordsFieldCpy = [...keywordsField]
-                          keywordsFieldCpy.push("")
-                          setkeywordsField(keywordsFieldCpy)
-                          }
-                            }>Add More</Button>
-                          </div>
+                              </Button>
+                            </div>
+                          
                             </DialogContentText>
                           </DialogContent>
                           <DialogActions>
