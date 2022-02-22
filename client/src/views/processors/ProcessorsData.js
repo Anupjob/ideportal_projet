@@ -124,7 +124,6 @@ const ProcessorsData = () => {
   const [folder, setFolder] = useState('');
   const [processor, setProcessor] = useState('');
   const [collection, setCollection] = useState('');
-  const [CompanyDropdown, setCompanyDropdownValue] = useState('');
   const [googleVisionVal, setGoogleVisionVal] = useState('');
   const [azureFormVal, setAzureFormVal] = useState('');
   const [textractVal, setTextract] = useState('');
@@ -203,9 +202,9 @@ const ProcessorsData = () => {
     setGoogleVisionVal("");
     setAzureFormVal("");
     setTextract("");
-    keywordsField([""])
-
+    setkeywordsField([""])
   };
+
   const submit = () => {
     if (group == '' || group == null || group == undefined) {
       toast.warn("Please Enter Group !", {toast_options});
@@ -228,16 +227,21 @@ const ProcessorsData = () => {
 
       let companyId = localStorage.getItem('companyId')
       console.log("===companyId:::",companyId)
+      let userType = localStorage.getItem('master')
+      console.log('userType is:::::>>', userType);
+    
       let requestBody = {company_id:companyId, 
                           name: name, 
                           group: group, 
                           folder: folder ,
                           processor: processor,
                           collection:collection,
-                          googleVisionVal:googleVisionVal,
-                          azureFormVal:azureFormVal,
-                          textractVal:textractVal
+                          googlevision:googleVisionVal,
+                          azure:azureFormVal,
+                          textract:textractVal,
+                          keywords:keywordsField
                         }
+                console.log('requestBody to add processor :>> ', requestBody);        
       axios({
         method: "POST",
         url: settings.serverUrl + "/addProcessor",
@@ -264,9 +268,7 @@ const ProcessorsData = () => {
         }
       });
     }}
-    const handleCompanyChange = (e) => {
-      setCompanyDropdownValue(e.target.value)
-    }
+    
     const handleGoogleVisionChange = (e) => {
       setGoogleVisionVal(e.target.value)
     }
