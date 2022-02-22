@@ -31,6 +31,7 @@ import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import 'react-toastify/dist/ReactToastify.css';
 import { useHistory } from "react-router";
+import { useSelector, useDispatch } from 'react-redux';
 
 const loader = {
   position: "fixed",
@@ -82,14 +83,17 @@ const CompniesData = () => {
   const [state, setState] = useState('');
   const [zip, setZip] = useState('');
   const [contact, setContact] = useState('');
+  const dispatch = useDispatch()
+
 
   useEffect(() => {
-
     getCompanyData()
   }, [])
 
   const getCompanyData = () => {
     setIsloader(true)
+    // setTableData([])
+
     const headers = {
       "Content-Type": "application/json",
       Authorization: "Bearer " + localStorage.getItem('access_token'),
@@ -102,17 +106,10 @@ const CompniesData = () => {
     }).then((response) => {
       console.log("Response", response.data.result);
       if (response.data.err) {
-        // alert(response.data.err);
         toast.error(response.data.err, toast_options);
       }else{
         if(response.data.result){
-          // let proArr = [];
-          // response.data.result.map(processPbj =>{
-          //   let processPbjCopy = {...processPbj}
-          //   delete processPbjCopy.processor_id;
-          //   proArr.push(processPbjCopy)
-          // })
-          // setTableData(proArr)
+          dispatch({ type: 'set', companyList: response.data.result })
           setTableData(response.data.result)
         }
         setIsloader(false)
@@ -126,16 +123,19 @@ const CompniesData = () => {
       }
     });
   }
-  const handleClickToOpen = () => {
-    // console.log("===errMsg===", errMsg)
-    // setErrorMsg(errMsg);
+  const handleClickToOpen = () => { 
     setOpen(true);
   };
-
   const handleToClose = () => {
     setOpen(false);
+    setName("");
+    setStreetOne("");
+    setStreetTwo("");
+    setCity("");
+    setState("");
+    setZip("");
+    setContact("")
   };
- 
   
  const submit = () => {
   if (name == '' || name == null || name == undefined) {
@@ -151,31 +151,39 @@ const CompniesData = () => {
   }else if(contact == '' || contact == null || contact == undefined){
     toast.warn("Please Enter Contact!", {toast_options});
   }else{
+    handleToClose()
     setIsloader(true)
     const headers = {
       "Content-Type": "application/json",
       Authorization: "Bearer " + localStorage.getItem('access_token'),
       // reqFrom: "ADMIN",
     };
+    let requestBody = { companyName: name, street1: streetOne, street2: streetTwo ,city: city,state:state,zip:zip,contact:contact}
     axios({
       method: "POST",
       url: settings.serverUrl + "/addCompany",
-      data: JSON.stringify({ companyName: name, street1: streetOne, street2: streetTwo ,city: city,state:state,zip:zip,contact:contact}),
+      data: JSON.stringify(requestBody),
       headers,
     }).then((response) => {
       console.log("Respone from post Company Data==", response.data.result);
       if (response.data.err) {
-        // alert(response.data.err);
         toast.error(response.data.err, toast_options);
+        setIsloader(false)
       } else {
-        // this.setState({ pdfImage: response.data.result, isLoading: false })
-        setTableData([])
         getCompanyData()
       }
+      setName("");
+      setStreetOne("");
+      setStreetTwo("");
+      setCity("");
+      setState("");
+      setZip("");
+      setContact("")
       setIsloader(false)
     }).catch(err => {
+      setIsloader(false)
       toast.error(err.message, toast_options);
-      console.log("Company Data Issue Error", err)
+      // console.log("Company Data Issue Error", err)
       if(err.message.includes("403")){
       localStorage.clear();
       history.push("/");
@@ -185,7 +193,7 @@ const CompniesData = () => {
   }
   return (
     <Grid className="container-fluid" style={{marginTop:40}}>
-      <CButton type="submit" color="primary" size="lg" style={btn_style} onClick={() => handleClickToOpen()}>Add Company</CButton>
+        <CButton type="submit" color="primary" size="lg" style={btn_style} onClick={() => handleClickToOpen()}>Add Company</CButton>
         <Grid item xs={12} style={{ marginTop: 25}}>
           <FlexGrid
               headersVisibility="Column"
@@ -196,12 +204,11 @@ const CompniesData = () => {
                 height: "auto",
                 maxHeight: 400,
                 margin: 0,
-              }}
-            >
+              }}>
               {tableData.length>0 && Object.keys(tableData[0]).map(key =>
               <FlexGridColumn
               binding={key}
-              header={key}
+              header={key.toUpperCase()}
               cssClass="cell-header"
               width="*"
               visible={key != "comp_id"}
@@ -211,7 +218,6 @@ const CompniesData = () => {
               <wjFilter.FlexGridFilter></wjFilter.FlexGridFilter>
             </FlexGrid>
           </Grid>
-
           {Isloader &&
           <div style={loader}>
             <CircularProgress style={{ margin: "28% auto", display: "block" }} />
@@ -230,6 +236,7 @@ const CompniesData = () => {
           <Dialog open={open} onClose={handleToClose}>
           <DialogTitle>Add Company</DialogTitle>
                           <DialogContent style={{ minWidth: 500 }}>
+
                             <DialogContentText>
                             <CRow>
                               <CCol md="6">

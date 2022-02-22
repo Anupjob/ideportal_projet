@@ -178,7 +178,10 @@ class DocumentDetails extends React.Component {
   componentDidMount = () => {
 
     localStorage.setItem('splitPos', 350)
+    console.log('object local :>> ', localStorage.getItem("details"));
+    console.log('object local :>> ', localStorage.getItem("details") === null);
     let details = JSON.parse(localStorage.getItem("details"))
+
     console.log("=== history.location.state:::", this.props)
     if (this.props.history.location && this.props.history.location.state && this.props.history.location.state.data) {
       

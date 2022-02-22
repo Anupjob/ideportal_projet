@@ -110,6 +110,7 @@ const Dashboard = () => {
   const [ArrNull, setArrNull] = React.useState(false);
   const [selectedFile, setSelectedFile] = useState();
   // const url = useSelector(state => state.url)
+  const compId = useSelector(state => state.companyId)
 
   //const toggleSidebar = () => {
   // const val = [true, 'responsive'].includes(url) ? false : 'incoming'
@@ -117,7 +118,7 @@ const Dashboard = () => {
   //}
   useEffect(() => {
     let doc = JSON.parse(localStorage.getItem("dashboardData"))
-    console.log("useeffect doc", doc)
+    console.log("dashboard useeffect compId", compId)
     if (doc && doc.Sdate) {
       setDocument(doc.Document)
       setSdate(doc.Sdate)
@@ -175,6 +176,8 @@ const Dashboard = () => {
     setDocument(event.target.value)
   }
   const searchBtn = (Sdate, Edate, Status, Document) => {
+    if(compId){
+
     setIsloader(true)
     setArrNull(false)
     setIncomingArr([])
@@ -184,54 +187,57 @@ const Dashboard = () => {
     console.log("status:::", Status)
     console.log("Document:::", Document)
     console.log("access_token==>>",localStorage.getItem('access_token'))
+    console.log('compId :>> ', compId);
 
     const headers = {
       "Content-Type": "application/json",
        Authorization: "Bearer " + localStorage.getItem('access_token'),
       // reqFrom: "ADMIN",
     };
-    axios({
-      method: "POST",
-      url: settings.serverUrl + "/incomingData",
-      data: JSON.stringify({
-        dateRec: Sdate, dateProcessed: Edate,
+      let requestBody = {
+        dateRec: Sdate, 
+        dateProcessed: Edate,
         docStatus: Status,
-        docType: Document
-      }),
-      headers,
-    }).then((response) => {
-      console.log("Response incomingData::::", response.data.result);
-      if (response.data.result == 0) {
-        setArrNull(true)
+        docType: Document,
+        companyId: compId
       }
-      setIncomingArr(response.data.result)
-      // setIsloader(false)
-      setTimeout(() => {
+      console.log('requestBody with company id for incoming list :>>',requestBody);
+      axios({
+        method: "POST",
+        url: settings.serverUrl + "/incomingData",
+        data: JSON.stringify(requestBody),
+        headers,
+      }).then((response) => {
+        console.log("Response incomingData::::", response.data.result);
+        if (response.data.result == 0) {
+          setArrNull(true)
+        }
+        setIncomingArr(response.data.result)
+        // setIsloader(false)
+        setTimeout(() => {
+          setIsloader(false)
+        }, 1000);
+      }).catch(err => {
+        toast.error(err.message, { toast_options });
+        console.log("Record Issue Error", err.message);
+        if(err.message.includes("403")){
+          localStorage.clear();
+          history.push("/");
+        }
         setIsloader(false)
+      });
+    }
+    else{
+      setTimeout(() => {
+        toast.warn("Please Select Company", { toast_options });
       }, 1000);
-      
-
-      // if (response.data.err) {
-      //   alert(response.data.err);
-      // }
-      // if (response.data.result == "success") {
-      //   this.props.history.push('/document_list');
-      // }
-
-    }).catch(err => {
-      toast.error(err.message, { toast_options });
-      console.log("Record Issue Error", err.message);
-      if(err.message.includes("403")){
-        localStorage.clear();
-        history.push("/");
-      }
-    });
+    }
     
   }
   const uploadBtn = (event) =>{
     setIsloader(true)
     event.preventDefault();
-    let companyId = localStorage.getItem('companyId')
+    let companyId = compId
     console.log("companyId in dashboard==",companyId)
 
     let userId = localStorage.getItem('userId')
