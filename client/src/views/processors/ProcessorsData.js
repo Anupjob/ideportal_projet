@@ -337,43 +337,38 @@ const ProcessorsData = () => {
                           <DialogContent>
                             <DialogContentText>
                               <CRow>
-                                <CCol md="4">
+                                <CCol md="6">
                                 <TextField id="outlined-basic" label="Enter Group" type="text" variant="outlined" style={{ width: "100%",marginTop:20 }}
                                 value={group}
                                 onChange={e => setGroup(e.target.value)}
                               />
                                 </CCol>
-                                <CCol md="4">
+                                <CCol md="6">
                                 <TextField id="outlined-basic" label="Enter Name" type="text" variant="outlined" style={{ width: "100%",marginTop:20 }}
                               value={name}
                               onChange={e => setName(e.target.value)}
                               />
                                 </CCol>
 
-                                <CCol md="4">
+                                
+                              </CRow>
+
+                              <CRow>
+                              <CCol md="6">
                                 <TextField id="outlined-basic" label="Enter Folder" type="text" variant="outlined" style={{ width: "100%",marginTop:20 }}
                                 value={folder}
                                 onChange={e => setFolder(e.target.value)}                              
                                 />
                                 </CCol>
-                              </CRow>
-
-                              <CRow>
-                                
-                                <CCol md="4">
+                                <CCol md="6">
                                 <TextField id="outlined-basic" label="Enter Processor" type="text" variant="outlined" style={{ width: "100%",marginTop:20 }}
                                 value={processor}
                                 onChange={e => setProcessor(e.target.value)}  />
                                 </CCol>
 
-                                <CCol md="4">
-                                <TextField id="outlined-basic" label="Enter Collection" type="text" variant="outlined" style={{ width: "100%",marginTop:20 }}
-                                value={collection}
-                                onChange={e => setCollection(e.target.value)} 
-                              />
-                                </CCol>
-                                <CCol md="4">
-                                <FormControl variant="outlined" className={classes.formControl}>
+                                
+                                {/*<CCol md="4">
+                                 <FormControl variant="outlined" className={classes.formControl}>
 <InputLabel id="company" className={classes.title}>Select Company</InputLabel>
         <Select
           labelId="company"
@@ -389,12 +384,18 @@ const ProcessorsData = () => {
                               ) )}
 
         </Select>
-        </FormControl>
-                                </CCol>
+        </FormControl> 
+                                </CCol>*/}
                               </CRow>
 
                               <CRow>
-                                <CCol md="4">
+                              <CCol md="6">
+                                <TextField id="outlined-basic" label="Enter Collection" type="text" variant="outlined" style={{ width: "100%",marginTop:20 }}
+                                value={collection}
+                                onChange={e => setCollection(e.target.value)} 
+                              />
+                                </CCol>
+                                <CCol md="6">
                                 <FormControl variant="outlined" className={classes.formControl}>
 <InputLabel id="processor" className={classes.title}>Select For Google Vision</InputLabel>
         <Select
@@ -412,7 +413,7 @@ const ProcessorsData = () => {
         </Select>
         </FormControl>
                                 </CCol>
-                                <CCol md="4">
+                                <CCol md="6">
                                 <FormControl variant="outlined" className={classes.formControl}>
 <InputLabel id="azureForm" className={classes.title}>Select For Azure Form</InputLabel>
         <Select
@@ -432,7 +433,7 @@ const ProcessorsData = () => {
         </Select>
         </FormControl>
                                 </CCol>
-                                <CCol md="4"><FormControl variant="outlined" className={classes.formControl}>
+                                <CCol md="6"><FormControl variant="outlined" className={classes.formControl}>
 <InputLabel id="textract" className={classes.title}>Select For textract</InputLabel>
         <Select
           labelId="textract"
