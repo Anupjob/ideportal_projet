@@ -1,10 +1,12 @@
 import { createStore } from 'redux'
 
 const initialState = {
-  sidebarShow: 'responsive'
+  sidebarShow: 'responsive',
+  companyId: localStorage.getItem('companyId'),
+  companyList: []
 }
-
 const changeState = (state = initialState, { type, ...rest }) => {
+  console.log('state:::::>>in store', state);
   switch (type) {
     case 'set':
       return {...state, ...rest }

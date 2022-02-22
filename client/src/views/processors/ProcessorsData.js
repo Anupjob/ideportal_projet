@@ -31,6 +31,8 @@ import TextField from "@material-ui/core/TextField";
 import 'react-toastify/dist/ReactToastify.css';
 import { useHistory } from "react-router";
 import { CFormSelect } from "@coreui/react";
+import { useSelector, useDispatch } from 'react-redux';
+
 
 const loader = {
   position: "fixed",
@@ -89,7 +91,7 @@ const ProcessorsData = () => {
   const [azureFormVal, setAzureFormVal] = useState('');
   const [textractVal, setTextract] = useState('');
   const [keywordsField, setkeywordsField] = useState([""]);
-  
+  const compId = useSelector(state => state.companyId)
 
   const CompanyList = ["Digital Glyde","Maverick","Questa Energy Corporation","Demo Resources"]
   const GoogleVisionList = ["Yes","No","All","First","Last"];
@@ -98,14 +100,18 @@ const ProcessorsData = () => {
   
   
   useEffect(() => {
-
+    if(compId){
     getProcessorData()
+    }
+    else{
+        setTimeout(() => {
+          toast.warn("Please Select Company", { toast_options });
+        }, 1000);
+      }
   }, [])
 
   const getProcessorData = () => {
     setIsloader(true)
-    let companyId = localStorage.getItem('companyId')
-    console.log("===companyId:::",companyId)
     const headers = {
       "Content-Type": "application/json",
       Authorization: "Bearer " + localStorage.getItem('access_token'),
@@ -115,7 +121,7 @@ const ProcessorsData = () => {
       method: "POST",
       url: settings.serverUrl + "/getProcessorData",
       data: JSON.stringify({
-        companyId: companyId,        
+        companyId: compId,        
       }),
       headers,
     }).then((response) => {
@@ -125,13 +131,6 @@ const ProcessorsData = () => {
         toast.error(response.data.err, toast_options);
       }else{
         if(response.data.result){
-          // let proArr = [];
-          // response.data.result.map(processPbj =>{
-          //   let processPbjCopy = {...processPbj}
-          //   delete processPbjCopy.processor_id;
-          //   proArr.push(processPbjCopy)
-          // })
-          // setTableData(proArr)
           setTableData(response.data.result)
         }
       }
@@ -146,10 +145,6 @@ const ProcessorsData = () => {
     });
   }
   const handleClickToOpen = () => {
-    // let companyId = localStorage.getItem('companyId')
-    // console.log("===companyId:::",companyId)
-    // console.log("===errMsg===", errMsg)
-    // setErrorMsg(errMsg);
     setOpen(true);
   };
 
@@ -179,19 +174,17 @@ const ProcessorsData = () => {
       toast.warn("Please Enter Collection!", {toast_options});
     }
     else{
+      handleToClose()
       setIsloader(true)
       const headers = {
         "Content-Type": "application/json",
         Authorization: "Bearer " + localStorage.getItem('access_token'),
         // reqFrom: "ADMIN",
       };
-
-      let companyId = localStorage.getItem('companyId')
-      console.log("===companyId:::",companyId)
       let userType = localStorage.getItem('master')
       console.log('userType is:::::>>', userType);
     
-      let requestBody = {company_id:companyId, 
+      let requestBody = {company_id:compId, 
                           name: name, 
                           group: group, 
                           folder: folder ,
@@ -211,16 +204,23 @@ const ProcessorsData = () => {
       }).then((response) => {
         console.log("Respone from post Processor Data==", response.data.result);
         if (response.data.err) {
-          // alert(response.data.err);
           toast.error(response.data.err, toast_options);
+          setIsloader(false)
         } else {
-          // this.setState({ pdfImage: response.data.result, isLoading: false })
-          setTableData([])
           getProcessorData()
-          handleToClose()
         }
+        setGroup("");
+        setName("");
+        setFolder("");
+        setProcessor("");
+        setCollection("");
+        setGoogleVisionVal("");
+        setAzureFormVal("");
+        setTextract("");
+        setkeywordsField([""]);
         setIsloader(false)
       }).catch(err => {
+        setIsloader(false)
         toast.error(err.message, toast_options);
         console.log("Company Data Issue Error", err);
         if(err.message.includes("403")){
@@ -317,7 +317,7 @@ const ProcessorsData = () => {
                                 value={collection}
                                 onChange={e => setCollection(e.target.value)} 
                               />
-                                
+                                 
                           <select
                             style={{
                               width: "100%",
@@ -375,7 +375,7 @@ const ProcessorsData = () => {
                             name="textract"
                             onChange={handleTextractChange}
                           >
-                            <option value="">Select For textract</option>
+                            <option value="">Select For Textract</option>
                             {TextractList.map((curr, index) => {
                               return (
                                 <>
@@ -405,7 +405,6 @@ const ProcessorsData = () => {
                                 setkeywordsField(keywordsFieldCpy)
                               }}
                               >
-
                               </i>
                             }
                             </div>

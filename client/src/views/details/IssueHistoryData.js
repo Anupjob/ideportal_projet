@@ -24,6 +24,10 @@ import axios from "axios";
 import Grid from "@material-ui/core/Grid";
 import { ToastContainer, toast } from 'react-toastify';
 import { useHistory } from "react-router";
+import { useSelector, useDispatch } from 'react-redux';
+import moment from 'moment'
+
+
  
 const loader = {
     position: "fixed",
@@ -51,16 +55,24 @@ const IssueHistoryData=()=>
     const history = useHistory();
     const [Isloader, setIsloader] = useState(false);
     const [historyData, setHistoryData] = useState([]);
+    const compId = useSelector(state => state.companyId)
 
-        useEffect(() => {
 
+    useEffect(() => {
+      if(compId){
         getHistoryData()
-      }, [])
+      }
+      else{
+        setTimeout(() => {
+          toast.warn("Please Select Company", { toast_options });
+        }, 1000);
+      }
+    }, [])
     
     const getHistoryData = () => {
         setIsloader(true)
-    let companyId = localStorage.getItem('companyId')
-    console.log("===companyId in UserData:::",companyId)
+    // let companyId = localStorage.getItem('companyId')
+    // console.log("===companyId in UserData:::",companyId)
     let userId = localStorage.getItem('userId')
     console.log("===userId in UserData:::",userId)
     const headers = {
@@ -69,7 +81,7 @@ const IssueHistoryData=()=>
       // reqFrom: "ADMIN",
     };
     let requestBody = {
-        company_id: companyId,
+        company_id: compId,
         user_id: userId       
       }
       console.log("requestBody of Issue History::::",requestBody)
@@ -79,7 +91,7 @@ const IssueHistoryData=()=>
       data: JSON.stringify(requestBody),
       headers,
     }).then((response) => {
-      console.log("Response", response.data.result);
+      console.log("Response from issue history===", response.data.result);
       if (response.data.err) {
         // alert(response.data.err);
         toast.error(response.data.err, toast_options);
@@ -104,29 +116,59 @@ const IssueHistoryData=()=>
   return (
     <Grid className="container-fluid" style={{marginTop:40}}>
         <Grid item xs={12} style={{ marginTop: 25}}>
-            <FlexGrid
-                headersVisibility="Column"
-                autoGenerateColumns={false}
-                // initialized={this.initializeDailyGrid}
-                itemsSource={historyData}
-                style={{
-                  height: "auto",
-                  maxHeight: 400,
-                  margin: 0,
-                }}
-              >
-                {historyData.length>0 && Object.keys(historyData[0]).map(key =>
-                <FlexGridColumn
-                binding={key}
-                header={key}
+           {historyData && historyData.length>0 ?
+           <FlexGrid
+           headersVisibility="Column"
+           autoGenerateColumns={false}
+           // initialized={this.initializeDailyGrid}
+           itemsSource={historyData}
+           style={{
+             height: "auto",
+             maxHeight: 400,
+             margin: 0,
+           }}
+         >
+           <FlexGridColumn
+           binding="User Email"
+           header="USER EMAIL"
+           cssClass="cell-header"
+           width="*"
+           style={{backgroundColor:'grey'}}
+           ></FlexGridColumn>
+           <FlexGridColumn
+           binding="Error Message"
+           header="ERROR MESSAGE"
+           cssClass="cell-header"
+           width="*"
+           style={{backgroundColor:'grey'}}
+           ></FlexGridColumn>
+           <FlexGridColumn
+           binding="Insert Time"
+           header="INSERT TIME"
+           cssClass="cell-header"
+           width="*"
+           style={{backgroundColor:'grey'}}
+           ></FlexGridColumn>
+           <FlexGridColumn
+                binding="Insert Time"
+                header="INSERT TIME"
                 cssClass="cell-header"
                 width="*"
-                visible={key != "hist_id"}
-                style={{backgroundColor:'grey'}}
-                ></FlexGridColumn>
-                )}  
-                <wjFilter.FlexGridFilter></wjFilter.FlexGridFilter>
-              </FlexGrid>
+                style={{ backgroundColor: 'grey' }}>
+                <FlexGridCellTemplate cellType="Cell" template={ctx =>
+                  <React.Fragment>
+                    {ctx.item["Insert Time"] ?
+                      <span>{moment(ctx.item["Insert Time"]).format("MM/DD/YYYY hh:mm A")}</span>
+                      :""
+                    }
+                  </React.Fragment>} />
+              </FlexGridColumn>
+           <wjFilter.FlexGridFilter></wjFilter.FlexGridFilter>
+         </FlexGrid>
+         :
+         <p style={{ width: "100%", display: "block", color: "#c00", margin: "12px 0", textAlign: "center", fontSize: "1.6em" }}>{Isloader?"": "No record Found!!"}</p>
+           }
+            
             </Grid>
 
             {Isloader &&

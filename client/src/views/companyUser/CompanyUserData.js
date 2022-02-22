@@ -31,6 +31,8 @@ import DialogContent from "@material-ui/core/DialogContent";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import { useHistory } from "react-router";
+import { useSelector, useDispatch } from 'react-redux';
+
 
 const loader = {
   position: "fixed",
@@ -78,17 +80,16 @@ const CompanyUserData = () => {
   const [open, setOpen] = React.useState(false);
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
+  const compId = useSelector(state => state.companyId)
 
   
   useEffect(() => {
-
     getUsersData()
   }, [])
 
   const getUsersData = () => {
     setIsloader(true)
-    let companyId = localStorage.getItem('companyId')
-    console.log("===companyId in UserData:::",companyId)
+
     const headers = {
       "Content-Type": "application/json",
       Authorization: "Bearer " + localStorage.getItem('access_token'),
@@ -98,7 +99,7 @@ const CompanyUserData = () => {
       method: "POST",
       url: settings.serverUrl + "/getUsersData",
       data: JSON.stringify({
-        companyId: companyId,        
+        companyId: compId,        
       }),
       headers,
     }).then((response) => {
@@ -127,41 +128,48 @@ const CompanyUserData = () => {
 
   const handleToClose = () => {
     setOpen(false);
+    setEmail("");
+    setName("");
   };
   const submit = () => {
+    const regex = /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+
     if (email == '' || email == null || email == undefined) {
       toast.warn("Please Enter Email !", {toast_options});
-    }else if(name == '' || name == null || name == undefined){
+    }
+    else if (!(regex.test(email))) {
+      toast.warn("Invalid Email !", {toast_options});  
+    }
+    else if(name == '' || name == null || name == undefined){
       toast.warn("Please Enter Name!", {toast_options});
     }
     else{
+      handleToClose()
       setIsloader(true)
       const headers = {
         "Content-Type": "application/json",
-        // Authorization: "Bearer " + logginUser.token,
+        Authorization: "Bearer " + localStorage.getItem('access_token'),
         // reqFrom: "ADMIN",
       };
-
-      let companyId = localStorage.getItem('companyId')
-      console.log("===companyId in Company User Data:::",companyId)
+      let requestBody = {company_id:compId,email:email, name: name}
       axios({
         method: "POST",
         url: settings.serverUrl + "/addUser",
-        data: JSON.stringify({company_id:companyId,email:email, name: name}),
+        data: JSON.stringify(requestBody),
         headers,
       }).then((response) => {
         console.log("Respone from post User Data==", response.data.result);
         if (response.data.err) {
-          // alert(response.data.err);
           toast.error(response.data.err, toast_options);
+          setIsloader(false)
         } else {
-          // this.setState({ pdfImage: response.data.result, isLoading: false })
-          setTableData([])
           getUsersData()
-          handleToClose()
         }
+        setEmail("");
+        setName("");
         setIsloader(false)
       }).catch(err => {
+        setIsloader(false)
         toast.error(err.message, toast_options);
         console.log("Company Data Issue Error", err)
         if(err.message.includes("403")){
@@ -190,7 +198,7 @@ const CompanyUserData = () => {
                 {tableData.length>0 && Object.keys(tableData[0]).map(key =>
                 <FlexGridColumn
                 binding={key}
-                header={key}
+                header={key.toUpperCase()}
                 cssClass="cell-header"
                 width="*"
                 visible={key != "user_id"}

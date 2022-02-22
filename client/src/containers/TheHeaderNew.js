@@ -195,6 +195,17 @@ const toast_options = {
   draggable: true,
   progress: undefined,
 }
+const master_dropdown={
+  width: "200px",
+  background: "white",
+  outline:'none',
+  borderRadius:'2px',
+  border:"none",
+  fontSize: "11px",
+  padding: "8px 0",
+  marginTop:"0px",
+  marginLeft:"10px",
+}
 
 const responsive = {
   superLargeDesktop: {
@@ -226,9 +237,20 @@ const TheHeaderNew = (props) => {
 
 
   const [Toggle, setToggle] = useState(false)
-  const [CompanyDropdown, setCompanyDropdownValue] = useState('');
 
-  const [CompanyListData, setCompanyListData] = useState([]);
+  const dispatch = useDispatch()
+  const classes = useStyles();
+  const sidebarShow = useSelector(state => state.sidebarShow)
+  const companySelectedVal = useSelector(state => state.companySelectedVal)
+  console.log('companySelectedVal :>> ', companySelectedVal);
+
+  const url = useSelector(state => state.url)
+  const compId = useSelector(state => state.companyId)
+  const companyList = useSelector(state => state.companyList)
+
+  console.log("companyList::", companyList)
+
+  const [CompanyDropdown, setCompanyDropdownValue] = useState(compId);
 
 
   useEffect(() => {
@@ -254,7 +276,7 @@ const TheHeaderNew = (props) => {
         toast.error(response.data.err, toast_options);
       }else{
         if(response.data.result){
-          setCompanyListData(response.data.result)
+          dispatch({ type: 'set', companyList: response.data.result })
         }
       }
     }).catch(err => {
@@ -273,12 +295,8 @@ const TheHeaderNew = (props) => {
 
   // console.log("url props::", this.props.document)
 
-  const dispatch = useDispatch()
-  const classes = useStyles();
-  const sidebarShow = useSelector(state => state.sidebarShow)
+ 
 
-  const url = useSelector(state => state.url)
-  console.log("url::", url)
 
   // const urll = () => {
   //   let CurrUrl = window.location.href
@@ -291,7 +309,11 @@ const TheHeaderNew = (props) => {
   // }
   const handleCompanyChange = (e) => {
     setCompanyDropdownValue(e.target.value)
+    dispatch({type:'set', companyId:e.target.value})
+    console.log('companySelectedVal :::::', e.target.value);
+    history.push("/incoming_list");
   }
+
   const toggleSidebar = () => {
     const val = [true, 'responsive'].includes(sidebarShow) ? false : 'responsive'
     dispatch({ type: 'set', sidebarShow: val })
@@ -402,37 +424,24 @@ const TheHeaderNew = (props) => {
             </Link>
           </CHeaderNavItem>
 
-{console.log('header rendewrlocalStorage.getItem(master) :>> ', localStorage.getItem('master'))}
-
+          {console.log('header rendewrlocalStorage.getItem(master) :>> ', localStorage.getItem('master'))}
 
           {
           localStorage.getItem('master') && JSON.parse(localStorage.getItem('master')) &&
-
-
             <select
-            style={{
-              // width: "100%",
-              background: "white",
-              // border: "1px solid #999",
-              border:"none",
-              fontSize: "11px",
-              padding: "8px 0",
-              marginTop:"0px",
-              marginLeft:"10px"
-            }}
+            style={master_dropdown}
             value={CompanyDropdown}
             name="company"
-            onChange={handleCompanyChange}
-          >
+            onChange={handleCompanyChange}>
             <option value="">Select Company</option>
-            {CompanyListData.map((curr, index) => {
+            {companyList.map((curr, index) => {
               return (
                 <>
-                  <option>{curr.name}</option>
+                  <option value={curr.comp_id}>{curr.name}</option>
                 </>
               );
             })}
-          </select>   
+           </select>   
           }
         <div><ToastContainer
                   position="top-center"
