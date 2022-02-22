@@ -100,6 +100,11 @@ class AddProcessorSchema(BaseModel):
    folder: str
    processor: str
    collection: str
+   googlevision: str
+   azure: str
+   textract: str
+   keywords: List[str]
+
 
 class AddUserSchema(BaseModel):
    company_id: str
@@ -339,7 +344,7 @@ async def send_otp_mail(otp, recipient):
     message = MessageSchema(
         subject='OTP for secure login on IDE Portal',
         recipients=[recipient],  # List of recipients, as many as you can pass
-        body=html_template,
+        html=html_template,
         subtype="html"
     )
 
@@ -436,13 +441,17 @@ async def user_login(user: UserLogin = Body(...)):
 
                 await send_otp_mail(str(otp), user.email)
 
+                is_master = "master" in companyData
+
                 user_comp_details = {
                     "company":companyData["companyName"],
                     "companyId": str(user_data["companyId"]),
                     "userId": str(user_data["_id"]),
                     "email": user_data["email"],
-                    "name": user_data["name"]
+                    "name": user_data["name"],
+                    "master": is_master
                 }
+
                 return {"result": user_comp_details, "err": None}
             else:
                 # return {"error": "Email not found in System "}
@@ -802,6 +811,20 @@ async def get_processors(incData: ProcessorDataSchema = Body(...)):
 
         processor_dict = []
         for processor_dict_s in processors_p:
+
+            azure = ""
+            googlevision = ""
+            textract = ""
+            identify_keywords = ""
+            if "google_vision" in processor_dict_s:
+                googlevision = processor_dict_s["google_vision"]
+            if "azure_form" in processor_dict_s:
+                azure = processor_dict_s["azure_form"]
+            if "textract" in processor_dict_s:
+                textract = processor_dict_s["textract"]
+            if "identify_keywords" in processor_dict_s:
+                identify_keywords = processor_dict_s["identify_keywords"]
+
             processor_dict.append(
                 {
                     "processor_id": str(processor_dict_s["_id"]),
@@ -809,7 +832,11 @@ async def get_processors(incData: ProcessorDataSchema = Body(...)):
                     "name": processor_dict_s["name"],
                     "folder": processor_dict_s["folder"],
                     "processor": processor_dict_s["processor"],
-                    "collection": processor_dict_s["collection"]
+                    "collection": processor_dict_s["collection"],
+                    "google vision": googlevision,
+                    "azure": azure,
+                    "textract": textract,
+                    "identify keywords": identify_keywords
                 }
             )
 
@@ -857,11 +884,17 @@ async def add_processor(incData: AddProcessorSchema = Body(...)):
     folder = incData.folder
     processor = incData.processor
     collection = incData.collection
+    googlevision = incData.googlevision
+    azure = incData.azure
+    textract = incData.textract
+    identify_keywords = incData.keywords
+
+    # print("add_processor keywords", identify_keywords)
 
     db_mongo = getConn()
     processors_c = db_mongo.processors
 
-    processor_ins_result = processors_c.insert_one({"company_id": ObjectId(company_id), "group": group, "name": name, "folder": folder, "processor": processor, "collection": collection, "identify_keywords": [], "google_vision": "all", "google_vision_response": "all","azure_form": "","azure_document_analyzer": "","textract": ""})
+    processor_ins_result = processors_c.insert_one({"company_id": ObjectId(company_id), "group": group, "name": name, "folder": folder, "processor": processor, "collection": collection, "identify_keywords": identify_keywords, "google_vision": googlevision, "google_vision_response": "all", "azure_form": azure, "azure_document_analyzer": "","textract": textract})
 
     return {"result": processor_ins_result, "err": None}
 

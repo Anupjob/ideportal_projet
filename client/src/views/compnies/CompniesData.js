@@ -40,7 +40,7 @@ const loader = {
   right: "0",
   bottom: "0",
   background: "rgba(255,255,255,0.4)",
-  zIndex: "100",
+  zIndex: "9999",
   display: "table",
   width: "100%",
   height: "100%"
@@ -236,35 +236,65 @@ const CompniesData = () => {
           <Dialog open={open} onClose={handleToClose}>
           <DialogTitle>Add Company</DialogTitle>
                           <DialogContent style={{ minWidth: 500 }}>
-                            <DialogContentText>                          
-                              <TextField id="outlined-basic" label="Enter Name" type="text" variant="outlined" style={{ width: "100%",marginTop:10 }}
+
+                            <DialogContentText>
+                            <CRow>
+                              <CCol md="6">
+                              <TextField id="outlined-basic" label="Enter Name" type="text" variant="outlined" style={{ width: "100%",marginTop:20 }}
                                 value={name}
                                 onChange={e => setName(e.target.value)}
                               />
-                              <TextField id="outlined-basic" label="Enter Street 1" type="text" variant="outlined" style={{ width: "100%",marginTop:10 }}
-                               value={streetOne}
-                               onChange={e => setStreetOne(e.target.value)}
+                              </CCol>
+                              <CCol md="6">
+                              <TextField id="outlined-basic" label="Enter Street 1" type="text" variant="outlined" style={{ width: "100%",marginTop:20 }}
+                              value={streetOne}
+                              onChange={e => setStreetOne(e.target.value)}
                               />
-                              <TextField id="outlined-basic" label="Enter Street 2" type="text" variant="outlined" style={{ width: "100%",marginTop:10 }}
+                              </CCol>
+                            </CRow>
+                            <CRow>
+                              <CCol md="6">
+                              <TextField id="outlined-basic" label="Enter Street 2" type="text" variant="outlined" style={{ width: "100%",marginTop:20 }}
                                 value={streetTwo}
                                 onChange={e => setStreetTwo(e.target.value)}                              
-                              />
-                              <TextField id="outlined-basic" label="Enter City" type="text" variant="outlined" style={{ width: "100%",marginTop:10 }}
+                                />
+                              </CCol>
+                              <CCol md="6">
+                              <TextField id="outlined-basic" label="Enter City" type="text" variant="outlined" style={{ width: "100%",marginTop:20 }}
                                 value={city}
-                                onChange={e => setCity(e.target.value)}                              
-                              />
-                              <TextField id="outlined-basic" label="Enter State" type="text" variant="outlined" style={{ width: "100%",marginTop:10 }}
+                                onChange={e => setCity(e.target.value)} />
+                              </CCol>
+                            </CRow>
+                            <CRow>
+                              <CCol md="6">
+                              <TextField id="outlined-basic" label="Enter State" type="text" variant="outlined" style={{ width: "100%",marginTop:20 }}
                                 value={state}
                                 onChange={e => setState(e.target.value)} 
                               />
-                              <TextField id="outlined-basic" label="Enter Zip" type="text" variant="outlined" style={{ width: "100%",marginTop:10 }}
+                              </CCol>
+                              <CCol md="6">
+                              <TextField id="outlined-basic" label="Enter Zip" type="text" variant="outlined" style={{ width: "100%",marginTop:20 }}
                                 value={zip}
                                 onChange={e => setZip(e.target.value)}
                               />
-                              <TextField id="outlined-basic" label="Enter Contact" type="tel" variant="outlined" style={{ width: "100%" ,marginTop:10}}
+                              </CCol>
+                            </CRow>
+                            <CRow>
+                              <CCol md="6">
+                              <TextField id="outlined-basic" label="Enter Contact" type="tel" variant="outlined" style={{ width: "100%" ,marginTop:20}}
                                 value={contact}
                                 onChange={e => setContact(e.target.value)}
                               />
+                              </CCol>
+                              <CCol md="6"></CCol>
+                            </CRow>
+                              
+                              
+                               
+                               
+                              
+                              
+                              
                             </DialogContentText>
                           </DialogContent>
                           <DialogActions>
