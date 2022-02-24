@@ -165,7 +165,8 @@ class PdfViewGoogleAzure extends React.Component {
       isCheckedRotateImg: false,
       totalPages:0,
       Toggle: false,
-      sliderData: []
+      sliderData: [],
+      selectedRadioOption: ""
     }
     // this.onChangeValue = this.onChangeValue.bind(this);
   }
@@ -286,12 +287,12 @@ class PdfViewGoogleAzure extends React.Component {
           }else if(this.state.visionType == 'azuret'){
 
           this.setState({azureTableVisible: true, googleVisionVisible: false, googleTableVisible: false ,
-            // azureDataResults:pardedResp.cells,
+            finalDataResult:[],
             azureDataResults:response.data.result,
              isLoading: false })
 
           }else{
-          this.setState({googleTableVisible: true, googleVisionVisible: false, azureTableVisible: false , isLoading: false })
+          this.setState({googleTableVisible: true, googleVisionVisible: false, azureTableVisible: false , isLoading: false, finalDataResult:[], azureDataResults:[] })
 
           }
       }
@@ -306,15 +307,24 @@ class PdfViewGoogleAzure extends React.Component {
     });
 
   }
+
   onChangeValue = (event) => {
     // console.log("===Radio Button click::", event.target.value);
+    let visType = event.target.value;
+
     if (event.target.value == "GoogleVision") {
-      this.setState({ visionType: 'googlev' }, () => { this.getPdfViewData() })
+      visType = 'googlev'
     } else if (event.target.value == "AzureTables") {
-      this.setState({ visionType: 'azuret' }, () => { this.getPdfViewData() })
+      visType = 'azuret'
     } else {
-      this.setState({ visionType: 'googlet' }, () => { this.getPdfViewData() })
+      visType = 'googlet'
     }
+
+    this.setState({ visionType: visType, selectedRadioOption: event.target.value }, () => { 
+      if(visType == 'googlev' || visType == 'azuret'){
+        this.getPdfViewData() 
+      }
+    })
   }
 
   onChangeRadioValue = (event) => {
@@ -323,8 +333,8 @@ class PdfViewGoogleAzure extends React.Component {
       this.setState({ fileType: 'pdf' }, () => { this.getPdfImageRotate() })
     } else if (event.target.value == "Image") {
       this.setState({ fileType: 'image' }, () => { this.getPdfImageRotate() })
-    // } else if (event.target.value == "RotatedImage") {
-    //   this.setState({ fileType: 'image_rotated' }, () => { this.getPdfImageRotate() })
+    } else if (event.target.value == "RotatedImage") {
+      this.setState({ fileType: 'image_rotated' }, () => { this.getPdfImageRotate() })
     }
   }
 
@@ -384,7 +394,14 @@ class PdfViewGoogleAzure extends React.Component {
                           console.log("afterChange currentSlide",currentSlide)
                           let newPageNum = currentSlide+1;
                           if(newPageNum>=1 && newPageNum <= this.state.sliderData.length){
-                            this.setState({pageNum: newPageNum}, ()=>this.getPdfImageRotate())
+                            this.setState({pageNum: newPageNum}, ()=>{
+                              this.getPdfImageRotate()
+                              // this.getPdfViewData()
+                              this.setState({azureTableVisible: false, googleVisionVisible: false, googleTableVisible: false ,
+                                finalDataResult:[],
+                                azureDataResults:[],selectedRadioOption:"" })
+
+                            })
                           }
                         }}
                         style={{ display: "table" }}
@@ -479,7 +496,7 @@ class PdfViewGoogleAzure extends React.Component {
               <div onChange={this.onChangeValue} >
               <FormControl component="fieldset">
       {/* <FormLabel component="legend">labelPlacement</FormLabel> */}
-      <RadioGroup row aria-label="position" name="position" defaultValue="top">
+      <RadioGroup row aria-label="position" name="position" defaultValue="top" value={this.state.selectedRadioOption}>
 
       <FormControlLabel
           value="GoogleVision"
@@ -648,7 +665,7 @@ class PdfViewGoogleAzure extends React.Component {
           name="gender"
         />  
                 {/* <input type="radio" value="OpenCV" name="gender" /> Open CV<br/> */}
-                {this.state.googleTableVisible &&
+                {/* {this.state.googleTableVisible &&
                   <div style={radioBtnMainView}>
                     <div style={radioBtnSubView}>
                       Google Tables Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad
@@ -661,7 +678,7 @@ class PdfViewGoogleAzure extends React.Component {
                       sapiente ea proident.
                     </div>
                   </div>
-                }
+                } */}
                 </RadioGroup>
     </FormControl>
                 {this.state.isLoading && (

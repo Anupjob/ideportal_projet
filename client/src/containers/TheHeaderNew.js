@@ -310,6 +310,8 @@ const TheHeaderNew = (props) => {
   const handleCompanyChange = (e) => {
     setCompanyDropdownValue(e.target.value)
     dispatch({type:'set', companyId:e.target.value})
+    localStorage.setItem('companyId', e.target.value)
+
     console.log('companySelectedVal :::::', e.target.value);
     history.push("/incoming_list");
   }

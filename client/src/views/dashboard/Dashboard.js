@@ -91,7 +91,8 @@ const upload_file = {
   background:"url(../upload.png) no-repeat #f2f2f2",
   backgroundSize: "110px",
   backgroundPosition: "50%",
-  marginBottom:"10px",marginTop:"42px"
+  marginBottom:"10px",marginTop:"42px",
+  cursor:'pointer'
 }
 
 
@@ -109,6 +110,15 @@ const Dashboard = () => {
   const [errorMsg, setErrorMsg] = React.useState('');
   const [ArrNull, setArrNull] = React.useState(false);
   const [selectedFile, setSelectedFile] = useState();
+  const [statusOptions, setStatusOptions] = useState([
+    {key:"ALL", value:"all"}, 
+    {key:"UPLOADED", value:"Uploaded"}, 
+    {key:"VALIDATED", value:"Validated"}, 
+    {key:"PROCESSED", value:"Processed"}, 
+    {key:"PENDING", value:"Pending"}, 
+    {key:"ERROR", value:"Error"}
+  ]);
+
   // const url = useSelector(state => state.url)
   const compId = useSelector(state => state.companyId)
 
@@ -117,8 +127,19 @@ const Dashboard = () => {
   // dispatch({ type: 'set', url: val })
   //}
   useEffect(() => {
+    
+    // searchIfDataExists()
+    if(localStorage.getItem('access_token') === null){
+      // console.log("===localStorage token::",localStorage.getItem('access_token'))
+      localStorage.clear();
+      history.push("/");
+    }
+  }, [])
+
+  const searchIfDataExists = () =>{
+    console.log('searchIfDataExists localStorage.getItem("dashboardData") :>> ', localStorage.getItem("dashboardData"));
     let doc = JSON.parse(localStorage.getItem("dashboardData"))
-    console.log("dashboard useeffect compId", compId)
+    console.log("searchIfDataExists compId", compId, "doc", doc)
     if (doc && doc.Sdate) {
       setDocument(doc.Document)
       setSdate(doc.Sdate)
@@ -133,15 +154,14 @@ const Dashboard = () => {
       // localStorage.clear()
       //  }, 2000);
 
-
     }
-    if(localStorage.getItem('access_token') === null){
-      // console.log("===localStorage token::",localStorage.getItem('access_token'))
-      localStorage.clear();
-      history.push("/");
-    }
-  }, [])
+  }
 
+  useEffect(() => {
+    console.log("company changed");
+    console.log('company changed localStorage.getItem("dashboardData") :>> ', localStorage.getItem("dashboardData"));
+    searchIfDataExists()
+  }, [compId])
 
   const handleClickToOpen = (errMsg) => {
     console.log("===errMsg===", errMsg)
@@ -189,6 +209,8 @@ const Dashboard = () => {
     console.log("access_token==>>",localStorage.getItem('access_token'))
     console.log('compId :>> ', compId);
 
+    localStorage.setItem("dashboardData", JSON.stringify({ Document: Document, Status: Status, Edate: Edate, Sdate: Sdate }))
+
     const headers = {
       "Content-Type": "application/json",
        Authorization: "Bearer " + localStorage.getItem('access_token'),
@@ -235,7 +257,6 @@ const Dashboard = () => {
     
   }
   const uploadBtn = (event) =>{
-    setIsloader(true)
     event.preventDefault();
     let companyId = compId
     console.log("companyId in dashboard==",companyId)
@@ -256,8 +277,7 @@ const Dashboard = () => {
       toast.warn("Please Select Pdf File !", toast_options);
     }
     else{
-      // companyId='1234';
-      // userId='555';
+    setIsloader(true)
     const formData = new FormData();
     formData.append("doc_file", selectedFile);
     formData.append("companyId", companyId);
@@ -280,12 +300,15 @@ const Dashboard = () => {
       if (response.data.err) {
         setTimeout(() => {
         toast.error(response.data.err, toast_options);
-      }, 500);
+        }, 500);
       } else {
         toast.success(response.data.result, toast_options);
+        setSelectedFile()
+        searchIfDataExists()
       }
       setIsloader(false)
   }).catch(err => {
+    setIsloader(false)
       if(err.message.includes("403")){
         localStorage.clear();
         history.push("/");
@@ -339,10 +362,11 @@ const Dashboard = () => {
                       value={Status}
                     >
                       <option value="">Select Status</option>
-                      <option value="all">ALL</option>
-                      <option value="Processed">PROCESSED</option>
-                      <option value="Pending">PENDING</option>
-                      <option value="Error">ERROR</option>
+                      {
+                        statusOptions.map(status=>
+                          <option value={status.value}>{status.key}</option>
+                        )
+                      }
                     </CSelect>
                     {/* <CInput type="text" /> */}
                   </CInputGroup>
@@ -389,7 +413,16 @@ const Dashboard = () => {
           </CRow>
           </CCol>
             <CCol md="3">
-            <CInput type='file' style={upload_file} placeholder='sdsdfs' onChange={(event)=>setSelectedFile(event.target.files[0])} />
+            <CInput type='file' style={upload_file} placeholder='sdsdfs' onChange={(event)=>{
+              setSelectedFile()
+              if(!event.target.files[0].type.includes("pdf")){
+                toast.warn("Please Select Pdf File !", toast_options);
+              }else{
+                setSelectedFile(event.target.files[0])
+              }
+            } } />
+            <span>{selectedFile && selectedFile.type.includes("pdf") && selectedFile.name}</span>
+                
                   <CButton
                     onClick={(event) => uploadBtn(event)}
                     color="primary"
@@ -442,7 +475,6 @@ const Dashboard = () => {
                 <FlexGridCellTemplate cellType="Cell" template={ctx => <React.Fragment>
                   <span style={{ cursor: "pointer" }}><i class="fa fa-search-plus" aria-hidden="true"
                     onClick={() => {
-                      localStorage.setItem("dashboardData", JSON.stringify({ Document: Document, Status: Status, Edate: Edate, Sdate: Sdate }))
                       //  console.log("IncomingArr data==>>", ctx.item)
                       history.push({
                         pathname: '/details',

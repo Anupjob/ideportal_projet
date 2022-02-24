@@ -130,17 +130,18 @@ const Login =()=> {
         headers,
       }).then((response) => {
         console.log("Respone from post in Login==", response);
-        localStorage.setItem('company', response.data.result.company)
-        localStorage.setItem('companyId', response.data.result.companyId)
-        localStorage.setItem('name', response.data.result.name)
-        localStorage.setItem('userId', response.data.result.userId)
-        localStorage.setItem('email', response.data.result.email)
-        localStorage.setItem('master', response.data.result.master)
-        dispatch({type:'set', companyId:response.data.result.companyId})
-
+        
         if (response.data.err) {
-          toast.error(response.data.err, {toast_options});         
+          setIsloader(false)
+          toast.error(response.data.err, {toast_options}); 
         } else {
+          localStorage.setItem('company', response.data.result.company)
+          localStorage.setItem('companyId', response.data.result.companyId)
+          localStorage.setItem('name', response.data.result.name)
+          localStorage.setItem('userId', response.data.result.userId)
+          localStorage.setItem('email', response.data.result.email)
+          localStorage.setItem('master', response.data.result.master)
+          dispatch({type:'set', companyId:response.data.result.companyId})
           setSendOtp(true)
         }
         setIsloader(false)

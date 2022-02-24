@@ -208,6 +208,14 @@ const ProcessorsData = () => {
       toast.warn("Please Enter Processor!", {toast_options});
     }else if(collection == '' || collection == null || collection == undefined){
       toast.warn("Please Enter Collection!", {toast_options});
+    }else if(googleVisionVal == '' || googleVisionVal == null || googleVisionVal == undefined){
+      toast.warn("Please Select Google Vision!", {toast_options});
+    }else if(azureFormVal == '' || azureFormVal == null || azureFormVal == undefined){
+      toast.warn("Please Select Azure Form!", {toast_options});
+    }else if(textractVal == '' || textractVal == null || textractVal == undefined){
+      toast.warn("Please Select Textract!", {toast_options});
+    }else if(keywordsField[0].length == 0){
+      toast.warn("Please Enter keywords!", {toast_options});
     }
     else{
       handleToClose()
@@ -288,6 +296,7 @@ const ProcessorsData = () => {
     
       <Grid className="container-fluid" style={{marginTop:55}}>
         <CButton type="submit" color="primary" size="lg" style={btn_style} onClick={() => handleClickToOpen()}>Add Processor</CButton>
+         {tableData.length>0 ?
           <Grid item xs={12} style={{ marginTop: 25}}>
             <FlexGrid
                 headersVisibility="Column"
@@ -312,7 +321,11 @@ const ProcessorsData = () => {
                 )}  
                 <wjFilter.FlexGridFilter></wjFilter.FlexGridFilter>
               </FlexGrid>
-            </Grid>
+            </Grid>:
+            <div style={{height:300}}> <p style={{ width: "100%", display: "block", color: "#c00", margin: "12px 0", textAlign: "center", fontSize: "1.6em" }}>
+            {(!Isloader) ? "No record Found!!" : ""}
+            </p></div>
+              }
 
             {Isloader &&
             <div style={loader}>
@@ -432,7 +445,7 @@ const ProcessorsData = () => {
         </FormControl>
                                 </CCol>
                                 <CCol md="6"><FormControl variant="outlined" className={classes.formControl}>
-<InputLabel id="textract" className={classes.title}>Select For textract</InputLabel>
+<InputLabel id="textract" className={classes.title}>Select For Textract</InputLabel>
         <Select
           labelId="textract"
           id="textract"

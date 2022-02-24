@@ -186,20 +186,22 @@ class DocumentDetails extends React.Component {
     if (this.props.history.location && this.props.history.location.state && this.props.history.location.state.data) {
       
     //  let docValidatedRec = this.props.history.location.state.data.docValidated? this.props.history.location.state.data.docValidated:"No";
-     let docValidatedRec = this.props.history.location.state.data.docStatus? this.props.history.location.state.data.docStatus.toLowerCase() === "validated"?"Yes":"No":"No";
-      
+      let docValidatedRec = this.props.history.location.state.data.docStatus? this.props.history.location.state.data.docStatus.toLowerCase() === "validated"?"Yes":"No":"No";
       this.setState({docValidated:docValidatedRec})
-      this.getPdfImage();
-      this.geCsvData();
     }
     else if (details) {
       this.props.history.location.state = details
-      this.getPdfImage();
-      this.geCsvData();
     }
 
+    this.getPdfAndCsv()
 
   }
+
+  getPdfAndCsv = () => {
+    this.getPdfImage();
+    this.geCsvData();
+  }
+
   openDialog = () => {
     this.setState({ openReportIssue: true });
   };
@@ -238,7 +240,7 @@ class DocumentDetails extends React.Component {
       // toast.warning("FileName is invalid", toast_options);
     }
 
-    if (pdfValid) {
+    // if (pdfValid) {
       console.log("==pdfValid==in if under", pdfValid, this.state.pageNo)
       this.setState({ isLoading: true })
 
@@ -274,19 +276,19 @@ class DocumentDetails extends React.Component {
           this.props.history.push("/");
         }
       });
-    } else {
-      console.log("==pdfValid==in else", pdfValid)
+    // } else {
+    //   console.log("==pdfValid==in else", pdfValid)
 
-      setTimeout(() => {
-        toast.warn("Request is invalid", toast_options);
-        setTimeout(() => {
+    //   setTimeout(() => {
+    //     toast.warn("Request is invalid", toast_options);
+    //     setTimeout(() => {
 
-          this.props.history.goBack()
-        }, 1000);
+    //       this.props.history.goBack()
+    //     }, 1000);
 
-      }, 500);
+    //   }, 500);
 
-    }
+    // }
   }
   geCsvData = () => {
     // console.log("===You are in geCsvData")
@@ -307,7 +309,7 @@ class DocumentDetails extends React.Component {
       dataValid = false
       // toast.warn("FileName is invalid", toast_options);
     }
-    if (dataValid) {
+    // if (dataValid) {
       const headers = {
         "Content-Type": "application/json",
         Authorization: "Bearer " + localStorage.getItem('access_token'),
@@ -340,11 +342,11 @@ class DocumentDetails extends React.Component {
           this.props.history.push("/");
         }
       });
-    } else {
-      this.setState({ isCsvLoading: false });
-      toast.warn("Request is invalid", toast_options);
+    // } else {
+    //   this.setState({ isCsvLoading: false });
+    //   toast.warn("Request is invalid", toast_options);
 
-    }
+    // }
   }
   submit = () => {
     let companyId = localStorage.getItem('companyId')
@@ -557,7 +559,7 @@ class DocumentDetails extends React.Component {
     let valFromInput = Number(e.target.value)
     if(valFromInput >= 1 && valFromInput <= this.state.totalPages){
 
-      this.setState({pageNo: valFromInput, pageNoToShow :valFromInput}, () => this.getPdfImage());
+      this.setState({pageNo: valFromInput, pageNoToShow :valFromInput}, () => this.getPdfAndCsv());
     }else{
       this.setState({pageNoToShow: ""});
       toast.info("Request is invalid", toast_options);
@@ -568,7 +570,7 @@ class DocumentDetails extends React.Component {
     if(this.state.pageNo >= 2){
     let updatedNum = this.state.pageNo - 1;
     console.log("minus page", updatedNum)
-    this.setState({ pageNo: updatedNum, pageNoToShow :updatedNum }, () => this.getPdfImage())
+    this.setState({ pageNo: updatedNum, pageNoToShow :updatedNum }, () => this.getPdfAndCsv())
     }
     else{
       toast.info("Request is invalid", toast_options);
@@ -578,7 +580,7 @@ class DocumentDetails extends React.Component {
     if(this.state.pageNo <= this.state.totalPages - 1){
     let updatedNum = this.state.pageNo + 1;
     console.log("plus page", updatedNum)
-    this.setState({ pageNo: updatedNum, pageNoToShow :updatedNum }, () => this.getPdfImage())
+    this.setState({ pageNo: updatedNum, pageNoToShow :updatedNum }, () => this.getPdfAndCsv())
   }
   else{
     toast.info("Request is invalid", toast_options);

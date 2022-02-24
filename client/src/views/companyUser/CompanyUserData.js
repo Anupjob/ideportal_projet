@@ -120,6 +120,7 @@ const CompanyUserData = () => {
       localStorage.clear();
       history.push("/");
       }
+      setIsloader(false)
     });
   }
   const handleClickToOpen = () => {
@@ -183,8 +184,9 @@ const CompanyUserData = () => {
       <Grid className="container-fluid" style={{marginTop:40}}>
       <CButton type="submit" color="primary" size="lg" style={btn_style} onClick={() => handleClickToOpen()}>Add User</CButton>
 
+          {tableData.length>0 ?
           <Grid item xs={12} style={{ marginTop: 25}}>
-            <FlexGrid
+             <FlexGrid
                 headersVisibility="Column"
                 autoGenerateColumns={false}
                 // initialized={this.initializeDailyGrid}
@@ -207,7 +209,10 @@ const CompanyUserData = () => {
                 )}  
                 <wjFilter.FlexGridFilter></wjFilter.FlexGridFilter>
               </FlexGrid>
-            </Grid>
+           </Grid>:
+           <div style={{height:300}}> <p style={{ width: "100%", display: "block", color: "#c00", margin: "12px 0", textAlign: "center", fontSize: "1.6em" }}>
+           {(!Isloader) ? "No record Found!!" : ""}
+           </p></div>}
 
             {Isloader &&
             <div style={loader}>
