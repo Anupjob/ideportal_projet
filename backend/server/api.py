@@ -33,9 +33,10 @@ container = "incomingfiles"
 connect_str_use = 'DefaultEndpointsProtocol=https;AccountName=idedata;AccountKey=7o/tRVR7exoh8XqFc2q/IRwm+YEo7/uxV3q1GjWeEYcfDbV56FC8xkp5xzLaO/rUnkI3JfnA1XFyq5dmDbJjXA==;EndpointSuffix=core.windows.net'
 
 def getConn():
-    conn = 'mongodb://ide21qadguser_qa:shSgSAd63SDsgh67S@18.232.50.247:27021/ide_database_qa?authMechanism=SCRAM-SHA-256&authSource=ide_database_qa'
+    # conn = 'mongodb://ide21qadguser_qa:shSgSAd63SDsgh67S@18.232.50.247:27021/ide_database_qa?authMechanism=SCRAM-SHA-256&authSource=ide_database_qa'
+    conn = 'mongodb://ide21qadguser:shSgSAd63SDsgh67S@18.232.50.247:27021/ide_database?authMechanism=SCRAM-SHA-256&authSource=ide_database'
     client_mongo = pymongo.MongoClient(conn)
-    db_mongo = client_mongo.ide_database_qa
+    db_mongo = client_mongo.ide_database
     return db_mongo
 
 def blob_connection():
@@ -53,6 +54,7 @@ class IncomingData(BaseModel):
     dateRec: Optional[date] = None
     dateProcessed: Optional[date] = None
     docStatus: Optional[str] = None
+    companyId: str
 
 class FinalData(BaseModel):
     fileName: Optional[str] = None
@@ -285,21 +287,22 @@ app.add_middleware(
 conf = ConnectionConfig(
     MAIL_FROM='support@vercx.com',
     MAIL_USERNAME='support@vercx.com',
-    MAIL_PASSWORD='VercX2018$$',
+    # MAIL_PASSWORD='VercX2018$$',
+    MAIL_PASSWORD='VercXA2022$$',
     MAIL_PORT=587,
     MAIL_SERVER="smtp.gmail.com",
     MAIL_TLS=True,
     MAIL_SSL=False
 )
 
-def getIncomingData(dateRec, dateProcessed, docStatus, docType):
-    print("getIncomingData", dateRec, dateProcessed, docStatus, docType)
+def getIncomingData(dateRec, dateProcessed, docStatus, docType, companyId):
+    print("getIncomingData", dateRec, dateProcessed, docStatus, docType, companyId)
     db_mongo = getConn()
     files_incoming_c = db_mongo.files_incoming
 
     # print("len(docType)", len(docType))
     # print("str dateRec",str(dateRec))
-    query_str = {}
+    query_str = {"companyId": ObjectId(companyId)}
     # date_rec = datetime.datetime.strptime(str(dateRec), "%d %B, %Y")
     # date_proc = datetime.datetime.strptime(str(dateProcessed), "%d %B, %Y")
     # print("date_rec", date_rec)
@@ -324,22 +327,32 @@ def getIncomingData(dateRec, dateProcessed, docStatus, docType):
 async def send_otp_mail(otp, recipient):
     print("send_otp_mail", otp, recipient)
 
-    html_template = '<html><head><title>OTP</title><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">'
-    html_template += '<p>Dear Valued Customer,</p><br/><br/>'
-    html_template += '<p>Your Password for Secure Login is: ' + otp + '<br /><br/>'
-    html_template += '</div></div><br/><br/><div class="row" style="background-color:#dbdada"><div class="col-sm-4"></div> <div class="col-sm-4" style="font-size:16px;padding:10px;">'
-    html_template += '<b>Thank you.<br/><br/></b></div><div class="col-sm-4"></div></div></div></body></html>'
+    # html_template = '<html><head><title>OTP</title><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">'
+    # html_template += '<p>Dear Valued Customer,</p><br/>'
+    # html_template += '<p>Your Password for Secure Login is: ' + otp + '<br /><br/>'
+    # html_template += '<div class="row" style="background-color:#dbdada"><div class="col-sm-4"></div> <div class="col-sm-4" style="font-size:16px;padding:10px;">'
+    # html_template += '<b>Thank you.<br/><br/></b></div><div class="col-sm-4"></div></div></div></body></html>'
 
-    template = """
-                <html>
-                <body>
-                <p>Hi !!!
-                <br>Thanks for using fastapi mail, keep using it..!!!</p>
-                </body>
-                </html>
+    html_template = f"""
+                <html><head><title>OTP</title>
+                    <meta charset="utf-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1">
+                    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+                    </head>
+                    <body>
+                        <p style="margin-left:10px">Dear Valued Customer,</p>
+                        <p style="margin-left:10px">Your Password for Secure Login is: {otp}</p>
+                        <div class="col-sm-4" style="font-size:16px;padding:10px;">
+                            <span><b>Important: </b></span> 
+                            <p>For any query please send email to <a href="mailto:support@vercx.com">support@vercx.com</a>
+                            </p>
+                        </div> 
+                        <div class="col-sm-4" style="background-color:#dbdada; font-size:16px; padding:10px; margin-left:10px">
+                            <b>Thank you.</b><br/>
+                        </div>
+                        </body>
+                    </html>
                 """
-
-    template2 = "<html><body><p>Hi !!!<br>Thanks for using fastapi mail, keep using it..!!!</p></body></html>"
 
     message = MessageSchema(
         subject='OTP for secure login on IDE Portal',
@@ -435,28 +448,30 @@ async def user_login(user: UserLogin = Body(...)):
             if (userfound):
                 companyData = getCompany(user_data["companyId"])
                 print("companyData", companyData)
-                otp = randint(100000, 999999)
 
-                createOTPRecord(user.email, otp)
+                if companyData:
 
-                await send_otp_mail(str(otp), user.email)
+                    otp = randint(100000, 999999)
+                    createOTPRecord(user.email, otp)
+                    await send_otp_mail(str(otp), user.email)
 
-                is_master = "master" in companyData
+                    is_master = "master" in companyData
 
-                user_comp_details = {
-                    "company":companyData["companyName"],
-                    "companyId": str(user_data["companyId"]),
-                    "userId": str(user_data["_id"]),
-                    "email": user_data["email"],
-                    "name": user_data["name"],
-                    "master": is_master
-                }
+                    user_comp_details = {
+                        "company":companyData["companyName"],
+                        "companyId": str(user_data["companyId"]),
+                        "userId": str(user_data["_id"]),
+                        "email": user_data["email"],
+                        "name": user_data["name"],
+                        "master": is_master
+                    }
 
-                return {"result": user_comp_details, "err": None}
+                    return {"result": user_comp_details, "err": None}
+                else:
+                    return {"result": None, "err": "Company not found in System "}
             else:
                 # return {"error": "Email not found in System "}
                 return {"result": None, "err": "Email not found in System "}
-
 
         else:
             return {"result": None, "err": "No email found"}
@@ -685,9 +700,10 @@ async def incoming_data(incData: IncomingData = Body(...)):
     dateProcessed = incData.dateProcessed
     docStatus = incData.docStatus
     docType = incData.docType
+    companyId = incData.companyId
     print("incoming_data", incData)
 
-    incomingDataRes = getIncomingData(dateRec, dateProcessed, docStatus, docType)
+    incomingDataRes = getIncomingData(dateRec, dateProcessed, docStatus, docType, companyId)
 
     ids_dict = []
     for ids_s in incomingDataRes:
@@ -728,8 +744,8 @@ async def incoming_data(incData: IncomingData = Body(...)):
         if 'from_email' in ids_s:
             fromEmail = ids_s["from_email"]
 
-        if 'to_main' in ids_s:
-            toEmail = ids_s["to_main"]
+        if 'to_mail' in ids_s:
+            toEmail = ids_s["to_mail"]
 
         if 'validatedOn' in ids_s:
             validatedOn = ids_s["validatedOn"]
@@ -775,7 +791,8 @@ async def final_data(incData: FinalData = Body(...)):
 
     # local_path = "../csv_final_data/"+file_name
     local_path = "csv_final.csv"
-    complete_file_name = "fileprocessing" + "/" +processorContainerPath + "/" + file_name
+    # complete_file_name = "fileprocessing" + "/" +processorContainerPath + "/" + file_name
+    complete_file_name = processorContainerPath + "/" + file_name
 
     # download_blob_azure(local_path, complete_file_name)
     file_buffer = download_blob_azure_buffer(complete_file_name)
@@ -783,8 +800,8 @@ async def final_data(incData: FinalData = Body(...)):
 
     if file_buffer:
         data = pd.read_csv(BytesIO(file_buffer))
-        # data = pd.read_csv(file_buffer)
-        data = data.drop("index", axis=1)
+        if "index" in data.columns:
+            data = data.drop("index", axis=1)
         data = data.fillna(0)
         # data_dict = data.to_dict("list")
         data_dict = data.to_dict(orient='index')
@@ -853,20 +870,33 @@ async def get_report_hist(incData: ReportHistSchema = Body(...)):
     db_mongo = getConn()
     report_history_c = db_mongo.report_history
 
-    report_history_p = report_history_c.find({"companyId": ObjectId(companyId)}, {"userId": ObjectId(userId)})
+    report_history_p = report_history_c.find({"companyId": ObjectId(companyId), "userId": ObjectId(userId)})
     print("report_history_p",report_history_p)
 
     if report_history_p :
 
         hist_data = []
         for report_history_s in report_history_p:
+
+            userEmail = ""
+            if "userEmail" in report_history_s:
+                userEmail = report_history_s["userEmail"]
+
+            errMsg = ""
+            if "errMsg" in report_history_s:
+                errMsg = report_history_s["errMsg"]
+
+            insertTime = ""
+            if "insertTime" in report_history_s:
+                insertTime = report_history_s["insertTime"]
+
             hist_data.append(
                 {
                     "hist_id": str(report_history_s["_id"]),
-                    "userEmail": report_history_s["userEmail"],
+                    "User Email": userEmail,
                     # "companyName": report_history_s["companyName"],
-                    "errMsg": report_history_s["errMsg"],
-                    "insertTime": report_history_s["insertTime"]
+                    "Error Message": errMsg,
+                    "Insert Time": insertTime
                 }
             )
         print("hist_data",hist_data)
@@ -948,6 +978,7 @@ async def add_company(incData: CompanySchema = Body(...)):
 
 @app.post("/getUsersData", dependencies=[Depends(JWTBearer())])
 async def get_users(incData: UserDataSchema = Body(...)):
+    print("getUsersData", incData)
     companyId = incData.companyId
 
     db_mongo = getConn()
@@ -1015,18 +1046,20 @@ async def add_user(companyId: str = Form(...), companyName: str = Form(...), use
         cleanFile = cleanFileName(doc_file.filename)
         print("cleanFile", cleanFile)
 
-        file_upload_res = upload_blob_azure_process(cleanFile, content, companyName)
+        file_upload_res = upload_blob_azure_process(cleanFile, content, "manual")
         print("file_upload_res", file_upload_res)
         db_mongo = getConn()
         files_incoming_c = db_mongo.files_incoming
+        files_incoming_breakup_c = db_mongo.files_incoming_breakup
 
         if file_upload_res != "file already exists":
+
             fileObj = {
                 "companyId": ObjectId(companyId),
                 "userId": ObjectId(userId),
                 "content_type": doc_file.content_type,
                 "container_path": container + "/" + cleanFile,
-                "companyName": companyName,
+                # "companyName": companyName,
                 "original_filename": doc_file.filename,
                 "filename": cleanFile,
                 # "size": doc_file.size,
@@ -1037,6 +1070,8 @@ async def add_user(companyId: str = Form(...), companyName: str = Form(...), use
                 "file_date": datetime.datetime.now(),
                 "uploaded_by": email,
                 "status": "Uploaded",
+                "processorContainerPath":"fileprocessing/manual",
+                "filenameprocessing":cleanFile
             }
 
             # ins_obj = {"content_type":"application/pdf", "container_path":containe + "/" + cleanFile,
@@ -1050,6 +1085,21 @@ async def add_user(companyId: str = Form(...), companyName: str = Form(...), use
 
             files_incoming_ins_result = files_incoming_c.insert_one(fileObj)
             print("files_incoming_ins_result", files_incoming_ins_result)
+
+            # fileBreakupObj = {
+            #     "incoming_id": ObjectId(files_incoming_ins_result.inserted_id),
+            #     "filenameprocessing": cleanFile,
+            #     "processorContainerPath":"fileprocessing/manual",
+            #     "pageNo": 1,
+            #     "pdf": cleanFile,
+            #     "img": cleanFile,
+            #     "img_rotated": cleanFile,
+            #     "date_created": datetime.datetime.now()
+            # }
+            #
+            # print("fileBreakupObj", fileBreakupObj)
+            # files_incoming_breakup_ins_result = files_incoming_breakup_c.insert_one(fileBreakupObj)
+            # print("files_incoming_breakup_ins_result", files_incoming_breakup_ins_result)
 
         return {"result": file_upload_res, "err": None}
     else:
