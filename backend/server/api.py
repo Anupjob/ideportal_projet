@@ -33,10 +33,11 @@ container = "incomingfiles"
 connect_str_use = 'DefaultEndpointsProtocol=https;AccountName=idedata;AccountKey=7o/tRVR7exoh8XqFc2q/IRwm+YEo7/uxV3q1GjWeEYcfDbV56FC8xkp5xzLaO/rUnkI3JfnA1XFyq5dmDbJjXA==;EndpointSuffix=core.windows.net'
 
 def getConn():
-    # conn = 'mongodb://ide21qadguser_qa:shSgSAd63SDsgh67S@18.232.50.247:27021/ide_database_qa?authMechanism=SCRAM-SHA-256&authSource=ide_database_qa'
-    conn = 'mongodb://ide21qadguser:shSgSAd63SDsgh67S@18.232.50.247:27021/ide_database?authMechanism=SCRAM-SHA-256&authSource=ide_database'
+    conn = 'mongodb://ide21qadguser_qa:shSgSAd63SDsgh67S@18.232.50.247:27021/ide_database_qa?authMechanism=SCRAM-SHA-256&authSource=ide_database_qa'
+    # conn = 'mongodb://ide21qadguser:shSgSAd63SDsgh67S@18.232.50.247:27021/ide_database?authMechanism=SCRAM-SHA-256&authSource=ide_database'
     client_mongo = pymongo.MongoClient(conn)
-    db_mongo = client_mongo.ide_database
+    # db_mongo = client_mongo.ide_database_qa
+    db_mongo = client_mongo.ide_database_qa
     return db_mongo
 
 def blob_connection():
@@ -67,7 +68,7 @@ class IssueSchema(BaseModel):
    errMsg: str
    doc_id: str
    user_id: str
-   # company_id: str
+   company_id: str
 
 class PdfDataSchema(BaseModel):
    fileName: str
@@ -501,6 +502,7 @@ async def report_issue(incData: IssueSchema = Body(...)):
     errMsg = incData.errMsg
     doc_id = incData.doc_id
     user_id = incData.user_id
+    cid = incData.company_id
 
     db_mongo = getConn()
     files_incoming_c = db_mongo.files_incoming
@@ -515,14 +517,14 @@ async def report_issue(incData: IssueSchema = Body(...)):
     if files_incoming_p:
         # uid = files_incoming_p["userId"]
 
-        uid = user_id
+        # uid = user_id
 
         # users_p = users_c.find_one({"_id": ObjectId(files_incoming_p["userId"])})
         users_p = users_c.find_one({"_id": ObjectId(user_id)})
         # cid = files_incoming_p["companyId"]
-        cid = users_p["companyId"]
+        # cid = users_p["companyId"]
         # cName = files_incoming_p["companyName"]
-        hist_obj = {"userId": ObjectId(user_id), "userEmail": users_p["email"], "companyId": cid, "fileIncomingId": ObjectId(doc_id), "errMsg": errMsg, "insertTime": datetime.datetime.now()}
+        hist_obj = {"userId": ObjectId(user_id), "userEmail": users_p["email"], "companyId": ObjectId(cid), "fileIncomingId": ObjectId(doc_id), "errMsg": errMsg, "insertTime": datetime.datetime.now()}
         print("hist_obj", hist_obj)
 
         report_history_result = report_history_c.insert_one(hist_obj)
