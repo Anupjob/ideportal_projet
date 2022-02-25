@@ -1,27 +1,36 @@
-aniso8601==9.0.1
+aioredis==2.0.1
+aiosmtplib==1.1.6
 anyio==3.5.0
 asgiref==3.4.1
-attrs==21.4.0
+async-timeout==4.0.2
+asyncio==3.4.3
 azure-ai-formrecognizer==3.1.2
 azure-common==1.1.27
 azure-core==1.21.1
 azure-identity==1.7.1
-azure-storage-blob==12.9.0
-boto3==1.20.32
-botocore==1.23.32
+azure-storage-blob @ file:///tmp/build/80754af9/azure-storage-blob_1633359807179/work
+blinker==1.4
+boto3==1.20.33
+botocore==1.23.33
+Bottleneck @ file:///opt/concourse/worker/volumes/live/ac8c8ef3-2ed0-42e9-6ec0-5bb05ad938f6/volume/bottleneck_1607575111469/work
+brotlipy==0.7.0
 cachetools==4.2.4
 certifi==2021.10.8
 cffi==1.15.0
 charset-normalizer==2.0.10
 click==8.0.3
 cryptography==36.0.1
+Deprecated==1.2.13
+dnspython==2.1.0
 ecdsa==0.17.0
+email-validator==1.1.3
+fakeredis==1.7.0
 fastapi==0.70.0
+fastapi-mail==1.0.2
 fastapi-utils==0.2.1
-Flask==2.0.2
-Flask-Cors==3.0.10
-flask-restplus==0.13.0
-google-api-core==2.3.2
+Flask==2.0.3
+glyder @ git+https://github.com/varunwyest/glyder.git@fd9330a183b60ed51a935f4ba6a538b784c880cb
+google-api-core==2.4.0
 google-auth==2.3.3
 google-cloud-core==2.2.1
 google-cloud-storage==1.44.0
@@ -33,47 +42,59 @@ greenlet==1.1.2
 grpcio==1.43.0
 grpcio-status==1.43.0
 h11==0.12.0
-idna==3.3
+httpcore==0.13.7
+httpx==0.19.0
+idna @ file:///tmp/build/80754af9/idna_1637925883363/work
 importlib-metadata==4.10.0
-importlib-resources==5.4.0
 isodate==0.6.1
 itsdangerous==2.0.1
 Jinja2==3.0.3
 jmespath==0.10.0
-jsonschema==4.3.3
 keyring==23.5.0
 MarkupSafe==2.0.1
+mkl-fft==1.3.1
+mkl-random @ file:///opt/concourse/worker/volumes/live/0cda23d8-7460-44b2-7e5d-3c76a8a0ca7e/volume/mkl_random_1626186083266/work
+mkl-service==2.4.0
 msal==1.16.0
 msal-extensions==0.3.1
-msrest==0.6.21
-oauthlib==3.1.1
+msrest @ file:///tmp/build/80754af9/msrest_1633357089145/work
+numexpr @ file:///opt/concourse/worker/volumes/live/87ac54fe-281a-440d-4d94-26ac99bdabdc/volume/numexpr_1640704258458/work
+numpy==1.22.2
+oauthlib==3.2.0
+packaging @ file:///tmp/build/80754af9/packaging_1637314298585/work
+pandas==1.3.5
 portalocker==2.3.2
 proto-plus==1.19.8
 protobuf==3.19.3
 pyasn1==0.4.8
 pyasn1-modules==0.2.8
-pycparser==2.21
+pycparser @ file:///tmp/build/80754af9/pycparser_1636541352034/work
 pydantic==1.9.0
 PyJWT==1.7.1
 pymongo==3.2.1
-pyrsistent==0.18.0
-python-dateutil==2.8.2
+pyOpenSSL==22.0.0
+pyparsing==3.0.6
+PySocks @ file:///opt/concourse/worker/volumes/live/112288ac-9cb0-4e73-768b-13baf4ca6419/volume/pysocks_1605305820043/work
+python-dateutil @ file:///tmp/build/80754af9/python-dateutil_1626374649649/work
 python-decouple==3.3
 python-jose==3.3.0
+python-multipart==0.0.5
 pytz==2021.3
-PyYAML==6.0
-requests==2.27.1
+redis==4.0.2
+requests @ file:///opt/conda/conda-bld/requests_1641824580448/work
 requests-oauthlib==1.3.0
+rfc3986==1.5.0
 rsa==4.8
 s3transfer==0.5.0
-six==1.16.0
+secure-smtplib==0.1.1
+six @ file:///tmp/build/80754af9/six_1623709665295/work
 sniffio==1.2.0
+sortedcontainers==2.4.0
 SQLAlchemy==1.4.29
 starlette==0.16.0
-swagger-ui==0.1.2
-swagger-ui-py==21.12.8
-typing-extensions==4.0.1
+typing_extensions==4.0.1
 urllib3==1.26.8
 uvicorn==0.15.0
-Werkzeug==2.0.2
+Werkzeug==2.0.3
+wrapt==1.13.3
 zipp==3.7.0
