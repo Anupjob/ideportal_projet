@@ -1,0 +1,15 @@
+fastapi==0.70.0
+uvicorn==0.15.0
+fastapi-utils==0.2.1
+PyJWT==1.7.1
+python-decouple==3.3
+azure-core == 1.21.1
+secure-smtplib == 0.1.1
+azure-storage-blob == 12.9.0
+#git+ssh://git@ssh.dev.azure.com:v3/digitalglyde/IDE/glyder
+#git+https://<personal_access_token>@github.com/varunwyest/glyder.git
+#git+https://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@github.com/varunwyest/glyder.git
+
+pymongo==3.2.1
+pandas==1.3.5
+pydantic==1.9.0
