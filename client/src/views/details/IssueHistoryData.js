@@ -26,6 +26,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import { useHistory } from "react-router";
 import { useSelector, useDispatch } from 'react-redux';
 import moment from 'moment'
+import { Button } from '@material-ui/core';
 
 
  
@@ -143,13 +144,6 @@ const IssueHistoryData=()=>
            style={{backgroundColor:'grey'}}
            ></FlexGridColumn>
            <FlexGridColumn
-           binding="Insert Time"
-           header="INSERT TIME"
-           cssClass="cell-header"
-           width="*"
-           style={{backgroundColor:'grey'}}
-           ></FlexGridColumn>
-           <FlexGridColumn
                 binding="Insert Time"
                 header="INSERT TIME"
                 cssClass="cell-header"
@@ -166,7 +160,7 @@ const IssueHistoryData=()=>
            <wjFilter.FlexGridFilter></wjFilter.FlexGridFilter>
          </FlexGrid>
          :
-         <p style={{ width: "100%", display: "block", color: "#c00", margin: "12px 0", textAlign: "center", fontSize: "1.6em" }}>{Isloader?"": "No record Found!!"}</p>
+         <p style={{ width: "100%", display: "block", color: "#c00", margin: "12px 0", textAlign: "center", fontSize: "1.6em" }}>{Isloader?"": "No Found!!"}</p>
            }
             
             </Grid>

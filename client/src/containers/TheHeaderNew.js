@@ -242,7 +242,7 @@ const TheHeaderNew = (props) => {
   const classes = useStyles();
   const sidebarShow = useSelector(state => state.sidebarShow)
   const companySelectedVal = useSelector(state => state.companySelectedVal)
-  console.log('companySelectedVal :>> ', companySelectedVal);
+  // console.log('companySelectedVal :>> ', companySelectedVal);
 
   const url = useSelector(state => state.url)
   const compId = useSelector(state => state.companyId)
@@ -312,7 +312,7 @@ const TheHeaderNew = (props) => {
     dispatch({type:'set', companyId:e.target.value})
     localStorage.setItem('companyId', e.target.value)
 
-    console.log('companySelectedVal :::::', e.target.value);
+    // console.log('companySelectedVal :::::', e.target.value);
     history.push("/incoming_list");
   }
 
