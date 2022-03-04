@@ -211,13 +211,16 @@ const zoomRotate_Icon ={
 
 const DocumentDetails = (props) => {
 
-  console.log('props.history.location.state.data :>> ', props);
+  console.log('props.history.location.state.data DocumentDetails :>> ', props);
+
     
   const history = useHistory();
+  console.log('history DocumentDetails====', history);
+
   const [totalPages, setTotalPages] = useState(1);
   const [Isloader, setIsloader] = useState(false);
   const [openReportIssue, setOpenReportIssue] = React.useState(false);
-  const [enterIssue, setEnterIssue] = useState(props.history.location.state.errMsg?props.history.location.state.errMsg:'');
+  const [enterIssue, setEnterIssue] = useState(props.history.location.state ? props.history.location.state.errMsg ? props.history.location.state.errMsg:"":"");
   const [isCsvLoading, setIsCsvLoading] = useState(false);
   const [finalDataResult, setFinalDataResult] = useState([]);
   const [pdfImage, setPdfImage] = useState('');
@@ -235,6 +238,8 @@ const DocumentDetails = (props) => {
 
 
   const compId = useSelector(state => state.companyId)
+
+  console.log('enterIssue :>> ', enterIssue);
   useEffect(() => {
     
       localStorage.setItem('splitPos', 350)
@@ -243,15 +248,15 @@ const DocumentDetails = (props) => {
     let details = JSON.parse(localStorage.getItem("details"))
 
     console.log("=== history.location.state:::M", props)
-    if (props.history && props.history.location && history.location.state && history.location.state) {
+    if (history && history.location && history.location.state) {
       
-      let docValidatedRec = props.history.location.state.docStatus? history.location.state.docStatus.toLowerCase() === "validated"?"Yes":"No":"No";
+      let docValidatedRec = history.location.state.docStatus? history.location.state.docStatus.toLowerCase() === "validated"?"Yes":"No":"No";
       // this.setState({docValidated:docValidatedRec})
       setDocValidated(docValidatedRec)
     }
     else if (details) {
       console.log("details :::::::: ", details)
-      props.history.location.state = details
+      history.location.state = details
     }
     else{
       history.goBack()
@@ -269,7 +274,10 @@ const DocumentDetails = (props) => {
   }
 
   const openDialog = () => {
-    // this.setState({ openReportIssue: true });
+    
+    if(props.history.location.state && props.history.location.state.errMsg){
+      setEnterIssue(props.history.location.state.errMsg)
+    }
     setOpenReportIssue(true)
   };
   const handleClose = () => {
@@ -278,9 +286,9 @@ const DocumentDetails = (props) => {
   };
   
   const getPdfImage = () => {
-    console.log('props.history.location.state.getPdfImage::',props);
-    var pdfFileName = props && props.history && props.history.location && props.history.location.state  && props.history.location.state.pdfFilename?props.history.location.state.pdfFilename:"";
-    var processorPath = props && props.history && props.history.location && props.history.location.state &&  props.history.location.state.processorContainerPath?props.history.location.state.processorContainerPath:"";
+    // console.log('props.history.location.state.getPdfImage::',props);
+    var pdfFileName = history && history.location && history.location.state  && history.location.state.pdfFilename?history.location.state.pdfFilename:"";
+    var processorPath = history && history.location && history.location.state &&  history.location.state.processorContainerPath?history.location.state.processorContainerPath:"";
     var pdfValid = true;
     console.log("==pdfFileName==", pdfFileName)
     console.log("==processorPath==", processorPath)
@@ -350,8 +358,8 @@ const DocumentDetails = (props) => {
     // }
   }
   const geCsvData = () => {
-    var fileName = props.history.location.state  && props.history.location.state.finalFileName ?props.history.location.state.finalFileName:'';
-    var processPath = props.history.location.state  && props.history.location.state.processorContainerPath ?props.history.location.state.processorContainerPath:'';
+    var fileName = history.location.state  && history.location.state.finalFileName ?history.location.state.finalFileName:'';
+    var processPath = history.location.state  && history.location.state.processorContainerPath ?history.location.state.processorContainerPath:'';
     
     // this.setState({ isCsvLoading: true })
     setIsCsvLoading(true)
@@ -425,7 +433,7 @@ const DocumentDetails = (props) => {
         Authorization: "Bearer " + localStorage.getItem('access_token'),
         // reqFrom: "ADMIN",
       };
-      let requestBody = {company_id:compId, doc_id: props.history.location.state.doc_id, errMsg: enterIssue, user_id: userId }
+      let requestBody = {company_id:compId, doc_id: history.location.state.doc_id, errMsg: enterIssue, user_id: userId }
       // console.log("requestBody::::", requestBody)
       axios({
         method: "POST",
@@ -454,8 +462,8 @@ const DocumentDetails = (props) => {
   }
 
   const downloadPdf = () =>{
-    var pdfFileName = props.history.location.state.pdfFilename;
-    var processorPath = props.history.location.state.processorContainerPath;
+    var pdfFileName = history.location.state.pdfFilename;
+    var processorPath = history.location.state.processorContainerPath;
     var pdfValid = true;
     // console.log("==pdfFileName==", pdfFileName)
     // console.log("==processorPath==", processorPath)
@@ -521,7 +529,7 @@ const DocumentDetails = (props) => {
         toast.warn("Request is invalid", toast_options);
         setTimeout(() => {
 
-          props.history.goBack()
+          history.goBack()
         }, 1000);
 
       }, 500);
@@ -545,7 +553,7 @@ const DocumentDetails = (props) => {
       Authorization: "Bearer " + localStorage.getItem('access_token'),
       // reqFrom: "ADMIN",
     };
-    let requestBody = { doc_id: props.history.location.state.doc_id,validated:docValidated === "Yes"}
+    let requestBody = { doc_id: history.location.state.doc_id,validated:docValidated === "Yes"}
     // console.log("requestBody for validate ::::", requestBody)
     axios({
       method: "POST",
@@ -598,7 +606,7 @@ const DocumentDetails = (props) => {
   };
 
   const exportCSV = () => {
-    let csvFileNameSplited = props.history.location.state.pdfFilename.split(".");
+    let csvFileNameSplited = history.location.state.pdfFilename.split(".");
     let csvFileName = csvFileNameSplited[0];
     //export grid to CSV
     var rng = new wjGrid.CellRange(
@@ -716,11 +724,11 @@ const rotatePdf = () => {
         <div style={{ width: "400px", padding: "20px", position: "fixed", right: "20px", background: '#8349bf', boxShadow: "0px 4px 6px rgba(0,0,0,0.5)", border: "1px solid #fff", borderRadius: "5px" }}>
                           <div style={report_box}>
                             RECIEVED<br/>
-                            {moment(props.history && props.history.location && props.history.location.state && props.history.location.state.dateRec).format("MM/DD/YYYY hh:mm A")}
+                            {moment(history && history.location && history.location.state && history.location.state.dateRec).format("MM/DD/YYYY hh:mm A")}
                           </div>
                           <div style={report_box}>
                             PROCESSED<br/>
-                            {moment(props.history && props.history.location && props.history.location.state && props.history.location.state.dateProcessed).format("MM/DD/YYYY")}
+                            {moment(history && history.location && history.location.state && history.location.state.dateProcessed).format("MM/DD/YYYY")}
                           </div>
                           <div style={report_box}>
                             COMPLETED<br/>
@@ -734,7 +742,7 @@ const rotatePdf = () => {
       }
                         </div>
         <CRow style={title_text}>
-          {props.history && props.history.location && props.history.location.state && props.history.location.state && props.history.location.state.pdfFilename ? props.history.location.state.pdfFilename : ""}
+          {history && history.location && history.location.state && history.location.state && history.location.state.pdfFilename ? history.location.state.pdfFilename : ""}
         </CRow>
         <CRow >
           <CCol>
@@ -862,23 +870,23 @@ const rotatePdf = () => {
                         <TableCell style={table_headerMain}>
                           <Button style={viewDetailBtn}
                             onClick={() => {
-                              localStorage.setItem("details", JSON.stringify(props.history.location.state))    
-                              props.history.push({
+                              localStorage.setItem("details", JSON.stringify(history.location.state))    
+                              history.push({
                                 // pathname: '/detail/' + props.history.location.state?props.history.location.state.data.doc_id:'',
-                                pathname: '/detail/' + props.history.location.state.doc_id,
+                                pathname: '/detail/' + history.location.state.doc_id,
 
                                 state: {
                                   // fileName: props.history.location.state?props.history.location.state.data.pdfFilename:'',
                                   // containerPath: props.history.location.state?props.history.location.state.data.processorContainerPath:''
-                                  fileName: props.history.location.state?props.history.location.state.pdfFilename:'',
-                                  containerPath: props.history.location.state?props.history.location.state.processorContainerPath:''
+                                  fileName: history.location.state?history.location.state.pdfFilename:'',
+                                  containerPath: history.location.state?history.location.state.processorContainerPath:''
 
 
                                 }
                               })
                             }}>VIEW DETAILS</Button>
                         </TableCell>
-                        {props.history.location.state && props.history.location.state.docStatus == "Error" ?
+                        {history.location.state && history.location.state.docStatus == "Error" ?
                         <TableCell style={table_headerMain}>
                           <Button style={issueBtn}
                             onClick={() => openDialog()}>REPORT ISSUE</Button>
