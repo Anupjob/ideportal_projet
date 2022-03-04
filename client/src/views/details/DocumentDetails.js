@@ -661,7 +661,7 @@ sliderClick = () => {
         <CRow className={classes.title_text }>
           {this.props.history.location &&this.props.history.location.state && this.props.history.location.state.data.pdfFilename ? this.props.history.location.state.data.pdfFilename : ""}
         </CRow>
-        <CRow>
+        <CRow >
           <CCol>
             <div style={{ background: "rgb(0, 117, 183)", borderRadius: "5px 5px 0 0", position: "fixed", zIndex: "500", right:"30px", left:"30px",
             }}>
@@ -733,6 +733,8 @@ sliderClick = () => {
             >
               <div
                 style={{
+                  overflowY:"auto",
+                  overflowX:"hidden",
                   width: this.state.expandScreen ? "100%" : "615px",
                   transform: (this.state.rotateScreen == 1 && "rotate(90deg)" || this.state.rotateScreen == 2 && "rotate(180deg)" || this.state.rotateScreen == 3 && "rotate(270deg)" || this.state.rotateScreen == 4 && "rotate(0deg)"),
                   margin: "0px auto",
