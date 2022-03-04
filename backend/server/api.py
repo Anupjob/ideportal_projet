@@ -721,6 +721,7 @@ async def incoming_data(incData: IncomingData = Body(...)):
         validatedOn = ""
         # docValidated = False
         # docValidatedStr = "No"
+        final_filenames = []
 
         if 'noOfPages' in ids_s:
             noOfPages = ids_s["noOfPages"]
@@ -752,6 +753,9 @@ async def incoming_data(incData: IncomingData = Body(...)):
         if 'validatedOn' in ids_s:
             validatedOn = ids_s["validatedOn"]
 
+        if 'final_filenames' in ids_s:
+            final_filenames = ids_s["final_filenames"]
+
         # if 'docValidated' in ids_s:
         #     docValidated = ids_s["docValidated"]
 
@@ -770,6 +774,7 @@ async def incoming_data(incData: IncomingData = Body(...)):
             "processorName": processorName,
             "processorContainerPath": processorContainerPath,
             "finalFileName": final_filename,
+            "final_filenames":final_filenames,
             "pdfFilename": filenameProcessing,
             "errMsg": errMsg,
             "fromEmail":fromEmail,
