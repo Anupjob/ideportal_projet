@@ -50,10 +50,21 @@ import ClearIcon from '@mui/icons-material/Clear';
 import { doc_styles } from "./documentDetailStyle";
 import { withStyles } from "@material-ui/core/styles";
 import { useSelector, useDispatch } from 'react-redux';
+import { cilBurger } from '@coreui/icons';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
-
+const master_dropdown={
+  width: "200px",
+  background: "grey",
+  outline:'none',
+  borderRadius:'2px',
+  border:"none",
+  fontSize: "11px",
+  padding: "8px 0",
+  marginTop:"0px",
+  marginLeft:"10px",
+}
 const table_header = {
   borderBottom: "1px solid #ccc",
   color: "#000000",
@@ -235,8 +246,8 @@ const DocumentDetails = (props) => {
   const [Toggle, setToggle] = useState(false);
   const [gridObject, setGridObject] = useState();
   const [isPageChange, setIsPageChange] = useState('');
-
-
+const [fileName,setFileName]=useState(history.location.state.final_filenames.length>0?history.location.state.final_filenames[0]:history.location.state.finalFileName)
+const fileNameObject=history.location.state.final_filenames.length>0?history.location.state.final_filenames:'';
   const compId = useSelector(state => state.companyId)
 
   console.log('enterIssue :>> ', enterIssue);
@@ -270,7 +281,7 @@ const DocumentDetails = (props) => {
 
   const getPdfAndCsv = () => {
     getPdfImage();
-    geCsvData();
+    geCsvData(fileName);
   }
 
   const openDialog = () => {
@@ -357,8 +368,9 @@ const DocumentDetails = (props) => {
 
     // }
   }
-  const geCsvData = () => {
-    var fileName = history.location.state  && history.location.state.finalFileName ?history.location.state.finalFileName:'';
+  console.log(history.location.state.final_filenames,'loaction');
+  const geCsvData = (fileName) => {
+    // var fileName = history.location.state  && history.location.state.finalFileName ?history.location.state.finalFileName:'';
     var processPath = history.location.state  && history.location.state.processorContainerPath ?history.location.state.processorContainerPath:'';
     
     // this.setState({ isCsvLoading: true })
@@ -714,7 +726,7 @@ const rotatePdf = () => {
     setGridObject(flex);
     flex.columnHeaders.rows.defaultSize = 40;
   };
-
+  console.log(typeof(fileName),'filetype')
   return (
     
 <CCard style={cardView}>
@@ -952,8 +964,30 @@ const rotatePdf = () => {
                 
                 {Object.keys(finalDataResult).length > 0 ?
                 <Grid className="container-fluid">
+                  
+                  {typeof(fileNameObject)==='object'&&
+                   <select
+            style={{marginTop:'10px',height:'40px'}}
+            // value={CompanyDropdown}
+            // name="company"
+            onChange={(e)=>geCsvData(e.target.value)}
+            >
+            {/* <option value="">Select Company</option>
+            <option value="">Select Company Select Company Select Company Select Company</option>
+            <option value="">Select Company Select Company Select Company </option> */}
+            {fileNameObject&&fileNameObject.map((curr, index) => {
+              return (
+                <>
+                  <option >{curr}</option>
+                </>
+              );
+            })}
+           </select> 
+} 
                 <Grid item xs={12} style={{ marginTop: 25}}>
-             
+               
+            
+         
                     <FlexGrid
                       headersVisibility="Column"
                       autoGenerateColumns={false}
