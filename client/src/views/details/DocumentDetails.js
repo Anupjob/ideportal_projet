@@ -736,7 +736,7 @@ const rotatePdf = () => {
         <CRow style={title_text}>
           {props.history && props.history.location && props.history.location.state && props.history.location.state && props.history.location.state.pdfFilename ? props.history.location.state.pdfFilename : ""}
         </CRow>
-        <CRow>
+        <CRow >
           <CCol>
             <div style={{ background: "rgb(0, 117, 183)", borderRadius: "5px 5px 0 0", position: "fixed", zIndex: "500", right:"30px", left:"30px",
             }}>
@@ -808,6 +808,8 @@ const rotatePdf = () => {
             >
               <div
                 style={{
+                  overflowY:"auto",
+                  overflowX:"hidden",
                   width: expandScreen ? "100%" : "615px",
                   transform: (rotateScreen == 1 && "rotate(90deg)" || rotateScreen == 2 && "rotate(180deg)" || rotateScreen == 3 && "rotate(270deg)" || rotateScreen == 4 && "rotate(0deg)"),
                   margin: "0px auto",
