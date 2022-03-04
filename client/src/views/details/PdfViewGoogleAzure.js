@@ -149,6 +149,7 @@ const viewDetailBtn = {
 class PdfViewGoogleAzure extends React.Component {
 
   constructor(props) {
+   
     super(props);
     this.state = {
       googleVisionVisible: false,
@@ -172,11 +173,11 @@ class PdfViewGoogleAzure extends React.Component {
   }
   componentDidMount = () => {
 
-    // console.log("===PdfViewGoogleAzure doc_id :::GoogleAzure",this.props)
+    console.log("===PdfViewGoogleAzure doc_id :::GoogleAzure",this.props)
     this.getPdfImageRotate();
   }
   getPdfImageRotate = () => {
-    // console.log("===PdfViewGoogleAzure doc_id :::GoogleAzure",this.props)
+    console.log("===PdfViewGoogleAzure doc_id in getPdfImageRotate:::",this.props)
 
     var pdfFileName = this.props.history.location.state && this.props.history.location.state.fileName;
     var processorPath = this.props.history.location.state && this.props.history.location.state.containerPath;
@@ -213,7 +214,7 @@ class PdfViewGoogleAzure extends React.Component {
         data: JSON.stringify({ fileName: pdfFileName, containerPath: processorPath, fileType: this.state.fileType, pageNum: this.state.pageNum }),
         headers,
       }).then((response) => {
-        console.log("Respone from post getPdfImage==", response.data.result);
+        console.log("Respone from post getPdfImage in PdfViewGoogleAzure==", response.data.result);
         if (response.data.err) {
           // alert(response.data.err);
           toast.error(response.data.err, toast_options);
@@ -353,7 +354,7 @@ class PdfViewGoogleAzure extends React.Component {
   render() {
     const { classes } = this.props;
     
-    // console.log("===PdfViewGoogleAzure doc_id in render :::",this.props.history.location.state.data.doc_id)
+    console.log("===props in render :::",this.props)
     return (
       <CCard style={pdfMainView}>
 

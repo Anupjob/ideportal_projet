@@ -470,7 +470,8 @@ const Dashboard = () => {
                     }
                   </React.Fragment>} />
               </FlexGridColumn>
-
+              {
+              localStorage.getItem('master') && JSON.parse(localStorage.getItem('master')) &&
               <FlexGridColumn>
                 <FlexGridCellTemplate cellType="Cell" template={ctx => <React.Fragment>
                   <span style={{ cursor: "pointer" }}><i class="fa fa-search-plus" aria-hidden="true"
@@ -478,12 +479,14 @@ const Dashboard = () => {
                       //  console.log("IncomingArr data==>>", ctx.item)
                       history.push({
                         pathname: '/details',
-                        state: { data: ctx.item }
+                        // state: { data: ctx.item }
+                        state:ctx.item
                       })
                     }}
                   ></i></span>
                 </React.Fragment>} />
               </FlexGridColumn>
+              }
 
               <FlexGridColumn
                 binding="processorGroup"
