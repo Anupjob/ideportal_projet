@@ -32,6 +32,8 @@ import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import { useHistory } from "react-router";
 import { useSelector, useDispatch } from 'react-redux';
+import Avatar from "@material-ui/core/Avatar";
+import zIndex from '@material-ui/core/styles/zIndex';
 
 
 const loader = {
@@ -79,10 +81,32 @@ const CompanyUserData = () => {
   const [tableData, setTableData] = useState([]);
   const [open, setOpen] = React.useState(false);
   const [email, setEmail] = useState('');
+  const [image, setImage] = useState('');
   const [name, setName] = useState('');
   const compId = useSelector(state => state.companyId)
 
+
+  const getBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
+  };
   
+  const handleChange = (e) => {
+
+    if (e.target.files) {
+      const { files } = e.target;
+      if (files && files.length > 0) {
+        getBase64(files[0]).then((res) => {
+          setImage(res);
+        });
+      }
+    } 
+  };
+
   useEffect(() => {
     getUsersData()
   }, [])
@@ -152,7 +176,7 @@ const CompanyUserData = () => {
         Authorization: "Bearer " + localStorage.getItem('access_token'),
         // reqFrom: "ADMIN",
       };
-      let requestBody = {company_id:compId,email:email, name: name}
+      let requestBody = {company_id:compId,email:email, name: name, image: image}
       axios({
         method: "POST",
         url: settings.serverUrl + "/addUser",
@@ -184,7 +208,101 @@ const CompanyUserData = () => {
       <Grid className="container-fluid" style={{marginTop:40}}>
       <CButton type="submit" color="primary" size="lg" style={btn_style} onClick={() => handleClickToOpen()}>Add User</CButton>
 
-          {tableData.length>0 ?
+      <Grid>
+            <Grid item xs={12} style={{ marginTop: 25 }}>
+              <FlexGrid
+                headersVisibility="Column"
+                autoGenerateColumns={false}
+                itemsSource={tableData}
+                style={{
+                  height: "auto",
+                  maxHeight: 400,
+                  margin: 0,
+                }}
+              >
+                {/* <FlexGridColumn>
+                  <FlexGridCellTemplate
+                    cellType="Cell"
+                    template={(ctx) => (
+                      <React.Fragment>
+                        <input type="checkbox" />
+                      </React.Fragment>
+                    )}
+                  />
+                </FlexGridColumn> */}
+                <FlexGridColumn
+                  binding="email"
+                  header="Email"
+                  cssClass="cell-header"
+                  width="*"
+                  multiLine="true"
+                  style={{ backgroundColor: "grey" }}
+                >
+                  <FlexGridCellTemplate
+                    cellType="Cell"
+                    template={(ctx) => (
+                      <React.Fragment>
+                        <div style={{ display: "flex" }}>
+                          <div style={{ width: "40px" }}>
+                            <Avatar
+                              src={ctx.item.image ? ctx.item.image : ""}
+                              style={{
+                                width: 30,
+                                height: 30,
+                                // border: '2px solid #f8f8f8',
+                              }}
+                            />
+                          </div>
+                          <div style={{ width: "40%" }}>{ctx.item.email}</div>
+                        </div>
+                      </React.Fragment>
+                    )}
+                  />
+                </FlexGridColumn>
+
+                <FlexGridColumn
+                  binding="name"
+                  header="Name"
+                  cssClass="cell-header"
+                  width="*"
+                  multiLine="true"
+                  style={{ backgroundColor: "grey" }}
+                />
+                {/* <FlexGridColumn
+                  binding="company"
+                  header="Company"
+                  cssClass="cell-header"
+                  width="*"
+                  multiLine="true"
+                  style={{ backgroundColor: "grey" }}
+                /> */}
+                
+                <wjFilter.FlexGridFilter></wjFilter.FlexGridFilter>
+              </FlexGrid>
+            </Grid>
+            {Isloader && (
+              <div style={loader}>
+                <CircularProgress
+                  style={{ margin: "28% auto", display: "block" }}
+                />
+              </div>
+            )}
+            <div>
+              <ToastContainer
+                position="top-center"
+                autoClose={5000}
+                hideProgressBar
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+              />
+            </div>
+          </Grid>
+
+          {/* {tableData.length>0 ?
           <Grid item xs={12} style={{ marginTop: 25}}>
              <FlexGrid
                 headersVisibility="Column"
@@ -212,7 +330,7 @@ const CompanyUserData = () => {
            </Grid>:
            <div style={{height:300}}> <p style={{ width: "100%", display: "block", color: "#c00", margin: "12px 0", textAlign: "center", fontSize: "1.6em" }}>
            {(!Isloader) ? "No record Found!!" : ""}
-           </p></div>}
+           </p></div>} */}
 
             {Isloader &&
             <div style={loader}>
@@ -233,6 +351,35 @@ const CompanyUserData = () => {
             <DialogTitle>Add User</DialogTitle>
                           <DialogContent style={{ minWidth: 500 }}>
                             <DialogContentText>
+                              <CRow>
+                                <CCol>
+                                {/* <TextField id="outlined-basic" label="" type="file" variant="outlined" style={{ width: "100%", marginTop:20 }}
+                                value="" onChange="" /> */}
+                                <div style={{border:"1px dashed #999", position:"relative"}}>
+                                  <i class="fa fa-user-circle-o" aria-hidden="true" 
+                                  style={{
+                                    fontSize: "2em",
+                                    left: "10px",
+                                    position: "absolute",
+                                    top: "16px",
+                                    color: "#cecece",
+                                    zIndex:"0"
+                                    }}></i>
+                                <input type="file" 
+                                style={{
+                                  textIndent: "80px", 
+                                  marginLeft: "-185px", 
+                                  cursor:"pointer", 
+                                  padding:"20px 0", 
+                                  position:"relative", 
+                                  zIndex:"2"
+                                  }} 
+                                  name="image"
+                        onChange={handleChange}
+                                  />
+                                </div>
+                                </CCol>
+                              </CRow>
                               <CRow>
                                 <CCol md="6">
                                 <TextField id="outlined-basic" label="Enter Email" type="text" variant="outlined" style={{ width: "100%",marginTop:20 }}
