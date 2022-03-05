@@ -1032,7 +1032,7 @@ async def add_user(incData: AddUserSchema = Body(...)):
     db_mongo = getConn()
     users_c = db_mongo.users
 
-    user_ins_result = users_c.insert_one({"companyId": ObjectId(company_id), "email": email, "name": name})
+    user_ins_result = users_c.insert_one({"companyId": ObjectId(company_id), "email": email, "name": name, "image": image})
 
     return {"result": user_ins_result, "err": None}
 
