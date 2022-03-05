@@ -132,6 +132,10 @@ class DownloadPdfSchema(BaseModel):
    fileName: str
    containerPath: str
 
+class userProfileSchema(BaseModel):
+    userId: str
+    userPicData: str
+
 def download_blob_azure(local_path, complete_file_name):
     print("download_blob_azure", local_path, complete_file_name);
 
