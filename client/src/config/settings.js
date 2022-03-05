@@ -1,4 +1,5 @@
- var serverUrl = "http://192.168.11.125:8081";
+//  var serverUrl = "http://192.168.11.125:8081";
+ var serverUrl = "http://localhost:8081";
 // var serverUrl = "http://192.168.2.180:8081";
 
 
