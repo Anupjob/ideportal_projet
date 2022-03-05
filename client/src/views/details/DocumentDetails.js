@@ -246,8 +246,8 @@ const DocumentDetails = (props) => {
   const [Toggle, setToggle] = useState(false);
   const [gridObject, setGridObject] = useState();
   const [isPageChange, setIsPageChange] = useState('');
-const [fileName,setFileName]=useState(history.location.state.final_filenames.length>0?history.location.state.final_filenames[0]:history.location.state.finalFileName)
-const fileNameObject=history.location.state.final_filenames.length>0?history.location.state.final_filenames:'';
+  const [fileName,setFileName]=useState(history.location.state.final_filenames!==undefined?history.location.state.final_filenames.length>0?history.location.state.final_filenames[0]:history.location.state.finalFileName!==undefined?history.location.state.finalFileName:"":history.location.state.finalFileName!==undefined?history.location.state.finalFileName:"")
+
   const compId = useSelector(state => state.companyId)
 
   console.log('enterIssue :>> ', enterIssue);
@@ -272,16 +272,23 @@ const fileNameObject=history.location.state.final_filenames.length>0?history.loc
     else{
       history.goBack()
     }
+   
+    
+  
     getPdfAndCsv()
+    
   }, [])
 
   useEffect(() => {
     getPdfAndCsv()
   }, [isPageChange])
 
+ useEffect(()=>{
+  geCsvData()
+ },[fileName])
   const getPdfAndCsv = () => {
     getPdfImage();
-    geCsvData(fileName);
+    geCsvData();
   }
 
   const openDialog = () => {
@@ -369,7 +376,7 @@ const fileNameObject=history.location.state.final_filenames.length>0?history.loc
     // }
   }
   console.log(history.location.state.final_filenames,'loaction');
-  const geCsvData = (fileName) => {
+  const geCsvData = () => {
     // var fileName = history.location.state  && history.location.state.finalFileName ?history.location.state.finalFileName:'';
     var processPath = history.location.state  && history.location.state.processorContainerPath ?history.location.state.processorContainerPath:'';
     
@@ -965,17 +972,13 @@ const rotatePdf = () => {
                 {Object.keys(finalDataResult).length > 0 ?
                 <Grid className="container-fluid">
                   
-                  {typeof(fileNameObject)==='object'&&
+                  {history.location.state.final_filenames!==undefined?(<>
+                 { history.location.state.final_filenames.length>0&&
                    <select
             style={{marginTop:'10px',height:'40px'}}
-            // value={CompanyDropdown}
-            // name="company"
-            onChange={(e)=>geCsvData(e.target.value)}
+            onChange={(e)=>setFileName(e.target.value)}
             >
-            {/* <option value="">Select Company</option>
-            <option value="">Select Company Select Company Select Company Select Company</option>
-            <option value="">Select Company Select Company Select Company </option> */}
-            {fileNameObject&&fileNameObject.map((curr, index) => {
+            {history.location.state.final_filenames.map((curr, index) => {
               return (
                 <>
                   <option >{curr}</option>
@@ -983,12 +986,9 @@ const rotatePdf = () => {
               );
             })}
            </select> 
-} 
+} </>):''}
                 <Grid item xs={12} style={{ marginTop: 25}}>
-               
-            
-         
-                    <FlexGrid
+                <FlexGrid
                       headersVisibility="Column"
                       autoGenerateColumns={false}
                       itemsSource={finalDataResult}
