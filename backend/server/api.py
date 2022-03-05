@@ -113,6 +113,7 @@ class AddUserSchema(BaseModel):
    company_id: str
    email: str
    name: str
+   image: str
 
 class ReportHistSchema(BaseModel):
    company_id: str
@@ -998,10 +999,16 @@ async def get_users(incData: UserDataSchema = Body(...)):
 
         user_dict = []
         for user_dict_s in users_p:
+            image = ""
+
+            if 'image' in user_dict_s:
+                image = user_dict_s["image"]
+
             user_dict.append(
                 {
                     "user_id": str(user_dict_s["_id"]),
                     "email": user_dict_s["email"],
+                    "image": image,
                     "name": user_dict_s["name"]
                 }
             )
@@ -1016,6 +1023,7 @@ async def add_user(incData: AddUserSchema = Body(...)):
     company_id = incData.company_id
     email = incData.email
     name = incData.name
+    image = incData.image
 
     db_mongo = getConn()
     users_c = db_mongo.users
@@ -1141,6 +1149,21 @@ async def download_pdf(incData: DownloadPdfSchema = Body(...)):
     base64Str = pdf_blob_azure_buffer(completeFileName)
 
     return {"result": base64Str, "err": None}
+
+
+@app.post("/updateUserPic", dependencies=[Depends(JWTBearer())])
+async def update_user_pic(incData: userProfileSchema = Body(...)):
+    print("update_user_pic", incData)
+    userId = incData.userId
+    userPicData = incData.userPicData
+
+    db_mongo = getConn()
+    users_c = db_mongo.users
+
+    result = users_c.update_one({"_id": ObjectId(userId)}, {"$set": {"image": userPicData}})
+    print("update_one result",result)
+
+    return {"result": "image updated successfully", "err": None}
 
 @app.get("/provider/{id}", dependencies=[Depends(JWTBearer())], tags=["posts"])
 async def add_post(id: int) -> dict:
