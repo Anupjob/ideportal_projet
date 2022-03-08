@@ -43,6 +43,7 @@ import {
   TheHeaderDropdownNotif,
   TheHeaderDropdownTasks
 } from './index'
+import { SportsRugbySharp } from '@material-ui/icons';
 
 const useStyles = makeStyles(theme => ({
 
@@ -164,13 +165,39 @@ const useStyles = makeStyles(theme => ({
 
     }
   },
+  header_grid: {
+    position: "relative",
+    background: "#fff",
+    width: "450px",
+    right: 0,
+    display: "table",
+    padding: "10px 20px",
+borderRadius: "5px",
+boxShadow: "0px 0px 10px rgba(0,0,0,0.6)"
+  },
+
   grid_icon: {
     fontSize: "2.7em",
     color: "#fff",
     margin: "-2px 0 0 0px",
     cursor: "pointer"
   },
-
+  grid_link: {
+    cursor:"pointer",
+    textAlign:"center",
+    whiteSpace:"nowrap"
+    
+  },
+  trianglePoint: {
+    width: 0,
+    height: 0,
+    borderLeft: "10px solid transparent",
+    borderRight: "10px solid transparent",
+    borderBottom: "10px solid #fff",
+    position: "absolute",
+    right: "10px",
+    top: "-10px"
+  },
   carousel_arrow_right: {
     color: "rgb(255, 255, 255)",
     background: "none",
@@ -472,8 +499,8 @@ const TheHeaderNew = (props) => {
 
 
             </CDropdownToggle>
-            <CDropdownMenu className="pt-0" placement="bottom-end">
-              <CDropdownItem onClick={() => { history.push('/compnies') }} >
+            <CDropdownMenu className="pt-0" placement="bottom-end" style={{background:"none", border:"0"}}>
+              {/* <CDropdownItem onClick={() => { history.push('/compnies') }} >
                 Companies List
               </CDropdownItem>
               <CDropdownItem divider />
@@ -483,8 +510,39 @@ const TheHeaderNew = (props) => {
               <CDropdownItem divider />
               <CDropdownItem onClick={() => { history.push('/processors') }}>
                 Processor List
-              </CDropdownItem>
+              </CDropdownItem> */}
+              <div className={classes.header_grid}>
+              <div className={classes.trianglePoint}></div>
+              <CRow>
+                <CCol sm="4">
+               <div className={classes.grid_link} onClick={() => { history.push('/compnies') }}>
+                 <span>
+                 <h2 style={{opacity: "0.5"}}><i class="fa fa-building" aria-hidden="true"></i></h2>
+                 <h5>Companies List</h5>  
+                 </span>               
+                 </div> 
+                  </CCol>
+                <CCol sm="4" style={{borderLeft:"1px solid rgb(234, 234, 234)"}}>
+                  
+                <div className={classes.grid_link} onClick={() => { history.push('/companyUser') }}>
+                  <span>
+                <h2 style={{opacity: "0.5"}}><i class="fa fa-user" aria-hidden="true"></i></h2>
+                 <h5>Users List</h5>    
+                 </span>              
+                  </div>
+                  </CCol>
+                <CCol sm="4" style={{borderLeft:"1px solid rgb(234, 234, 234)"}}>
+                <div className={classes.grid_link} onClick={() => { history.push('/processors') }}>
+                  <span>
+                <h2 style={{opacity: "0.5"}}><i class="fa fa-cogs" aria-hidden="true"></i></h2>
+                 <h5>Processor List</h5>
+                 </span>
+                  </div>
+                  </CCol>
+              </CRow>
+            </div>
             </CDropdownMenu>
+            
           </CDropdown>
           <TheHeaderDropdown />
         </CHeaderNav>

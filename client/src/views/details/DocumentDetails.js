@@ -95,14 +95,19 @@ const loader = {
   height: "100%"
 }
 const cancel_dialogBtn = {
-  backgroundColor: '#4EA7D8',
   fontSize: 14,
-  color: 'white'
+  color: 'white',
+  background: 'none', 
+          fontSize: "24px",
+          color: "#fff",
+          position: "absolute",
+          top: "4px",
+          right:"0"
 }
 const submit_dialogBtn = {
   backgroundColor: '#4EA7D8',
   fontSize: 14, color: 'white',
-  marginLeft: 10
+  marginRight: "15px"
 }
 const cardView = {
   backgroundColor: 'transparent',
@@ -124,6 +129,8 @@ const bottom_View = {
 }
 const dateTimeView = {
   fontSize: 12,
+  color:"#999",
+  margin:0
   //width: 250
 }
 const viewDetailBtn = {
@@ -168,7 +175,7 @@ const report_block = {
   display: "table",
   marginBottom: "20px",
   position: "fixed",
-  zIndex: "500000",
+  zIndex: "1030;",
   right: "8px",
   top: "80px",
   "@media (max-width: 1200px)": {
@@ -833,28 +840,28 @@ const rotatePdf = () => {
               }}
               style={{ position: "static", backgroundColor: 'transparent', marginTop:"60px" }}
             >
+              
               <div
-                style={{
-                  overflowY:"auto",
-                  overflowX:"hidden",
+                style={{                  
                   width: expandScreen ? "100%" : "615px",
                   transform: (rotateScreen == 1 && "rotate(90deg)" || rotateScreen == 2 && "rotate(180deg)" || rotateScreen == 3 && "rotate(270deg)" || rotateScreen == 4 && "rotate(0deg)"),
                   margin: "0px auto",
-                  position: "relative"
+                  position: "relative",
+                  
                 }}
               >
                 <div style={{
                   position: "absolute",
                   width: "100%",
-                  margin: "0px auto",
-                  top: (zoomScreen == 1 && "2.8em" || zoomScreen == 2 && "5.7em" || zoomScreen == 3 && "8.5em" || zoomScreen == 4 && "11.3em" || zoomScreen == 5 && "14em" || zoomScreen == 6 && "16.9em" || zoomScreen == 7 && "19.7em" || zoomScreen == 8 && "22.5em" || zoomScreen == 9 && "25.4em" || zoomScreen == 10 && "28.2em" || zoomScreen == 11 && "31em" || zoomScreen == 12 && "33.8em" || zoomScreen == 13 && "36.6em" || zoomScreen == 14 && "39.4em" || zoomScreen == 15 && "42.2em"),
+                  margin: "0px auto",                  
+                   top: (zoomScreen == 1 && "1.5em" || zoomScreen == 2 && "3.3em" || zoomScreen == 3 && "5em" || zoomScreen == 4 && "6.8em" || zoomScreen == 5 && "8.4em" || zoomScreen == 6 && "10.3em" || zoomScreen == 7 && "12em" || zoomScreen == 8 && "13.8em" || zoomScreen == 9 && "15.4em" || zoomScreen == 10 && "17.3em" || zoomScreen == 11 && "19em" || zoomScreen == 12 && "20.8em" || zoomScreen == 13 && "22.5em" || zoomScreen == 14 && "24.3em" || zoomScreen == 15 && "26em"),
                   transform: (zoomScreen == 1 && "scale(1.1)" || zoomScreen == 2 && "scale(1.2)" || zoomScreen == 3 && "scale(1.3)" || zoomScreen == 4 && "scale(1.4)" || zoomScreen == 5 && "scale(1.5)" || zoomScreen == 6 && "scale(1.6)" || zoomScreen == 7 && "scale(1.7)" || zoomScreen == 8 && "scale(1.8)" || zoomScreen == 9 && "scale(1.9)" || zoomScreen == 10 && "scale(2)" || zoomScreen == 11 && "scale(2.1)" || zoomScreen == 12 && "scale(2.2)" || zoomScreen == 13 && "scale(2.3)" || zoomScreen == 14 && "scale(2.4)" || zoomScreen == 15 && "scale(2.5)")
                 }}>
 
-                  <div style={
-                   Isloader ? { ...pdfContentView, ...{ boxShadow: "none" } } : pdfContentView
+                  <div style={  
+                   Isloader ? { ...pdfContentView, ...{ boxShadow: "none" } } : pdfContentView 
                   }>
-
+<div style={{overflowY: "auto", overflowX: "hidden", height:"500px"}}>
                     {/* <img src={"data:image/jpeg;base64," + this.state.pdfImage} style={{width:500,height:700}}/> */}
                     {pdfImage ?
 
@@ -872,7 +879,7 @@ const rotatePdf = () => {
                       <p>loading PDF</p>
 
                     }
-
+</div>
                   </div>
                 </div>
               </div>
@@ -883,9 +890,9 @@ const rotatePdf = () => {
                   <Table aria-label="simple table">
                     <TableHead>
                       <TableRow>
-                        <TableCell style={table_headerMain}><p style={dateTimeView}>Date/Time Received:{moment(props.history && props.history.location && props.history.location.state && props.history.location.state.dateRec).format("MM/DD/YYYY hh:mm A")}</p></TableCell>
-                        <TableCell style={table_headerMain}><p style={dateTimeView}>Date/Time Processed:{moment( props.history && props.history.location && props.history.location.state && props.history.location.state.dateProcessed).format("MM/DD/YYYY hh:mm A")}</p></TableCell>
-                        <TableCell style={table_headerMain}><p style={dateTimeView}># of Pages:{props.history && props.history.location && props.history.location.state && props.history.location.state.noOfPages}</p></TableCell>
+                        <TableCell style={table_headerMain}><p style={dateTimeView}>Date/Time Received:</p><p style={{fontSize: "1.7em"}}>{moment(props.history && props.history.location && props.history.location.state && props.history.location.state.dateRec).format("MM/DD/YYYY hh:mm A")}</p></TableCell>
+                        <TableCell style={table_headerMain}><p style={dateTimeView}>Date/Time Processed:</p><p style={{fontSize: "1.7em"}}>{moment( props.history && props.history.location && props.history.location.state && props.history.location.state.dateProcessed).format("MM/DD/YYYY hh:mm A")}</p></TableCell>
+                        <TableCell style={table_headerMain}><p style={dateTimeView}># of Pages:</p><p style={{fontSize: "1.7em"}}>{props.history && props.history.location && props.history.location.state && props.history.location.state.noOfPages}</p></TableCell>
                         <TableCell style={table_headerMain}>
                           <Button style={viewDetailBtn}
                             onClick={() => {
@@ -956,7 +963,7 @@ const rotatePdf = () => {
                           </DialogContent>
                           <DialogActions>
                             <div style={{ flexDirection: 'row' }}>
-                              <Button style={cancel_dialogBtn} onClick={handleClose}>Cancel</Button>
+                            <Button style={cancel_dialogBtn} onClick={handleClose}>&times;</Button>
                               <Button style={submit_dialogBtn} onClick={submit}>Submit</Button>
                             </div>
                           </DialogActions>
@@ -1021,6 +1028,7 @@ const rotatePdf = () => {
              </p></div>
               }
               </div>
+        
             </SplitPane>
           </CCol>
           {(Isloader || isCsvLoading) &&

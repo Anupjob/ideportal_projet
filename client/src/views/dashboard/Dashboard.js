@@ -81,18 +81,20 @@ const toast_options = {
 
 const upload_file = {
   textIndent: "-2000px",
-  padding: "62px 0",
+  padding: "58px 0",
   borderRadius: "5px",
  // background: "none",
   border: "none",
   position: "relative",
   zIndex: "1",
   marginBottom: "5px",
-  background:"url(../upload.png) no-repeat #f2f2f2",
-  backgroundSize: "110px",
+  background:"url(../upload.png) no-repeat #c8d9e0",
+  backgroundSize: "40%",
   backgroundPosition: "50%",
-  marginBottom:"10px",marginTop:"42px",
-  cursor:'pointer'
+  marginBottom:"18px",marginTop:"42px",
+  cursor:'pointer',
+  border: "2px dashed #9cacb3",
+outline: "7px solid #c8d9e0"
 }
 
 
@@ -331,7 +333,13 @@ const Dashboard = () => {
           <CRow>
             <CCol md="9">
               <CRow>
-              <CCol><div style={{ fontSize: "1.3em", marginBottom: "15px" }}>Filter by any of these details</div>
+              <CCol><h3 style={{
+                fontWeight: "700",
+                textTransform: "uppercase",
+                margin: "0 0 1em 0",
+                color: "#2587bd",
+                fontSize: "1.5em"
+              }}>Filter by any of these details</h3>
               <CRow style={{ marginBottom: "10px"}}>
                 <CCol xs="4" style={text_box}>RECEIVE DATE: </CCol>
                 <CCol xs="8">
@@ -437,14 +445,22 @@ const Dashboard = () => {
         </CForm>
       </CCard >
       <Dialog open={open} onClose={handleToClose}>
-        <DialogTitle>Issue</DialogTitle>
+        <DialogTitle>Issue 
+          
+          </DialogTitle>
         <DialogContent style={{ minWidth: 500 }}>
-          <DialogContentText>
+          <DialogContentText style={{color:"rgb(189, 0, 0)", }}>
             {errorMsg}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button style={{ backgroundColor: '#4EA7D8', fontSize: 14, color: 'white' }} onClick={handleToClose}>Close</Button>
+        <Button style={{ 
+          background: 'none', 
+          fontSize: "24px",
+          color: "#fff",
+          position: "absolute",
+          top: "4px" 
+}} onClick={handleToClose}>&times;</Button>
         </DialogActions>
       </Dialog>
 
@@ -464,7 +480,7 @@ const Dashboard = () => {
                 <FlexGridCellTemplate cellType="Cell" template={ctx =>
                   <React.Fragment>
                     {ctx.item.docStatus.toLowerCase() == 'error' &&
-                      <span><i class="fa fa-exclamation-triangle" aria-hidden="true"
+                      <span style={{color:"#c00"}}><i class="fa fa-exclamation-triangle" aria-hidden="true"
                         onClick={() => handleClickToOpen(ctx.item.errMsg)}
                       ></i></span>
                     }

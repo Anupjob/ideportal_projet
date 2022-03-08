@@ -73,9 +73,12 @@ const btn_style = {
   marginTop:30 
 }
 const cancel_dialogBtn = {
-  backgroundColor: '#4EA7D8',
-  fontSize: 14,
-  color: 'white'
+  background: 'none', 
+          fontSize: "24px",
+          color: "#fff",
+          position: "absolute",
+          top: "4px",
+          right:"0"
 }
 const submit_dialogBtn = {
   backgroundColor: '#4EA7D8',
@@ -605,7 +608,7 @@ const ProcessorsData = () => {
                           </DialogContent>
                           <DialogActions>
                             <div style={{ flexDirection: 'row',marginRight:30 }}>
-                              <Button style={cancel_dialogBtn} onClick={handleToClose}>Cancel</Button>
+                              <Button style={cancel_dialogBtn} onClick={handleToClose}>&times;</Button>
                               <Button style={submit_dialogBtn} onClick={submit}>Submit</Button>
                             </div>
                           </DialogActions>
