@@ -153,9 +153,9 @@ const TheHeaderDropdown = () => {
            </div> 
            </div>
 
-      <CDropdownMenu className="pt-0" placement="bottom-end">
+      <CDropdownMenu className="pt-0" placement="bottom-end" style={{padding:0, minWidth:"100px"}}>
 
-        <CDropdownItem divider />
+        {/* <CDropdownItem divider /> */}
         <CDropdownItem
           onClick={() => {
             // firebase.auth().signOut();
@@ -163,12 +163,12 @@ const TheHeaderDropdown = () => {
             console.log('handleLogout', history);
             localStorage.clear();
             history.push("/");
-
           }}
+          style={{padding: "7px 10px", minWidth:"100px"}}
         >
-          <CIcon name="cil-lock-locked" className="mfe-2" />
+          {/* <CIcon name="cil-lock-locked" className="mfe-2" /> */}
           {/* Lock Account */}
-          Sign Out
+          <i class="fa fa-sign-out" aria-hidden="true"></i> Sign Out
         </CDropdownItem>
       </CDropdownMenu>
     </CDropdown>
