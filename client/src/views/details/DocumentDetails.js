@@ -246,7 +246,7 @@ const DocumentDetails = (props) => {
   const [Toggle, setToggle] = useState(false);
   const [gridObject, setGridObject] = useState();
   const [isPageChange, setIsPageChange] = useState('');
-  const [fileName,setFileName]=useState(history.location.state.final_filenames!==undefined?history.location.state.final_filenames.length>0?history.location.state.final_filenames[0]:history.location.state.finalFileName!==undefined?history.location.state.finalFileName:"":history.location.state.finalFileName!==undefined?history.location.state.finalFileName:"")
+  const [fileName,setFileName]=useState(history.location.state?history.location.state.final_filenames!==undefined?history.location.state.final_filenames.length>0?history.location.state.final_filenames[0]:history.location.state.finalFileName!==undefined?history.location.state.finalFileName:"":history.location.state.finalFileName!==undefined?history.location.state.finalFileName:"":"")
 
   const compId = useSelector(state => state.companyId)
 
@@ -375,7 +375,7 @@ const DocumentDetails = (props) => {
 
     // }
   }
-  console.log(history.location.state.final_filenames,'loaction');
+  // console.log(history.location.state.final_filenames,'loaction');
   const geCsvData = () => {
     // var fileName = history.location.state  && history.location.state.finalFileName ?history.location.state.finalFileName:'';
     var processPath = history.location.state  && history.location.state.processorContainerPath ?history.location.state.processorContainerPath:'';

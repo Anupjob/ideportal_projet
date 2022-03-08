@@ -160,7 +160,7 @@ const IssueHistoryData=()=>
            <wjFilter.FlexGridFilter></wjFilter.FlexGridFilter>
          </FlexGrid>
          :
-         <p style={{ width: "100%", display: "block", color: "#c00", margin: "12px 0", textAlign: "center", fontSize: "1.6em" }}>{Isloader?"": "No Found!!"}</p>
+         <p style={{ width: "100%",color: "#c00", marginTop:150, textAlign: "center", fontSize: "1.6em" }}>{Isloader?"": "No Record Found!!"}</p>
            }
             
             </Grid>
