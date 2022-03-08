@@ -33,11 +33,11 @@ container = "incomingfiles"
 connect_str_use = 'DefaultEndpointsProtocol=https;AccountName=idedata;AccountKey=7o/tRVR7exoh8XqFc2q/IRwm+YEo7/uxV3q1GjWeEYcfDbV56FC8xkp5xzLaO/rUnkI3JfnA1XFyq5dmDbJjXA==;EndpointSuffix=core.windows.net'
 
 def getConn():
-    conn = 'mongodb://ide21qadguser_qa:shSgSAd63SDsgh67S@18.232.50.247:27021/ide_database_qa?authMechanism=SCRAM-SHA-256&authSource=ide_database_qa'
-    # conn = 'mongodb://ide21qadguser:shSgSAd63SDsgh67S@18.232.50.247:27021/ide_database?authMechanism=SCRAM-SHA-256&authSource=ide_database'
+    # conn = 'mongodb://ide21qadguser_qa:shSgSAd63SDsgh67S@18.232.50.247:27021/ide_database_qa?authMechanism=SCRAM-SHA-256&authSource=ide_database_qa'
+    conn = 'mongodb://ide21qadguser:shSgSAd63SDsgh67S@18.232.50.247:27021/ide_database?authMechanism=SCRAM-SHA-256&authSource=ide_database'
     client_mongo = pymongo.MongoClient(conn)
     # db_mongo = client_mongo.ide_database_qa
-    db_mongo = client_mongo.ide_database_qa
+    db_mongo = client_mongo.ide_database
     return db_mongo
 
 def blob_connection():
@@ -125,8 +125,10 @@ class UploadFileSchema(BaseModel):
    userId: str
 
 class ValidateDocSchema(BaseModel):
-   doc_id: str
-   validated: bool
+   # doc_id: str
+   # validated: bool
+   fileName: Optional[str] = None
+   processorContainerPath: Optional[str] = None
 
 class DownloadPdfSchema(BaseModel):
    fileName: str
@@ -174,7 +176,8 @@ def download_blob_azure_buffer(complete_file_name):
 
     except Exception as e:
         print(f"download_blob_azure_buffer Error {complete_file_name} due to {e}")
-        return ""
+        # return ""
+        return e
         # print('Error in downloading', complete_file_name, local_path)
 
 def pdf_blob_azure_buffer(complete_file_name):
@@ -727,6 +730,9 @@ async def incoming_data(incData: IncomingData = Body(...)):
         # docValidated = False
         # docValidatedStr = "No"
         final_filenames = []
+        createdOn = ""
+        status = ""
+        file_date = ""
 
         if 'noOfPages' in ids_s:
             noOfPages = ids_s["noOfPages"]
@@ -761,17 +767,20 @@ async def incoming_data(incData: IncomingData = Body(...)):
         if 'final_filenames' in ids_s:
             final_filenames = ids_s["final_filenames"]
 
-        # if 'docValidated' in ids_s:
-        #     docValidated = ids_s["docValidated"]
+        if 'createdOn' in ids_s:
+            createdOn = ids_s["createdOn"]
 
-        # if docValidated == True:
-        #     docValidatedStr = "Yes"
+        if 'status' in ids_s:
+            status = ids_s["status"]
+
+        if 'file_date' in ids_s:
+            file_date = ids_s["file_date"]
 
         ids_dict.append({
             "doc_id":str(ids_s["_id"]),
-            "docStatus":ids_s["status"],
-            "dateRec":ids_s["createdOn"],
-            "dateProcessed": ids_s["file_date"],
+            "docStatus": status,
+            "dateRec": createdOn,
+            "dateProcessed": file_date,
             # "dateRec": ids_s["file_date"],
             # "dateProcessed": ids_s["step2time"],
             "noOfPages": noOfPages,
@@ -803,8 +812,8 @@ async def final_data(incData: FinalData = Body(...)):
 
     # local_path = "../csv_final_data/"+file_name
     local_path = "csv_final.csv"
-    complete_file_name = "fileprocessing" + "/" +processorContainerPath + "/" + file_name
-    # complete_file_name = processorContainerPath + "/" + file_name
+    # complete_file_name = "fileprocessing" + "/" +processorContainerPath + "/" + file_name
+    complete_file_name = processorContainerPath + "/" + file_name
 
     # download_blob_azure(local_path, complete_file_name)
     file_buffer = download_blob_azure_buffer(complete_file_name)
@@ -1128,19 +1137,79 @@ async def add_user(companyId: str = Form(...), companyName: str = Form(...), use
 @app.post("/validateDoc", dependencies=[Depends(JWTBearer())])
 async def validate_doc(incData: ValidateDocSchema = Body(...)):
     print("validateDoc", incData)
-    doc_id = incData.doc_id
-    validated = incData.validated
+    # doc_id = incData.doc_id
+    # validated = incData.validated
+    #
+    # db_mongo = getConn()
+    # files_incoming_c = db_mongo.files_incoming
+    #
+    # doc_validated_result = files_incoming_c.update_one({"_id": ObjectId(doc_id)}, {"$set": {"status": "Validated", "validatedOn":datetime.datetime.now()}})
 
-    db_mongo = getConn()
-    files_incoming_c = db_mongo.files_incoming
+    file_name = incData.fileName
+    processorContainerPath = incData.processorContainerPath
 
-    # validatedVal = "false"
-    # if validated == True:
-    #     validatedVal = "true"
-    # doc_validated_result = files_incoming_c.update_one({"_id": ObjectId(doc_id)}, {"$set": {"docValidated": validated}})
-    doc_validated_result = files_incoming_c.update_one({"_id": ObjectId(doc_id)}, {"$set": {"status": "Validated", "validatedOn":datetime.datetime.now()}})
+    # complete_file_name = "fileprocessing" + "/" + processorContainerPath + "/" + file_name
+    complete_file_name = processorContainerPath + "/" + file_name
 
-    return {"result": doc_validated_result, "err": None}
+    # download_blob_azure(local_path, complete_file_name)
+    file_buffer = download_blob_azure_buffer(complete_file_name)
+    print("file_buffer", file_buffer)
+
+    if file_buffer:
+        csv_fileData = pd.read_csv(BytesIO(file_buffer))
+        csv_fileData = csv_fileData.fillna(0)
+        Obj_type = csv_fileData.select_dtypes(include='object').columns
+        # print(Obj_type)
+
+        ValidateResult = {}
+
+        columns_to_read = ["Owner Value", "Owner Deducts", "Owner Taxes", "Check Amount", "Net Tax", "Net Deduct"]
+        #     for col in csv_fileData.columns:
+        for index, col in enumerate(csv_fileData.columns):
+
+            if any(x in col for x in columns_to_read):
+                col_val = csv_fileData[col]
+                if (col in Obj_type):
+                    col_val = (csv_fileData[col].str.split()).apply(lambda x: float(x[0].replace(',', '')))
+
+                if "Check Amount" in col:
+                    ValidateResult[col] = col_val[0]
+                else:
+                    ValidateResult[col] = col_val.sum()
+
+        net_tax_total = 0
+        net_deduct_total = 0
+
+        for key, value in ValidateResult.items():
+            if 'Net Tax' in key:
+                net_tax_total += float(value)
+            if 'Net Deduct' in key:
+                net_deduct_total += float(value)
+
+        #     print("net_tax_total",net_tax_total)
+        #     print("net_deduct_total",net_deduct_total)
+
+        ValidateResult["Net Tax Total"] = net_tax_total
+        ValidateResult["Net Deduct Total"] = net_deduct_total
+
+        total_owner_val = ValidateResult["Owner Value"]
+        total_owner_taxes = ValidateResult["Owner Taxes"]
+        total_owner_deducts = ValidateResult["Owner Deducts"]
+
+        final_Value = abs(total_owner_val - total_owner_taxes - total_owner_deducts - net_tax_total - net_deduct_total)
+
+        ValidateResult["Tax Deduct Totals"] = final_Value
+
+        if ValidateResult["Check Amount"] == final_Value:
+            ValidateResult["Validated"] = True
+        else:
+            ValidateResult["Validated"] = False
+
+        print("ValidateResult:::", ValidateResult)
+
+        return {"result": ValidateResult, "err": None}
+    else:
+        return {"result": None, "err": file_buffer}
 
 @app.post("/downloadPdf", dependencies=[Depends(JWTBearer())])
 async def download_pdf(incData: DownloadPdfSchema = Body(...)):
