@@ -5,6 +5,7 @@ import {
   CInput,
   CProgress,
   CRow,
+  CCardBody,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import SplitPane, { Pane } from 'react-split-pane';
@@ -98,6 +99,13 @@ const cancel_dialogBtn = {
   backgroundColor: '#4EA7D8',
   fontSize: 14,
   color: 'white'
+}
+const cancel_dialogValidateBtn = {
+  backgroundColor: '#4EA7D8',
+  fontSize: 14,
+  color: 'white',
+  marginRight:20,
+  marginBottom:10
 }
 const submit_dialogBtn = {
   backgroundColor: '#4EA7D8',
@@ -246,7 +254,11 @@ const DocumentDetails = (props) => {
   const [Toggle, setToggle] = useState(false);
   const [gridObject, setGridObject] = useState();
   const [isPageChange, setIsPageChange] = useState('');
-  const [fileName,setFileName]=useState(history.location.state?history.location.state.final_filenames!==undefined?history.location.state.final_filenames.length>0?history.location.state.final_filenames[0]:history.location.state.finalFileName!==undefined?history.location.state.finalFileName:"":history.location.state.finalFileName!==undefined?history.location.state.finalFileName:"":"")
+  // const [fileName,setFileName]=useState(history.location.state?history.location.state.final_filenames!==undefined?history.location.state.final_filenames.length>0?history.location.state.final_filenames[0]:history.location.state.finalFileName!==undefined?history.location.state.finalFileName:"":history.location.state.finalFileName!==undefined?history.location.state.finalFileName:"":"")
+  const [csvFileName,setCsvFileName]=useState('')
+  const [openValidateData, setOpenValidateData] = React.useState(false);
+  const [validData, setValidData] = useState({});
+
 
   const compId = useSelector(state => state.companyId)
 
@@ -262,19 +274,16 @@ const DocumentDetails = (props) => {
     if (history && history.location && history.location.state) {
       
       let docValidatedRec = history.location.state.docStatus? history.location.state.docStatus.toLowerCase() === "validated"?"Yes":"No":"No";
-      // this.setState({docValidated:docValidatedRec})
       setDocValidated(docValidatedRec)
     }
     else if (details) {
       console.log("details :::::::: ", details)
       history.location.state = details
     }
-    else{
-      history.goBack()
-    }
-   
-    
-  
+    // else{
+    //   history.goBack()
+    // } 
+    console.log('final_filenames in useEffect :>>', history.location.state?history.location.state.final_filenames!==undefined?history.location.state.final_filenames.length>0?history.location.state.final_filenames[0]:history.location.state.finalFileName!==undefined?history.location.state.finalFileName:"":history.location.state.finalFileName!==undefined?history.location.state.finalFileName:"":"");
     getPdfAndCsv()
     
   }, [])
@@ -285,7 +294,8 @@ const DocumentDetails = (props) => {
 
  useEffect(()=>{
   geCsvData()
- },[fileName])
+ },[csvFileName])
+
   const getPdfAndCsv = () => {
     getPdfImage();
     geCsvData();
@@ -302,7 +312,9 @@ const DocumentDetails = (props) => {
     // this.setState({ openReportIssue: false });
     setOpenReportIssue(false)
   };
-  
+  const handleValidateClose = () => {
+    setOpenValidateData(false)
+  }
   const getPdfImage = () => {
     // console.log('props.history.location.state.getPdfImage::',props);
     var pdfFileName = history && history.location && history.location.state  && history.location.state.pdfFilename?history.location.state.pdfFilename:"";
@@ -379,10 +391,27 @@ const DocumentDetails = (props) => {
   const geCsvData = () => {
     // var fileName = history.location.state  && history.location.state.finalFileName ?history.location.state.finalFileName:'';
     var processPath = history.location.state  && history.location.state.processorContainerPath ?history.location.state.processorContainerPath:'';
-    
     // this.setState({ isCsvLoading: true })
     setIsCsvLoading(true)
     var dataValid = true;
+
+    let fileName = ""
+    if(csvFileName && csvFileName.length>0){
+      fileName = csvFileName
+      console.log('fileName geCsvData in if', fileName);
+    }else if(history.location.state && 
+      history.location.state.final_filenames && 
+      history.location.state.final_filenames.length>0){
+        fileName = history.location.state.final_filenames[0]
+      console.log('fileName geCsvData in else if', fileName);
+
+    }else if(history.location.state && 
+      history.location.state.finalFileName){
+        fileName = history.location.state.finalFileName
+      console.log('fileName geCsvData in else if===', fileName);
+
+    }
+
     if (fileName) {
 
     } else {
@@ -546,10 +575,10 @@ const DocumentDetails = (props) => {
 
       setTimeout(() => {
         toast.warn("Request is invalid", toast_options);
-        setTimeout(() => {
+        // setTimeout(() => {
 
-          history.goBack()
-        }, 1000);
+        //   history.goBack()
+        // }, 1000);
 
       }, 500);
 
@@ -558,22 +587,37 @@ const DocumentDetails = (props) => {
   }
 
   const validateData = () => {
-    let valDoc = docValidated
+    // let valDoc = docValidated
     // this.setState({docValidated:valDoc === "Yes"?"No":"Yes"},()=>{this.validateDoc()})
-    setDocValidated(valDoc === "Yes"?"No":"Yes")
-    // validateDoc()
+    // setDocValidated(valDoc === "Yes"?"No":"Yes")
+    if(compId == "619d2b75087f9c908ccf1835"){
+      validateDoc()
+    }
   }
 
   const validateDoc = () => {
-    console.log('You are in validate document:::');
+    var processPath = history.location.state  && history.location.state.processorContainerPath ?history.location.state.processorContainerPath:'';
     setIsloader(true)
     const headers = {
       "Content-Type": "application/json",
       Authorization: "Bearer " + localStorage.getItem('access_token'),
       // reqFrom: "ADMIN",
     };
-    let requestBody = { doc_id: history.location.state.doc_id,validated:docValidated === "Yes"}
-    // console.log("requestBody for validate ::::", requestBody)
+    let fileName = ""
+    if(csvFileName && csvFileName.length>0){
+      fileName = csvFileName
+    }else if(history.location.state && 
+      history.location.state.final_filenames && 
+      history.location.state.final_filenames.length>0){
+        fileName = history.location.state.final_filenames[0]
+    }else if(history.location.state && 
+      history.location.state.finalFileName){
+        fileName = history.location.state.finalFileName
+    }
+
+    // let requestBody = { doc_id: history.location.state.doc_id,validated:docValidated === "Yes"}
+    let requestBody = { fileName: fileName, processorContainerPath: processPath }
+    console.log("requestBody for validate ::::", requestBody)
     axios({
       method: "POST",
       url: settings.serverUrl + "/validateDoc",
@@ -583,9 +627,12 @@ const DocumentDetails = (props) => {
       console.log("Response on validate Api:::::",response)
       if (response.data.err) {
         // alert(response.data.err);
+        setIsloader(false)
         toast.error(response.data.err, toast_options);
       } else {
-
+        let validateData = response.data.result;
+        setValidData(validateData)
+        setOpenValidateData(true)
       }
       setIsloader(false)
 
@@ -733,7 +780,7 @@ const rotatePdf = () => {
     setGridObject(flex);
     flex.columnHeaders.rows.defaultSize = 40;
   };
-  console.log(typeof(fileName),'filetype')
+
   return (
     
 <CCard style={cardView}>
@@ -932,9 +979,10 @@ const rotatePdf = () => {
                             Export Data &nbsp;  <i class="fa fa-download" aria-hidden="true"></i>
                           </Button>
                         </TableCell>
+                        {/* {console.log("localStorage.getItem('master') && JSON.parse(localStorage.getItem('master')))==",localStorage.getItem('master') && JSON.parse(localStorage.getItem('master')))} */}
                         <TableCell style={historyIssueBtn}>
                           <Button style={viewDetailBtn} 
-                          startIcon= {docValidated.toLowerCase() === "yes"?<CheckIcon/>:<ClearIcon/>}
+                          // startIcon= {docValidated.toLowerCase() === "yes"?<CheckIcon/>:<ClearIcon/>}
                           // color={this.state.docValidated?"green":"red"}
                           onClick={() => validateData()}
                           >
@@ -976,7 +1024,7 @@ const rotatePdf = () => {
                  { history.location.state.final_filenames.length>0&&
                    <select
             style={{marginTop:'10px',height:'40px'}}
-            onChange={(e)=>setFileName(e.target.value)}
+            onChange={(e)=>setCsvFileName(e.target.value)}
             >
             {history.location.state.final_filenames.map((curr, index) => {
               return (
@@ -999,6 +1047,9 @@ const rotatePdf = () => {
                         maxHeight: 400,
                         margin: 0,
                       }}
+
+                      selectionChanged={(s) => {console.log('s=====', initializeGrid.Object);}}
+                      
                     >
                       {finalDataResult.length>0 && Object.keys(finalDataResult[0]).map(key =>
                       <FlexGridColumn
@@ -1023,6 +1074,65 @@ const rotatePdf = () => {
               </div>
             </SplitPane>
           </CCol>
+          {openValidateData &&
+            <Dialog open={openValidateData}
+            onClose={handleValidateClose}>
+            <DialogTitle style={{fontWeight:'bold',fontSize:18}}>Validate Data</DialogTitle>
+            <DialogContent style={{ minWidth: 500 }}>
+              <DialogContentText>
+                <CCard>
+                <CCardBody>
+                <CRow>
+                <CCol sm="4" style={{fontWeight:'bold',fontSize:15}}>Validated:</CCol>
+                <CCol sm="1"></CCol>
+                <CCol sm="7">{!validData["Validated"] ? <i class="fa fa-times" aria-hidden="true"></i>:<i class="fa fa-check" aria-hidden="true"></i>}</CCol>
+                </CRow>
+                <CRow>
+                <CCol sm="4" style={{fontWeight:'bold',fontSize:15}}>Check Amount :</CCol>
+                <CCol sm="1"></CCol>
+                <CCol sm="7">{validData["Check Amount"]}</CCol>
+                </CRow>
+                <CRow>
+                <CCol sm="4" style={{fontWeight:'bold',fontSize:15}}>Tax Deduct Totals:</CCol>
+                <CCol sm="1"></CCol>
+                <CCol sm="7">{validData["Tax Deduct Totals"]}</CCol>
+                </CRow>
+                <CRow>
+                <CCol sm="4" style={{fontWeight:'bold',fontSize:15}}>Net Deduct Total :</CCol>
+                <CCol sm="1"></CCol>
+                <CCol sm="7">{validData["Net Deduct Total"]}</CCol>
+                </CRow>
+                <CRow>
+                <CCol sm="4" style={{fontWeight:'bold',fontSize:15}}>Net Tax Total:</CCol>
+                <CCol sm="1"></CCol>
+                <CCol sm="7">{validData["Net Tax Total"]}</CCol>
+                </CRow>
+                <CRow>
+                <CCol sm="4" style={{fontWeight:'bold',fontSize:15}}>Owner Deducts:</CCol>
+                <CCol sm="1"></CCol>
+                <CCol sm="7">{validData["Owner Deducts"]}</CCol>
+                </CRow>
+                <CRow>
+                <CCol sm="4" style={{fontWeight:'bold',fontSize:15}}>Owner Taxes:</CCol>
+                <CCol sm="1"></CCol>
+                <CCol sm="7">{validData["Owner Taxes"]}</CCol>
+                </CRow>
+                <CRow>
+                <CCol sm="4" style={{fontWeight:'bold',fontSize:15}}>Owner Value:</CCol>
+                <CCol sm="1"></CCol>
+                <CCol sm="7">{validData["Owner Value"]}</CCol>
+                </CRow>
+                </CCardBody>
+                </CCard>
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <div style={{ flexDirection: 'row' }}>
+                <Button style={cancel_dialogValidateBtn} onClick={handleValidateClose}>Cancel</Button>
+              </div>
+            </DialogActions>
+          </Dialog>
+          }
           {(Isloader || isCsvLoading) &&
             <div style={loader}>
 

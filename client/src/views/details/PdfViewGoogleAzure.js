@@ -517,9 +517,9 @@ class PdfViewGoogleAzure extends React.Component {
                         <div >
                           {
                             pageData.blocks.map((blockData, blockIdx) =>
-                              <div style={{ padding: 10 }}>
+                              <div style={{ padding: 0 }}>
                                 <div>
-                                  <span style={{ backgroundColor: '#824CC0', color: 'white', flexWrap: 'wrap', padding: 5, marginTop: 5, borderRadius: 10 }}>
+                                  <span style={{ backgroundColor: '#824CC0', color: 'white', flexWrap: 'wrap', padding: 0, marginTop: 5, borderRadius: 10 }}>
                                     +Block {blockIdx + 1} (score : {blockData.confidence})
                                   </span>
                                 </div>
