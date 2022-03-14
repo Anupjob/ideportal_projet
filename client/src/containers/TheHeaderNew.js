@@ -448,7 +448,9 @@ const TheHeaderNew = (props) => {
 
         <CHeaderNav className="mr-auto">
           <CHeaderNavItem >
-            <Link to="/document_list" className={classes.logo_image}>
+            <Link 
+            // to="/document_list" 
+            className={classes.logo_image}>
               IMAGE DATA EXTRACT
             </Link>
           </CHeaderNavItem>

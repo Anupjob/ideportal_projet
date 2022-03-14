@@ -476,7 +476,8 @@ const Dashboard = () => {
                 maxHeight: 400,
                 margin: 0,
               }}>
-              <FlexGridColumn>
+              <FlexGridColumn
+              width="*">
                 <FlexGridCellTemplate cellType="Cell" template={ctx =>
                   <React.Fragment>
                     {ctx.item.docStatus.toLowerCase() == 'error' &&
@@ -488,7 +489,8 @@ const Dashboard = () => {
               </FlexGridColumn>
               {
               localStorage.getItem('master') && JSON.parse(localStorage.getItem('master')) &&
-              <FlexGridColumn>
+              <FlexGridColumn
+              width="*">
                 <FlexGridCellTemplate cellType="Cell" template={ctx => <React.Fragment>
                   <span style={{ cursor: "pointer" }}><i class="fa fa-search-plus" aria-hidden="true"
                     onClick={() => {
@@ -504,28 +506,27 @@ const Dashboard = () => {
               </FlexGridColumn>
               }
 
+              
+              
               <FlexGridColumn
-                binding="processorGroup"
-                header="PROCESSOR GROUP"
+                binding="docStatus"
+                header="STATUS"
                 cssClass="cell-header"
-                width="*"
+                width="2*"
+                style={{ backgroundColor: 'grey' }}/>
+                <FlexGridColumn
+                binding="fromEmail"
+                header="FROM"
+                cssClass="cell-header"
+                width="3*"
                 multiLine="true"
                 style={{ backgroundColor: 'grey' }}
               />
-              <FlexGridColumn
-                binding="processorName"
-                header="PROSESSOR NAME"
-                cssClass="cell-header"
-                width="*"
-                multiLine="true"
-                style={{ backgroundColor: 'grey' }}
-              />
-
               <FlexGridColumn
                 binding="dateRec"
                 header="DATE/TIME RECEIVED"
                 cssClass="cell-header"
-                width="*"
+                width="3*"
                 style={{ backgroundColor: 'grey' }}
 
               >
@@ -536,12 +537,39 @@ const Dashboard = () => {
                     }
                   </React.Fragment>} />
               </FlexGridColumn>
-
+              <FlexGridColumn
+                binding="pdfFilename"
+                header="FILE NAME"
+                cssClass="cell-header"
+                width="4*"
+                style={{ backgroundColor: 'grey' }} />
+              <FlexGridColumn
+                binding="processorGroup"
+                header="PROCESSOR GROUP"
+                cssClass="cell-header"
+                width="3*"
+                multiLine="true"
+                style={{ backgroundColor: 'grey' }}
+              />  
+              <FlexGridColumn
+                binding="processorName"
+                header="PROSESSOR NAME"
+                cssClass="cell-header"
+                width="3*"
+                multiLine="true"
+                style={{ backgroundColor: 'grey' }}
+              />
+              <FlexGridColumn
+                binding="noOfPages"
+                header="# OF PAGES"
+                cssClass="cell-header"
+                width="2*"
+                style={{ backgroundColor: 'grey' }} />
               <FlexGridColumn
                 binding="dateProcessed"
                 header="DATE/TIME PROCESSED"
                 cssClass="cell-header"
-                width="*"
+                width="3*"
                 style={{ backgroundColor: 'grey' }}>
                 <FlexGridCellTemplate cellType="Cell" template={ctx =>
                   <React.Fragment>
@@ -550,36 +578,18 @@ const Dashboard = () => {
                     }
                   </React.Fragment>} />
               </FlexGridColumn>
-              <FlexGridColumn
-                binding="pdfFilename"
-                header="FILE NAME"
-                cssClass="cell-header"
-                width="*"
-                style={{ backgroundColor: 'grey' }} />
+
                 <FlexGridColumn
                 binding="finalFileName"
                 header="CSV FILE"
                 cssClass="cell-header"
-                width="*"
+                width="4*"
                 style={{ backgroundColor: 'grey' }} />
-              <FlexGridColumn
-                binding="noOfPages"
-                header="# OF PAGES"
-                cssClass="cell-header"
-                width="*"
-                style={{ backgroundColor: 'grey' }} />
-
-              <FlexGridColumn
-                binding="docStatus"
-                header="STATUS"
-                cssClass="cell-header"
-                width="*"
-                style={{ backgroundColor: 'grey' }}/>
-                <FlexGridColumn
+               <FlexGridColumn
                 binding="validatedOn"
                 header="VALIDATED ON"
                 cssClass="cell-header"
-                width="*"
+                width="3*"
                 style={{ backgroundColor: 'grey' }}>
                   <FlexGridCellTemplate cellType="Cell" template={ctx =>
                   <React.Fragment>
@@ -588,19 +598,12 @@ const Dashboard = () => {
                     }
                   </React.Fragment>} />
                 </FlexGridColumn>
-              <FlexGridColumn
-                binding="fromEmail"
-                header="FROM"
-                cssClass="cell-header"
-                width="*"
-                multiLine="true"
-                style={{ backgroundColor: 'grey' }}
-              />
+              
               <FlexGridColumn
                 // binding="toEmail"
                 header="UPLOADED BY"
                 cssClass="cell-header"
-                width="*"
+                width="3*"
                 multiLine="true"
                 style={{ backgroundColor: 'grey' }}
               />
