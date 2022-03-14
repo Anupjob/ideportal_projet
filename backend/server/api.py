@@ -65,7 +65,7 @@ class EmailSchema(BaseModel):
    email: List[EmailStr]
 
 class IssueSchema(BaseModel):
-   errMsg: str
+   errMsg: dict
    doc_id: str
    user_id: str
    company_id: str
@@ -176,8 +176,8 @@ def download_blob_azure_buffer(complete_file_name):
 
     except Exception as e:
         print(f"download_blob_azure_buffer Error {complete_file_name} due to {e}")
-        # return ""
-        return e
+        return ""
+        # return e
         # print('Error in downloading', complete_file_name, local_path)
 
 def pdf_blob_azure_buffer(complete_file_name):
@@ -1209,7 +1209,7 @@ async def validate_doc(incData: ValidateDocSchema = Body(...)):
 
         return {"result": ValidateResult, "err": None}
     else:
-        return {"result": None, "err": file_buffer}
+        return {"result": None, "err": "file not found"}
 
 @app.post("/downloadPdf", dependencies=[Depends(JWTBearer())])
 async def download_pdf(incData: DownloadPdfSchema = Body(...)):

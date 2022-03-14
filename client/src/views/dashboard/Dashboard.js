@@ -479,9 +479,9 @@ const Dashboard = () => {
               <FlexGridColumn>
                 <FlexGridCellTemplate cellType="Cell" template={ctx =>
                   <React.Fragment>
-                    {ctx.item.docStatus.toLowerCase() == 'error' &&
+                    {ctx.item.docStatus.toLowerCase() == 'error' && ctx.item.errMsg &&
                       <span style={{color:"#c00"}}><i class="fa fa-exclamation-triangle" aria-hidden="true"
-                        onClick={() => handleClickToOpen(ctx.item.errMsg)}
+                        onClick={() => handleClickToOpen(ctx.item.errMsg.issue)}
                       ></i></span>
                     }
                   </React.Fragment>} />

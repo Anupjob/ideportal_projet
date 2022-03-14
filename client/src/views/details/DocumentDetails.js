@@ -246,7 +246,7 @@ const DocumentDetails = (props) => {
   const [totalPages, setTotalPages] = useState(1);
   const [Isloader, setIsloader] = useState(false);
   const [openReportIssue, setOpenReportIssue] = React.useState(false);
-  const [enterIssue, setEnterIssue] = useState(props.history.location.state ? props.history.location.state.errMsg ? props.history.location.state.errMsg:"":"");
+  const [enterIssue, setEnterIssue] = useState(props.history.location.state ? props.history.location.state.errMsg ?props.history.location.state.errMsg.issue ? props.history.location.state.errMsg.issue:"":"":"");
   const [isCsvLoading, setIsCsvLoading] = useState(false);
   const [finalDataResult, setFinalDataResult] = useState([]);
   const [pdfImage, setPdfImage] = useState('');
@@ -265,6 +265,7 @@ const DocumentDetails = (props) => {
   const [csvFileName,setCsvFileName]=useState('')
   const [openValidateData, setOpenValidateData] = React.useState(false);
   const [validData, setValidData] = useState({});
+  const [reportIsuueCells, setReportIsuueCells] = useState({});
 
 
   const compId = useSelector(state => state.companyId)
@@ -282,7 +283,12 @@ const DocumentDetails = (props) => {
       
       let docValidatedRec = history.location.state.docStatus? history.location.state.docStatus.toLowerCase() === "validated"?"Yes":"No":"No";
       setDocValidated(docValidatedRec)
+
+      let reportIsuueCellsRec = history.location.state.errMsg && history.location.state.errMsg.reportIsuueCells? history.location.state.errMsg.reportIsuueCells: {};
+      setReportIsuueCells(reportIsuueCellsRec);
+
     }
+    
     else if (details) {
       console.log("details :::::::: ", details)
       history.location.state = details
@@ -310,8 +316,8 @@ const DocumentDetails = (props) => {
 
   const openDialog = () => {
     
-    if(props.history.location.state && props.history.location.state.errMsg){
-      setEnterIssue(props.history.location.state.errMsg)
+    if(props.history.location.state && props.history.location.state.errMsg.issue){
+      setEnterIssue(props.history.location.state.errMsg.issue)
     }
     setOpenReportIssue(true)
   };
@@ -488,7 +494,7 @@ const DocumentDetails = (props) => {
         Authorization: "Bearer " + localStorage.getItem('access_token'),
         // reqFrom: "ADMIN",
       };
-      let requestBody = {company_id:compId, doc_id: history.location.state.doc_id, errMsg: enterIssue, user_id: userId }
+      let requestBody = {company_id:compId, doc_id: history.location.state.doc_id, errMsg: {issue: enterIssue, reportIsuueCells}, user_id: userId }
       // console.log("requestBody::::", requestBody)
       axios({
         method: "POST",
@@ -1055,8 +1061,48 @@ const rotatePdf = () => {
                         margin: 0,
                       }}
 
-                      selectionChanged={(s) => {console.log('s=====', initializeGrid.Object);}}
-                      
+                      selectionMode="MultiRange"
+                      showSelectedHeaders="All"
+                      // selectionChanged={(s) => {console.log('s=====', initializeGrid.Object);}}
+                      selectionChanged={(s) => {
+                        // calculate aggregates
+                        let ranges = s.selectedRanges;
+                        console.log('selectionChanged ranges', ranges);
+
+                        let newRows = {}
+                        for (let i = 0; i < ranges.length; i++) {
+
+                          let rng = ranges[i];
+
+                          console.log('rng', rng);
+                          for (let r = rng.topRow; r <= rng.bottomRow; r++) {
+                            console.log(r, 'r ranges')
+
+                            let colarr = []
+                            for (let c = rng.leftCol; c <= rng.rightCol; c++) {
+                              console.log(c, ' cranges')
+                              colarr.push("col" + c)
+                            }
+
+                            newRows["row" + r] = colarr
+                            // reportIsuueCellsCopy1["row" + r] = colarr
+                          }
+                        }
+
+                        console.log('reportIsuueCells', reportIsuueCells);
+                        console.log('newRows', newRows);
+
+                        let reportIsuueCellsCopy = {
+                          ...reportIsuueCells,
+                          ...newRows
+                        }
+
+                        console.log('reportIsuueCellsCopy', reportIsuueCellsCopy);
+
+                        setReportIsuueCells(reportIsuueCellsCopy)
+
+                      }}
+                        
                     >
                       {finalDataResult.length>0 && Object.keys(finalDataResult[0]).map(key =>
                       <FlexGridColumn
