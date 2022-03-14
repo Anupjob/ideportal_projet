@@ -522,7 +522,7 @@ const Dashboard = () => {
               />
 
               <FlexGridColumn
-                // binding="dateRec"
+                binding="dateRec"
                 header="DATE/TIME RECEIVED"
                 cssClass="cell-header"
                 width="*"
@@ -538,7 +538,7 @@ const Dashboard = () => {
               </FlexGridColumn>
 
               <FlexGridColumn
-                // binding="dateProcessed"
+                binding="dateProcessed"
                 header="DATE/TIME PROCESSED"
                 cssClass="cell-header"
                 width="*"
