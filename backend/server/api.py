@@ -52,8 +52,8 @@ class UserLogin(BaseModel):
 
 class IncomingData(BaseModel):
     docType: Optional[str] = None
-    dateRec: Optional[date] = None
-    dateProcessed: Optional[date] = None
+    dateRec: Optional[str] = None
+    dateProcessed: Optional[str] = None
     docStatus: Optional[str] = None
     companyId: str
 
@@ -318,13 +318,48 @@ def getIncomingData(dateRec, dateProcessed, docStatus, docType, companyId):
     #
     # query_str = {"file_date": {"$gte": date_rec}, "file_date": {"$lte": date_proc}}
 
+    startDate = dateRec
+    endDate = dateProcessed
+
+    if len(startDate) > 0 and len(endDate) > 0:
+        start_date_str = startDate + " 00:00:01"
+        print("start_date_str", start_date_str)
+        start_date = datetime.datetime.fromisoformat(start_date_str)
+        print("start_date", start_date)
+
+        end_date_str = endDate + " 11:59:59"
+        print("end_date_str", end_date_str)
+        end_date = datetime.datetime.fromisoformat(end_date_str)
+        print("end_date", end_date)
+
+        query_str["file_date"] = {"$gte": start_date, "$lte": end_date}
+
+    elif len(startDate) > 0:
+
+        start_date_str = startDate + " 00:00:01"
+        print("start_date_str", start_date_str)
+        start_date = datetime.datetime.fromisoformat(start_date_str)
+        print("start_date", start_date)
+
+        query_str["file_date"] = {"$gte": start_date}
+
+    elif len(endDate) > 0:
+
+        end_date_str = endDate + " 11:59:59"
+        print("end_date_str", end_date_str)
+        end_date = datetime.datetime.fromisoformat(end_date_str)
+        print("end_date", end_date)
+
+        query_str["file_date"] = {"$lte": end_date}
+
     if len(docType)>0:
         searchStr = ".*" + docType + ".*"
         # query_str_doctype = {"$or":[{"processorGroup" : {"$regex" : searchStr, "$options":"i"}}, {"processorFolder" : {"$regex" : searchStr, "$options":"i"}}, {"final_filename" : {"$regex" : searchStr, "$options":"i"}}, {"filenameprocessing" : {"$regex" : searchStr, "$options":"i"}}, {"companyName" : {"$regex" : searchStr, "$options":"i"}}]}
         query_str["$or"]=[{"processorGroup" : {"$regex" : searchStr, "$options":"i"}}, {"processorFolder" : {"$regex" : searchStr, "$options":"i"}}, {"final_filename" : {"$regex" : searchStr, "$options":"i"}}, {"filenameprocessing" : {"$regex" : searchStr, "$options":"i"}}, {"companyName" : {"$regex" : searchStr, "$options":"i"}}]
     if docStatus != 'all':
         # query_str_status = {"status": docStatus}
-        query_str["status"] = docStatus
+        # query_str["status"] = docStatus
+        query_str["status"] = {"$regex": docStatus, "$options": "i"}
 
     print("query_str",query_str)
 
@@ -543,6 +578,8 @@ async def report_issue(incData: IssueSchema = Body(...)):
 
 @app.post("/getPdfFile", dependencies=[Depends(JWTBearer())])
 async def get_pdf_file(incData: PdfDataSchema = Body(...)):
+    print("get_pdf_file", incData)
+
     fileName = incData.fileName
     containerPath = incData.containerPath
     fileType = incData.fileType
@@ -568,9 +605,18 @@ async def get_pdf_file(incData: PdfDataSchema = Body(...)):
         completeFileName = containerPath + "/" + files_incoming_breakup_p[file_type_str]
 
         base64Str = pdf_blob_azure_buffer(completeFileName)
-        print("getPdfFile data", base64Str)
+        # print("getPdfFile data", base64Str)
         return {"result": {"base64Str" : base64Str, "noOfPages": files_incoming_p["noOfPages"]}, "err": None}
         # return data
+
+    elif files_incoming_p:
+        completeFileName = containerPath + "/" + files_incoming_p["filename"]
+        if "manual" in containerPath:
+            completeFileName = "manual/" + files_incoming_p["filename"]
+
+        base64Str = pdf_blob_azure_buffer(completeFileName)
+        # print("getPdfFile data", base64Str)
+        return {"result": {"base64Str": base64Str, "noOfPages": 0}, "err": None}
     else:
         return {"result": None, "err": "No file found"}
 
@@ -733,6 +779,7 @@ async def incoming_data(incData: IncomingData = Body(...)):
         createdOn = ""
         status = ""
         file_date = ""
+        uploadedBy = ""
 
         if 'noOfPages' in ids_s:
             noOfPages = ids_s["noOfPages"]
@@ -757,6 +804,9 @@ async def incoming_data(incData: IncomingData = Body(...)):
 
         if 'from_email' in ids_s:
             fromEmail = ids_s["from_email"]
+
+        if 'uploaded_by' in ids_s:
+            uploadedBy = ids_s["uploaded_by"]
 
         if 'to_mail' in ids_s:
             toEmail = ids_s["to_mail"]
@@ -793,7 +843,8 @@ async def incoming_data(incData: IncomingData = Body(...)):
             "errMsg": errMsg,
             "fromEmail":fromEmail,
             "toEmail":toEmail,
-            "validatedOn": validatedOn
+            "validatedOn": validatedOn,
+            "uploaded_by":uploadedBy
             # "docValidated": docValidatedStr
         })
 
@@ -1097,6 +1148,7 @@ async def add_user(companyId: str = Form(...), companyName: str = Form(...), use
                 # "created_on": datetime.datetime.now(),
                 "file_date": datetime.datetime.now(),
                 "uploaded_by": email,
+                "from_email": email,
                 "status": "Uploaded",
                 "processorContainerPath":"fileprocessing/manual",
                 "filenameprocessing":cleanFile
