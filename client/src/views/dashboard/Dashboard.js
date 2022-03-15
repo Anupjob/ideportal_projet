@@ -105,7 +105,7 @@ const Dashboard = () => {
   const [Isloader, setIsloader] = useState(false);
   const [Sdate, setSdate] = useState('');
   const [Edate, setEdate] = useState('');
-  const [Status, setStatus] = useState('');
+  const [Status, setStatus] = useState('all');
   const [Document, setDocument] = useState('');
   const [IncomingArr, setIncomingArr] = useState([]);
   const [open, setOpen] = React.useState(false);
@@ -142,7 +142,8 @@ const Dashboard = () => {
     console.log('searchIfDataExists localStorage.getItem("dashboardData") :>> ', localStorage.getItem("dashboardData"));
     let doc = JSON.parse(localStorage.getItem("dashboardData"))
     console.log("searchIfDataExists compId", compId, "doc", doc)
-    if (doc && doc.Sdate) {
+    // if (doc && doc.Sdate) {
+      if (doc) {
       setDocument(doc.Document)
       setSdate(doc.Sdate)
       setEdate(doc.Edate)
@@ -156,6 +157,8 @@ const Dashboard = () => {
       // localStorage.clear()
       //  }, 2000);
 
+    }else{
+      searchBtn(Sdate, Edate, Status, Document)
     }
   }
 
@@ -189,7 +192,7 @@ const Dashboard = () => {
 
 
   const Status1 = (event) => {
-    console.log(event.target.value);
+    console.log("Status1", event.target.value);
     setStatus(event.target.value)
   }
 
@@ -369,7 +372,7 @@ const Dashboard = () => {
                       onChange={Status1}
                       value={Status}
                     >
-                      <option value="">Select Status</option>
+                      {/* <option value="">Select Status</option> */}
                       {
                         statusOptions.map(status=>
                           <option value={status.value}>{status.key}</option>
@@ -600,7 +603,7 @@ const Dashboard = () => {
                 </FlexGridColumn>
               
               <FlexGridColumn
-                // binding="toEmail"
+                binding="uploaded_by"
                 header="UPLOADED BY"
                 cssClass="cell-header"
                 width="3*"
