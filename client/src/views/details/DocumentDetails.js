@@ -52,7 +52,6 @@ import { doc_styles } from "./documentDetailStyle";
 import { withStyles } from "@material-ui/core/styles";
 import { useSelector, useDispatch } from 'react-redux';
 import { cilBurger } from '@coreui/icons';
-
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 const master_dropdown={
@@ -266,19 +265,21 @@ const DocumentDetails = (props) => {
   const [openValidateData, setOpenValidateData] = React.useState(false);
   const [validData, setValidData] = useState({});
   const [reportIsuueCells, setReportIsuueCells] = useState({});
-
-
+  const [newreportIsuueCells, setNewReportIsuueCells] = useState({})
+  const [flagissue,setFlagIssue]=useState(false)
+console.log(newreportIsuueCells,'newCells')
   const compId = useSelector(state => state.companyId)
 
   console.log('enterIssue :>> ', enterIssue);
   useEffect(() => {
     
       localStorage.setItem('splitPos', 350)
-    console.log('object local :>> ', localStorage.getItem("details"));
+    console.log('object local :>> ', history && history);
     console.log('object local :>> ', localStorage.getItem("details") === null);
     let details = JSON.parse(localStorage.getItem("details"))
 
     console.log("=== history.location.state:::M", props)
+    console.log("reportcells", reportIsuueCells)
     if (history && history.location && history.location.state) {
       
       let docValidatedRec = history.location.state.docStatus? history.location.state.docStatus.toLowerCase() === "validated"?"Yes":"No":"No";
@@ -297,7 +298,8 @@ const DocumentDetails = (props) => {
     //   history.goBack()
     // } 
     console.log('final_filenames in useEffect :>>', history.location.state?history.location.state.final_filenames!==undefined?history.location.state.final_filenames.length>0?history.location.state.final_filenames[0]:history.location.state.finalFileName!==undefined?history.location.state.finalFileName:"":history.location.state.finalFileName!==undefined?history.location.state.finalFileName:"":"");
-    getPdfAndCsv()
+    // getPdfAndCsv()
+ 
     
   }, [])
 
@@ -308,6 +310,62 @@ const DocumentDetails = (props) => {
  useEffect(()=>{
   geCsvData()
  },[csvFileName])
+
+ useEffect(()=>{
+//    var flex =new FlexGrid()
+//   flex.itemFormatter = function(panel, r, c, cell) {
+//     console.log(panel, 5, 5, cell,'celllssss')
+
+//     // if(reportIsuueCells && !_.isEmpty(reportIsuueCells))
+//     let arr = Object.keys(reportIsuueCells)
+//   for(var i=0;i<arr.length;i++){
+//     let row = arr[i]
+//     let rowIdx = row.substring(3)
+     
+//     let colArr = reportIsuueCells[arr[i]]
+
+//     colArr.map((cObj)=>{
+//       let col = cObj
+//       let cIdx = col.substring(3)
+// // remove text      
+// if(c===cIdx&&r===rowIdx){
+//         cell.innerHTML='<div class="diff-up">' + cell.innerHTML + '</div>'
+//        }
+//     })
+    
+//   }
+//  }
+
+
+
+// gridObject.itemFormatter = function(panel, r, c, cell) {
+//   console.log(Object.keys( reportIsuueCells),'celllssss')
+
+//   if(reportIsuueCells &&  Object.keys( reportIsuueCells).length !== 0){
+//   let arr = Object.keys(reportIsuueCells)
+// for(var i=0;i<arr.length;i++){
+//   let row = arr[i]
+//   let rowIdx = row.substring(3)
+   
+//   let colArr = reportIsuueCells[arr[i]]
+
+//   colArr.map((cObj)=>{
+//     let col = cObj
+//     let cIdx = col.substring(3)
+//     console.log(rowIdx,cIdx,'row column')
+// // remove text      
+// if(c==cIdx&&r==rowIdx){
+// return(<>
+//       {cell.innerHTML='<div class="diff-up">' + cell.innerHTML + '</div>'}
+//       </> )
+//      }
+//   })
+  
+// }
+// }
+// }
+
+},[reportIsuueCells]);
 
   const getPdfAndCsv = () => {
     getPdfImage();
@@ -489,12 +547,18 @@ const DocumentDetails = (props) => {
       toast.warn("Please Enter Issue !", toast_options);
     }
     else {
+
+      let issueCells = reportIsuueCells;
+      if(Object.keys(reportIsuueCells).length>0&&Object.keys(newreportIsuueCells).length>0){
+        issueCells = newreportIsuueCells;
+      }
+      console.log(issueCells,'cells isuuses')
       const headers = {
         "Content-Type": "application/json",
         Authorization: "Bearer " + localStorage.getItem('access_token'),
         // reqFrom: "ADMIN",
       };
-      let requestBody = {company_id:compId, doc_id: history.location.state.doc_id, errMsg: {issue: enterIssue, reportIsuueCells}, user_id: userId }
+      let requestBody = {company_id:compId, doc_id: history.location.state.doc_id, errMsg: {issue: enterIssue, reportIsuueCells:issueCells}, user_id: userId }
       // console.log("requestBody::::", requestBody)
       axios({
         method: "POST",
@@ -508,6 +572,7 @@ const DocumentDetails = (props) => {
           toast.error(response.data.err, toast_options);
         } else {
           toast.success(response.data.result, toast_options);
+          setFlagIssue(true)
         }
       }).catch(err => {
         toast.error(err.message, toast_options);
@@ -791,11 +856,53 @@ const rotatePdf = () => {
 
   const initializeGrid = (flex) => {
     setGridObject(flex);
+    console.log(flex)
     flex.columnHeaders.rows.defaultSize = 40;
-  };
-
-  return (
     
+  // flex.itemFormatter = function(panel, r, c, cell) {
+  //   console.log(panel, 5, 5, cell,'celllssss')
+  // for(var i=0;i<arr.length;i++){
+  //   if(c===arr[i]&&r===arr[i]){
+  //     cell.innerHTML='<div class="diff-up">' + cell.innerHTML + '</div>'
+  //    }
+  // }
+ 
+   
+  // }
+  
+
+flex.itemFormatter = function(panel, r, c, cell) {
+  console.log(Object.keys( reportIsuueCells),reportIsuueCells,'celllssss')
+
+  if(reportIsuueCells &&  Object.keys( reportIsuueCells).length !== 0){
+  let arr = Object.keys(reportIsuueCells)
+for(var i=0;i<arr.length;i++){
+  let row = arr[i]
+  let rowIdx = row.substring(3)
+   
+  let colArr = reportIsuueCells[arr[i]]
+
+  colArr.map((cObj)=>{
+    let col = cObj
+    let cIdx = col.substring(3)
+    
+// remove text      
+if(c==cIdx&&r==rowIdx){
+
+return(<>
+      {cell.innerHTML='<div class="diff">' + cell.innerHTML + '</div>'}
+      </> )
+     }
+  })
+  
+}
+}
+}
+
+  };
+console.log(gridObject,'gridobject')
+  return (
+  
 <CCard style={cardView}>
         <div style={report_block}>
     <h4 style={report_title} onClick={() => sliderClick()}>DOCUMENT REPORT CARD <i class="fa fa-chevron-down" aria-hidden="true"></i></h4>
@@ -1018,7 +1125,7 @@ const rotatePdf = () => {
                           <DialogActions>
                             <div style={{ flexDirection: 'row' }}>
                             <Button style={cancel_dialogBtn} onClick={handleClose}>&times;</Button>
-                              <Button style={submit_dialogBtn} onClick={submit}>Submit</Button>
+                              <Button style={submit_dialogBtn} onClick={submit} >Submit</Button>
                             </div>
                           </DialogActions>
                         </Dialog>}
@@ -1052,9 +1159,11 @@ const rotatePdf = () => {
                 <FlexGrid
                       headersVisibility="Column"
                       autoGenerateColumns={false}
+                      isReadOnly={true}
                       itemsSource={finalDataResult}
                       initialized={initializeGrid}
                       // ref={this.theGrid}
+                   
                       style={{
                         height: "auto",
                         maxHeight: 400,
@@ -1063,45 +1172,60 @@ const rotatePdf = () => {
 
                       selectionMode="MultiRange"
                       showSelectedHeaders="All"
-                      // selectionChanged={(s) => {console.log('s=====', initializeGrid.Object);}}
+                      // selectionChanged={(s) => {s.selection._col=3}}
                       selectionChanged={(s) => {
-                        // calculate aggregates
+                        console.log(s,'flex')
                         let ranges = s.selectedRanges;
                         console.log('selectionChanged ranges', ranges);
-
+                     
                         let newRows = {}
                         for (let i = 0; i < ranges.length; i++) {
 
                           let rng = ranges[i];
-
-                          console.log('rng', rng);
+                          
+                         
                           for (let r = rng.topRow; r <= rng.bottomRow; r++) {
-                            console.log(r, 'r ranges')
-
                             let colarr = []
+                            console.log("row"+r,'row')
+                            // console.log(r,'row')
                             for (let c = rng.leftCol; c <= rng.rightCol; c++) {
-                              console.log(c, ' cranges')
+                             
+                              // console.log("row"+r,'row')
+                              console.log("col"+c, ' cranges')
                               colarr.push("col" + c)
-                            }
-
+                             }
                             newRows["row" + r] = colarr
-                            // reportIsuueCellsCopy1["row" + r] = colarr
+                           
                           }
                         }
 
                         console.log('reportIsuueCells', reportIsuueCells);
                         console.log('newRows', newRows);
 
-                        let reportIsuueCellsCopy = {
-                          ...reportIsuueCells,
-                          ...newRows
+                        if(Object.keys(reportIsuueCells).length>0){
+
+                          let reportIsuueCellsCopy = {
+                            ...newreportIsuueCells,
+                            ...newRows
+                          }
+                          console.log('reportIsuueCellsCopy', reportIsuueCellsCopy);
+  
+                          setNewReportIsuueCells(reportIsuueCellsCopy)
+                        }else{
+
+                          let reportIsuueCellsCopy = {
+                            ...reportIsuueCells,
+                            ...newRows
+                          }
+
+                          console.log('reportIsuueCellsCopy', reportIsuueCellsCopy);
+  
+                          setReportIsuueCells(reportIsuueCellsCopy)
+                         
                         }
 
-                        console.log('reportIsuueCellsCopy', reportIsuueCellsCopy);
-
-                        setReportIsuueCells(reportIsuueCellsCopy)
-
                       }}
+
                         
                     >
                       {finalDataResult.length>0 && Object.keys(finalDataResult[0]).map(key =>
@@ -1113,7 +1237,10 @@ const rotatePdf = () => {
                       minWidth={100}
                       // visible={key != "user_id"}
                       style={{backgroundColor:'grey'}}
-                      ></FlexGridColumn>
+                      >
+                       
+
+                      </FlexGridColumn>
                       )}  
 
                       <wjFilter.FlexGridFilter></wjFilter.FlexGridFilter>
@@ -1125,10 +1252,10 @@ const rotatePdf = () => {
              </p></div>
               }
               </div>
-        
+             
             </SplitPane>
           </CCol>
-          {openValidateData &&
+           {openValidateData &&
             <Dialog open={openValidateData}
             onClose={handleValidateClose}>
             <DialogTitle style={{fontWeight:'bold',fontSize:18}}>Validate Data</DialogTitle>
@@ -1207,6 +1334,7 @@ const rotatePdf = () => {
           /></div>
         </CRow>
       </CCard >
+   
   );
   
 }

@@ -113,13 +113,14 @@ const IssueHistoryData=()=>
 
     }
 
-
+console.log(historyData,'history issue')
   return (
     <Grid className="container-fluid" style={{marginTop:40}}>
         <Grid item xs={12} style={{ marginTop: 25}}>
            {historyData && historyData.length>0 ?
            <FlexGrid
            headersVisibility="Column"
+           isReadOnly={true}
            autoGenerateColumns={false}
            // initialized={this.initializeDailyGrid}
            itemsSource={historyData}
@@ -142,7 +143,14 @@ const IssueHistoryData=()=>
            cssClass="cell-header"
            width="*"
            style={{backgroundColor:'grey'}}
-           ></FlexGridColumn>
+           >
+             <FlexGridCellTemplate cellType="Cell" template={ctx =>
+        
+                  <React.Fragment>
+                       {console.log(ctx,'ctx')}
+                    {ctx.item["Error Message"].issue}
+                  </React.Fragment>} />
+           </FlexGridColumn>
            <FlexGridColumn
                 binding="Insert Time"
                 header="INSERT TIME"
@@ -185,3 +193,10 @@ const IssueHistoryData=()=>
 }
  
 export default IssueHistoryData;
+
+
+
+
+
+
+
