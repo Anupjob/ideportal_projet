@@ -473,6 +473,7 @@ const Dashboard = () => {
             <FlexGrid
               headersVisibility="Column"
               autoGenerateColumns={false}
+              isReadOnly={true}
               itemsSource={IncomingArr}
               style={{
                 height: "auto",
@@ -484,7 +485,7 @@ const Dashboard = () => {
                 <FlexGridCellTemplate cellType="Cell" template={ctx =>
                   <React.Fragment>
                     {ctx.item.docStatus.toLowerCase() == 'error' && ctx.item.errMsg &&
-                      <span style={{color:"#c00"}}><i class="fa fa-exclamation-triangle" aria-hidden="true"
+                      <span style={{color:"#c00",cursor: "pointer"}}><i class="fa fa-exclamation-triangle" aria-hidden="true"
                         onClick={() => handleClickToOpen(ctx.item.errMsg.issue)}
                       ></i></span>
                     }

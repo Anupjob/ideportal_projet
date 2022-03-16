@@ -48,3 +48,7 @@
   .Resizer.disabled:hover {
     border-color: transparent;
   }
+  .diff{
+    background-color: red;
+    color: white;
+  }
