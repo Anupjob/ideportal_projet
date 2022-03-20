@@ -91,6 +91,7 @@ const useStyles = makeStyles(theme => ({
     zIndex: "20",
     border: "0",
     paddingRight: "20px",
+    paddingBottom: "15px",
     position: "fixed"
   },
   logo_image: {
