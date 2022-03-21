@@ -52,6 +52,7 @@ import { doc_styles } from "./documentDetailStyle";
 import { withStyles } from "@material-ui/core/styles";
 import { useSelector, useDispatch } from 'react-redux';
 import { cilBurger } from '@coreui/icons';
+import ViewOptions from './ViewOptions';
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 const master_dropdown={
@@ -66,15 +67,18 @@ const master_dropdown={
   marginLeft:"10px",
 }
 const table_header = {
-  borderBottom: "1px solid #ccc",
+  // borderBottom: "1px solid #ccc",
   color: "#000000",
   fontSize: 12,
   fontWeight: 'bold'
 }
 const table_headerMain = {
-  borderBottom: "1px solid #ccc",
-  color: "#2352a2",
-  fontSize: 10
+  borderBottom: "none",
+ color: "#2352a2",
+ fontSize: 10,
+ paddingTop:"0",
+ paddingBottom:"0"
+ // borderRight: "1px solid #ccc",
 }
 const table_content = {
   // borderBottom: '2px solid #D2D9DA',
@@ -132,20 +136,23 @@ const bottom_View = {
   backgroundColor: '#fff',
   padding: 20,
   maxHeight: 600,
+  borderTop:"#ccc solid 1px" 
   // overflowY: 'scroll'
 }
 const dateTimeView = {
   fontSize: 12,
-  color:"#999",
-  margin:0
+  // color:"#999",
+  margin:0,
+  whiteSpace:"nowrap"
+
   //width: 250
 }
 const viewDetailBtn = {
-  backgroundColor: '#4EA7D8',
-  fontSize: 14,
-  color: 'white',
+  background: 'none',
+  fontSize: "1em",
+  color: '#999',
   whiteSpace: "nowrap",
-  margin: "10px"
+  margin: "0 10px",
 }
 const issueBtn = {
   backgroundColor: 'red',
@@ -155,9 +162,12 @@ const issueBtn = {
   margin: "10px"
 }
 const historyIssueBtn = {
-  borderBottom: "1px solid #ccc",
+  borderBottom: "none",
   color: "#2352a2",
-  fontSize: 10
+  fontSize: 10,
+  borderLeft: "1px solid #ccc",
+  paddingTop:"0",
+  paddingBottom:"0"
 }
 const toast_options = {
   position: "top-center",
@@ -222,15 +232,15 @@ const title_text = {
   top: '135px'
 }}
 const zoomRotate_Icon ={
-  border: "1px solid #fff", 
   borderRadius: "50px", 
-  width: "40px", 
-  height: "40px", 
+  width: "30px", 
+  // height: "40px", 
   textAlign: "center", 
-  lineHeight: "38px", 
-  color: "#fff", 
+  // lineHeight: "38px", 
+  color: "#486fb4", 
   display: "table-cell", 
-  cursor: "pointer"
+  cursor: "pointer",
+  fontSize: "1.3em"
 }
 
 
@@ -253,7 +263,7 @@ const DocumentDetails = (props) => {
   const [pageNo, setPageNo] = useState(1);
   const [expandScreen, setExpandScreen] = useState(false);
   const [zoomScreen, setZoomScreen] = useState(0);
-  const [rotateScreen, setRotateScreen] = useState(0);
+  // const [rotateScreen, setRotateScreen] = useState(0);
   const [value, setValue] = useState(1);
   const [pageNoToShow, setPageNoToShow] = useState("1");
   const [docValidated, setDocValidated] = useState("No");
@@ -267,6 +277,25 @@ const DocumentDetails = (props) => {
   const [reportIsuueCells, setReportIsuueCells] = useState({});
   const [newreportIsuueCells, setNewReportIsuueCells] = useState({})
   const [flagissue,setFlagIssue]=useState(false)
+  const [ListVal, setList] = useState(0);
+  const [rotate, setRotate] = useState(0);
+  const [canvasBackground, setCanvasBackground] = useState(null);
+  const [displayAll, setDisplayAll] = useState(false);
+  const [externalLinkTarget, setExternalLinkTarget] = useState(null);
+  const [file, setFile] = useState(null);
+  const [fileForProps, setFileForProps] = useState(null);
+  const [numPages, setNumPages] = useState(null);
+  const [pageHeight, setPageHeight] = useState(null);
+  const [pageNumber, setPageNumber] = useState(null);
+  const [pageScale, setPageScale] = useState(null);
+  const [pageWidth, setPageWidth] = useState(null);
+  const [passMethod, setPassMethod] = useState(null);
+  const [render, setRender] = useState(true);
+  const [renderAnnotationLayer, setRenderAnnotationLayer] = useState(true);
+  const [renderForms, setRenderForms] = useState(true);
+  const [renderMode, setRenderMode] = useState('canvas');
+  const [renderTextLayer, setRenderTextLayer] = useState(true);
+  
 console.log(newreportIsuueCells,'newCells')
   const compId = useSelector(state => state.companyId)
 
@@ -766,26 +795,7 @@ console.log(newreportIsuueCells,'newCells')
     );
   };
 
-  const changePage = (e) =>{
-    //let pageSet = this.state.pageNo;
-    let valFromInput = Number(e.target.value)
-    if(valFromInput >= 1 && valFromInput <= totalPages){
-
-    setPageNo(valFromInput)
-    setPageNoToShow(valFromInput)
-    setTimeout(() => {
-
-      setIsPageChange(valFromInput)
-    }, 1000);
-
-    // getPdfAndCsv()
-    }else{
-      setPageNoToShow("")
-      toast.info("Request is invalid", toast_options);
-    }
-  }
-
- const pageDownClicked = () => {
+  const pageDownClicked = () => {
     if(pageNo >= 2){
     let updatedNum = pageNo - 1;
     console.log("minus page", updatedNum)
@@ -798,8 +808,28 @@ console.log(newreportIsuueCells,'newCells')
       toast.info("Request is invalid", toast_options);
     }
   }
+  const pageNumberClicked = (data) => {
+    console.log('pageNo in pageNumberClicked :>> ', data);
+       if(data <= totalPages){
+       let updatedNum = data;
+       console.log("plus page", updatedNum)
+       setPageNo(updatedNum)
+       setPageNoToShow(updatedNum)
+      
+      setIsPageChange(updatedNum)
+       // getPdfAndCsv()
+       
+     }
+     else{
+       toast.info("Request is invalid", toast_options);
+     }
+   }
+  
   const pageUpClicked = () => {
  console.log('pageNo in pageup :>> ', pageNo);
+//  if(pageNo > 10){
+//    setList(10)
+//  }
     if(pageNo <= totalPages - 1){
     let updatedNum = pageNo + 1;
     console.log("plus page", updatedNum)
@@ -818,41 +848,97 @@ const sliderClick = () => {
   // this.setState({Toggle:!this.state.Toggle})
   setToggle(!Toggle)
 }
-const rotatePdf = () => {
-    if (rotateScreen >= 4) {
-      // this.setState({ rotateScreen: 0 })
-      setRotateScreen(0)
-    }
-    else {
-      // this.setState({ rotateScreen: this.state.rotateScreen + 1 })
-      setRotateScreen(rotateScreen + 1)
-    }
-  }
-  const zoomIn = () => {
-    if (zoomScreen >= 15) {
-      // this.setState({ zoomScreen: 15 })
-      setZoomScreen(15)
-    }
-    else {
-      // this.setState({ zoomScreen: this.state.zoomScreen + 1 })
-      setZoomScreen(zoomScreen + 1)
-    }
-  }
-  const zoomOut = () => {
-    if (zoomScreen <= 0) {
-      // this.setState({ zoomScreen: 0 })
-      setZoomScreen(0)
-    }
-    else {
-      // this.setState({ zoomScreen: this.state.zoomScreen - 1 })
-      setZoomScreen(zoomScreen - 1)
-    }
-  }
 
-  const expandPdf = () => {
-    // this.setState({ expandScreen: !this.state.expandScreen })
-    setExpandScreen(!expandScreen)
+   function getPageProps() {
+    return {
+      canvasBackground,
+      className: 'custom-classname-page',
+      height: pageHeight,
+      onClick: (event, page) => console.log('Clicked a page', { event, page }),
+      // onRenderSuccess: onPageRenderSuccess,
+      renderAnnotationLayer,
+      renderForms,
+      renderMode,
+      renderTextLayer,
+      scale: pageScale,
+      width: pageWidth,
+      customTextRenderer: (textItem) =>
+        textItem.str.split('ipsum').reduce(
+          (strArray, currentValue, currentIndex) =>
+            currentIndex === 0
+              ? [...strArray, currentValue]
+              : [
+                  ...strArray,
+                  // eslint-disable-next-line react/no-array-index-key
+                  <mark key={currentIndex}>ipsum</mark>,
+                  currentValue,
+                ],
+          [],
+        ),
+    };
   }
+  const pageProps = getPageProps();
+  const documentProps = {
+    externalLinkTarget,
+    file: fileForProps,
+    // options,
+    rotate,
+  };
+  
+    const zoomIn = () => {
+      
+      if (pageWidth < 612) {
+        // this.setState({ zoomScreen: 15 })
+        setPageWidth(612)
+        setPageHeight(800)
+      }
+      else {
+        // this.setState({ zoomScreen: this.state.zoomScreen + 1 })
+        setPageWidth(pageWidth + 30)
+        setPageHeight(pageHeight + 30)
+      }
+    }
+    const zoomOut = () => {
+      if (pageWidth < 612) {
+        // this.setState({ zoomScreen: 0 })
+        setPageWidth(612)
+        setPageHeight(800)
+      }
+      else {
+        // this.setState({ zoomScreen: this.state.zoomScreen - 1 })
+        setPageWidth(pageWidth - 30)
+        setPageHeight(pageHeight - 30)
+      }
+    }
+  
+    const rotatePdfH = () => {
+      setRotate(90)
+    }
+    const rotatePdfV = () => {
+      setRotate(0)
+    }
+  
+    const resetPdf = () => {
+      setPageWidth(612)
+      setRotate(0)
+      setExpandScreen(false)
+    }
+  
+    const expandPdf = () => {
+      // this.setState({ expandScreen: !this.state.expandScreen })
+      setExpandScreen(!expandScreen)
+      // console.log("Page Width expend", pageWidth)
+      if (pageWidth <= 612) {
+        // this.setState({ zoomScreen: 0 })
+        setPageWidth(1600)
+        setPageHeight(2000)
+      }
+      else{
+        setPageWidth(612)
+        setPageHeight(800)
+      }
+    }
+  
 
   const initializeGrid = (flex) => {
     setGridObject(flex);
@@ -930,64 +1016,78 @@ console.log(gridObject,'gridobject')
         <CRow style={title_text}>
           {history && history.location && history.location.state && history.location.state && history.location.state.pdfFilename ? history.location.state.pdfFilename : ""}
         </CRow>
-        <CRow >
-          <CCol>
-            <div style={{ background: "rgb(0, 117, 183)", borderRadius: "5px 5px 0 0", position: "fixed", zIndex: "500", right:"30px", left:"30px",
-            }}>
+       
+<CRow>
 
+<div style={{  width:"100%", display:"table", position:"fixed", zIndex:5, top:140}}>
+  <CRow>
+  <div style={{background: "#fff", padding: "0 30px", width:"100%", display:"table", borderBottom:"1px solid rgb(157, 157, 157)"}}>
+   <div style={{ display: "table", float: "left", borderRadius: "5px", textAlign: "center", margin: "10px", color: "#486fb4", borderSpacing: "15px 0",  }}>
+        <div style={{ cursor: "pointer", width: "30px", display: "table-cell" }} onClick={() => pageDownClicked()}>PREV
+        </div>
+        {[...Array(totalPages+1)].map((elementInArray, index) => (
 
-                  <div style={{ width: "130px", display: "table", float: "left", border: "1px solid #fff", borderRadius: "5px", textAlign: "center", lineHeight: "40px", margin: "10px", color: "#fff" }}>
-                    <div style={{ cursor: "pointer", width: "30px", borderRight: "1px solid #fff", display: "table-cell" }} onClick={() => pageDownClicked()}><i class="fa fa-angle-left" aria-hidden="true" ></i>
-                    </div>
-                    <div style={{  display: "table-cell", verticalAlign:"middle" }}>
-                      <CInput type='text' 
-                      value={pageNoToShow} 
-                      onChange={changePage}
-                      style={{
-                        background: "none",
-                        color: "#fff",
-                        borderRadius: "0",
-                        margin: "3px auto",
-                        width: "50px",
-                        border: "1px solid #fff",
-                        textAlign:"center"
-                      }}
-                      />
-                      </div>
-                    <div style={{ cursor: "pointer", width: "30px", borderLeft: "1px solid #fff", display: "table-cell" }} onClick={() => pageUpClicked()}><i class="fa fa-angle-right" aria-hidden="true"></i>
-                    </div>
+         ((pageNo <= (totalPages - 10)) && (index >= pageNo && index <= (pageNo + 10)) && index != 0) ?
+        <div style={{display: "table-cell", verticalAlign:"middle" ,cursor:'pointer', color:index==pageNo? "#000": "#486fb4"}} onClick={() => pageNumberClicked(index)}>
+          {/* <CInput type='text' 
+          value={pageNoToShow} 
+          onChange={changePage}
+          style={{
+            background: "none",
+            borderRadius: "0",
+            margin: "3px auto",
+            width: "50px",
+            textAlign:"center"
+          }}
+          /> */}
+          {index}  
+          </div>
+        :
+        (pageNo >= (totalPages - 10) && index >= (totalPages-10) && index <= totalPages && index != 0) &&
+        <div style={{display: "table-cell", verticalAlign:"middle" ,cursor:'pointer', color:index==pageNo? "#000": "#486fb4"}} onClick={() => pageNumberClicked(index)}>
+        {index}
+        </div>
+        ))}
+        <div style={{ cursor: "pointer", width: "30px", display: "table-cell" }} onClick={() => pageUpClicked()}>NEXT
+        </div>
 
-                  </div>
-                  <div style={{ whiteSpace: "nowrap", float: "left", color: "#fff", marginTop: "20px" }}>
-                    <p>from {totalPages} Pages </p>
-                  </div>
+      </div>
+      <div style={{ whiteSpace: "nowrap", float: "left", color: "#486fb4", margin: "10px", cursor:"pointer"}} onClick={() => pageNumberClicked(totalPages)}>
+        {/* <p>from {totalPages} Pages </p> */}
+        <p style={{margin:"0"}}>LAST</p>
+      </div>
 
-                  <div style={{ display: "table", borderSpacing: "10px", float:"right" }}>
+      <div style={{ display: "table", borderSpacing: "10px", float:"right", color:"#486fb4" }}>
 
-                    <div style={{ border: "1px solid #fff", borderRadius: "50px", width: "40px", height: "40px", textAlign: "center", lineHeight: "38px", color: "#fff", display: "table-cell", cursor: "pointer" }}
-                      onClick={() => expandPdf()}>
-                      {expandScreen ?
-                        <i class="fa fa-compress" aria-hidden="true"></i>
-                        :
-                        <i class="fa fa-expand" aria-hidden="true"></i>
-                      }
-                    </div>
+      <div style={{ width: "30px", textAlign: "center", color: "#486fb4", display: "table-cell", cursor: "pointer", fontSize: "1.3em", border:"1px solid #486fb4"}} onClick={() => rotatePdfH(90)}><i class="fa fa-arrows-h" aria-hidden="true"></i></div>
+      <div style={ {width: "30px", textAlign: "center", color: "#486fb4", display: "table-cell", cursor: "pointer", fontSize: "1.3em", border:"1px solid #486fb4"}} onClick={() => rotatePdfV(0)}><i class="fa fa-arrows-v" aria-hidden="true"></i></div>
 
-                    <div style={zoomRotate_Icon} onClick={() => zoomIn()}><i class="fa fa-search-plus" aria-hidden="true"></i></div>
-                    <div style={zoomRotate_Icon} onClick={() => zoomOut()}><i class="fa fa-search-minus" aria-hidden="true"></i></div>
-                    <div style={zoomRotate_Icon} onClick={() => rotatePdf()}><i class="fa fa-repeat" aria-hidden="true"></i></div>
-                    <div style={zoomRotate_Icon}>
-                      {/* <a style={{color:'white'}} href={"data:application/pdf;base64," + this.state.pdfImage} download={this.props.history.location.state.data.pdfFilename ? this.props.history.location.state.data.pdfFilename : "file_"+new Date().getTime()+".pdf"}>
-                      <i class="fa fa-download" aria-hidden="true"></i>
-                      </a> */}
-                      <a style={{color:'white'}}  onClick={() => downloadPdf()}>
-                      <i class="fa fa-download" aria-hidden="true"></i>
-                      </a>
-                    </div>
-                  </div>
+        <div style={{ borderRadius: "50px", width: "30px", textAlign: "center",  display: "table-cell", cursor: "pointer", fontSize: "1.3em" }}
+          onClick={() => expandPdf()}>
+          {expandScreen ?
+            <i class="fa fa-compress" aria-hidden="true"></i>
+            :
+            <i class="fa fa-expand" aria-hidden="true"></i>
+          }
+        </div>
 
-            </div>
+        <div style={zoomRotate_Icon} onClick={() => zoomIn()}><i class="fa fa-search-plus" aria-hidden="true"></i></div>
+        <div style={zoomRotate_Icon} onClick={() => zoomOut()}><i class="fa fa-search-minus" aria-hidden="true"></i></div>
+        <div style={zoomRotate_Icon} onClick={() => resetPdf()}><i class="fa fa-repeat" aria-hidden="true"></i></div>
+        <div style={zoomRotate_Icon}>
+          {/* <a style={{color:'white'}} href={"data:application/pdf;base64," + this.state.pdfImage} download={this.props.history.location.state.data.pdfFilename ? this.props.history.location.state.data.pdfFilename : "file_"+new Date().getTime()+".pdf"}>
+          <i class="fa fa-download" aria-hidden="true"></i>
+          </a> */}
+          <a style={{color:'#486fb4'}}  onClick={() => downloadPdf()}>
+          <i class="fa fa-download" aria-hidden="true"></i>
+          </a>
+        </div>
+      </div>
+      </div>
+      </CRow>
+</div>
 
+</CRow>
 
             <SplitPane
               split="horizontal"
@@ -1000,39 +1100,22 @@ console.log(gridObject,'gridobject')
               }}
               style={{ position: "static", backgroundColor: 'transparent', marginTop:"60px" }}
             >
-              
-              <div
-                style={{                  
-                  width: expandScreen ? "100%" : "615px",
-                  transform: (rotateScreen == 1 && "rotate(90deg)" || rotateScreen == 2 && "rotate(180deg)" || rotateScreen == 3 && "rotate(270deg)" || rotateScreen == 4 && "rotate(0deg)"),
-                  margin: "0px auto",
-                  position: "relative",
-                  
-                }}
-              >
-                <div style={{
-                  position: "absolute",
-                  width: "100%",
-                  margin: "0px auto",                  
-                   top: (zoomScreen == 1 && "1.5em" || zoomScreen == 2 && "3.3em" || zoomScreen == 3 && "5em" || zoomScreen == 4 && "6.8em" || zoomScreen == 5 && "8.4em" || zoomScreen == 6 && "10.3em" || zoomScreen == 7 && "12em" || zoomScreen == 8 && "13.8em" || zoomScreen == 9 && "15.4em" || zoomScreen == 10 && "17.3em" || zoomScreen == 11 && "19em" || zoomScreen == 12 && "20.8em" || zoomScreen == 13 && "22.5em" || zoomScreen == 14 && "24.3em" || zoomScreen == 15 && "26em"),
-                  transform: (zoomScreen == 1 && "scale(1.1)" || zoomScreen == 2 && "scale(1.2)" || zoomScreen == 3 && "scale(1.3)" || zoomScreen == 4 && "scale(1.4)" || zoomScreen == 5 && "scale(1.5)" || zoomScreen == 6 && "scale(1.6)" || zoomScreen == 7 && "scale(1.7)" || zoomScreen == 8 && "scale(1.8)" || zoomScreen == 9 && "scale(1.9)" || zoomScreen == 10 && "scale(2)" || zoomScreen == 11 && "scale(2.1)" || zoomScreen == 12 && "scale(2.2)" || zoomScreen == 13 && "scale(2.3)" || zoomScreen == 14 && "scale(2.4)" || zoomScreen == 15 && "scale(2.5)")
-                }}>
-
                   <div style={  
                    Isloader ? { ...pdfContentView, ...{ boxShadow: "none" } } : pdfContentView 
                   }>
+                    <main className="Test__container__content">
 <div style={{overflowY: "auto", overflowX: "hidden", height:"500px"}}>
                     {/* <img src={"data:image/jpeg;base64," + this.state.pdfImage} style={{width:500,height:700}}/> */}
                     {pdfImage ?
 
                       <Document
-
+                      {...documentProps}
                         file={"data:application/pdf;base64," + pdfImage}
                       // file='https://dgsciense.s3.amazonaws.com/raw_invoices_hubspot/6085ca5e0c876f667d354cb0.pdf'
                       // onLoadSuccess={page => console.log('page onLoadSuccess:>> ', page)}
                       // onLoadError={(error) => console.log('pdf error :>> ', error)}
                       >
-                        <Page pageNumber={1} />
+                        <Page pageNumber={1} {...pageProps} />
                       </Document>
 
                       :
@@ -1040,19 +1123,17 @@ console.log(gridObject,'gridobject')
 
                     }
 </div>
+</main>
                   </div>
-                </div>
-              </div>
-
               <div style={bottom_View}>
-                <div style={drag_arrow}><i class="fa fa-arrows-v" aria-hidden="true"></i></div>
-                <TableContainer component={Paper} style={{ position: "relative", zIndex: "5", overflow: 'hidden' }}>
+               
+                <TableContainer component={Paper} style={{ position: "relative", zIndex: "5", overflow: 'hidden', padding:20 }}>
                   <Table aria-label="simple table">
                     <TableHead>
                       <TableRow>
-                        <TableCell style={table_headerMain}><p style={dateTimeView}>Date/Time Received:</p><p style={{fontSize: "1.7em"}}>{moment(props.history && props.history.location && props.history.location.state && props.history.location.state.dateRec).format("MM/DD/YYYY hh:mm A")}</p></TableCell>
-                        <TableCell style={table_headerMain}><p style={dateTimeView}>Date/Time Processed:</p><p style={{fontSize: "1.7em"}}>{moment( props.history && props.history.location && props.history.location.state && props.history.location.state.dateProcessed).format("MM/DD/YYYY hh:mm A")}</p></TableCell>
-                        <TableCell style={table_headerMain}><p style={dateTimeView}># of Pages:</p><p style={{fontSize: "1.7em"}}>{props.history && props.history.location && props.history.location.state && props.history.location.state.noOfPages}</p></TableCell>
+                      <TableCell style={table_headerMain}><p style={dateTimeView}><span style={{fontWeight:"600"}}>Date/Time Received:</span> {moment(props.history && props.history.location && props.history.location.state && props.history.location.state.dateRec).format("MM/DD/YYYY hh:mm A")}</p></TableCell>
+                        <TableCell style={table_headerMain}><p style={dateTimeView}><span style={{fontWeight:"600"}}>Date/Time Processed:</span> {moment( props.history && props.history.location && props.history.location.state && props.history.location.state.dateProcessed).format("MM/DD/YYYY hh:mm A")}</p></TableCell>
+                        <TableCell style={table_headerMain}><p style={dateTimeView}><span style={{fontWeight:"600"}}># of Pages:</span> {props.history && props.history.location && props.history.location.state && props.history.location.state.noOfPages}</p></TableCell>
                         <TableCell style={table_headerMain}>
                           <Button style={viewDetailBtn}
                             onClick={() => {
@@ -1077,7 +1158,7 @@ console.log(gridObject,'gridobject')
                           <Button style={issueBtn}
                             onClick={() => openDialog()}>REPORT ISSUE</Button>
                         </TableCell>:
-                        <TableCell style={table_headerMain}>
+                        <TableCell style={historyIssueBtn}>
                         <Button style={viewDetailBtn}
                           onClick={() => openDialog()}>REPORT ISSUE</Button>
                       </TableCell>}
@@ -1254,7 +1335,7 @@ console.log(gridObject,'gridobject')
               </div>
              
             </SplitPane>
-          </CCol>
+          
            {openValidateData &&
             <Dialog open={openValidateData}
             onClose={handleValidateClose}>
@@ -1332,7 +1413,7 @@ console.log(gridObject,'gridobject')
             draggable
             pauseOnHover
           /></div>
-        </CRow>
+        
       </CCard >
    
   );
