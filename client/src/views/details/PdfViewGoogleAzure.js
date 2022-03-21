@@ -139,11 +139,16 @@ const toast_options = {
 
 }
 const viewDetailBtn = {
-  backgroundColor: '#4EA7D8',
-  fontSize: 10, 
-  color: 'white',
-  marginLeft:10,
-  height:35
+  // backgroundColor: '#4EA7D8',
+  background:"none",
+  fontSize: 12, 
+  color: 'rgb(87, 87, 87)',
+  marginLeft: "0px",
+borderRight: "1px solid rgb(87, 87, 87)",
+borderRadius: 0,
+paddingTop: 0,
+paddingBottom: 0
+  // height:35
   // width: 130
 }
 class PdfViewGoogleAzure extends React.Component {
@@ -423,21 +428,62 @@ class PdfViewGoogleAzure extends React.Component {
         <CRow className={classes.title_text }>
           {this.props.history.location && this.props.history.location.state && this.props.history.location.state.fileName ? this.props.history.location.state.fileName : ""}
         </CRow>
-        <CRow style={{ borderBottom: "1px solid #999", marginBottom: "20px", paddingTop: "20px" }}>
-          <CCol xs="6" style={{ backgroundColor: 'white', height: 50 }}>
+
+       
+
+<div style={{  width:"100%", display:"table", position:"fixed", zIndex:5, top:140, paddingLeft:15, left:0}}>
+  <CRow>
+  <div style={{background: "#fff", padding: "0 30px", width:"100%", display:"table",  borderBottom:"1px solid rgb(157, 157, 157)"}}>
+  <CRow>
+  <CCol xs="6" style={{ backgroundColor: 'white', height: 50 }}>
             <div style={{ width: "100%", display: 'table' }} onChange={this.onChangeRadioValue}>
-              <input type="radio" value="PDF" name="check" defaultChecked style={{ margin: 10 }} /> PDF
-              <input type="radio" value="Image" name="check" style={{ margin: 10 }} /> Image
-              <input type="radio" value="RotatedImage" name="check" style={{ margin: 10 }} /> Rotated Image
+            <FormControlLabel
+          value="PDF"
+          control={<Radio color="primary" />}
+          label="PDF"
+          labelPlacement="PDF"
+          name="check"
+          defaultChecked
+          style={{fontSize:"0.8rem", fontWeight: "300"}}
+        />
+        <FormControlLabel
+          value="Image"
+          control={<Radio color="primary" />}
+          label="Image"
+          labelPlacement="Image"
+          name="check"
+          style={{fontSize:"0.8rem", fontWeight: "300"}}
+        />
+        <FormControlLabel
+          value="RotatedImage"
+          control={<Radio color="primary" />}
+          label="RotatedImage"
+          labelPlacement="RotatedImage"
+          name="check"
+          style={{fontSize:"0.8rem", fontWeight: "300"}}
+        />
+              {/* <input type="radio" value="PDF" name="check" defaultChecked style={{ margin: 10 }} /> PDF */}
+              {/* <input type="radio" value="Image" name="check" style={{ margin: 10 }} /> Image */}
+              {/* <input type="radio" value="RotatedImage" name="check" style={{ margin: 10 }} /> Rotated Image */}
             </div>
           </CCol>
           <CCol xs='6'>
+            <div style={{display:"table", float:"right", marginTop: "10px" }}>
           <Button style={viewDetailBtn} onClick={console.log("==Reprocess Extraction Click::")}><i class="fa fa-repeat fa-lg" aria-hidden="true" style={{padding:'5px'}}></i>Reprocess Extraction</Button>
           <Button style={viewDetailBtn} onClick={console.log("==Reprocess Mapping Click::")}><i class="fa fa-repeat fa-lg" aria-hidden="true" style={{padding:'5px'}}></i>Reprocess Mapping</Button>          
           <Button style={viewDetailBtn} onClick={console.log("==Header Mapping Click::")}><i class="fa fa-code fa-lg" aria-hidden="true"></i>Header Mapping</Button>
           <Button style={viewDetailBtn} onClick={console.log("==Table Mapping Click::")}><i class="fa fa-code fa-lg" aria-hidden="true"></i>Table Mapping</Button>
+          </div>
           </CCol>
-        </CRow>
+  </CRow>
+      </div>
+      </CRow>
+</div>
+
+
+
+
+
 
         <CRow style={{ marginTop: 5 }}>
           <CCol xs="8">
