@@ -497,13 +497,14 @@ const Dashboard = () => {
               width="*">
                 <FlexGridCellTemplate cellType="Cell" template={ctx => <React.Fragment>
                   <span style={{ cursor: "pointer" }}><i class="fa fa-search-plus" aria-hidden="true"
-                    onClick={() => {
-                      //  console.log("IncomingArr data==>>", ctx.item)
+                     onClick={() => {
+                     
                       history.push({
                         pathname: '/details',
                         // state: { data: ctx.item }
                         state:ctx.item
-                      })
+                      });
+                      localStorage.setItem("Deatails", JSON.stringify({history}))
                     }}
                   ></i></span>
                 </React.Fragment>} />

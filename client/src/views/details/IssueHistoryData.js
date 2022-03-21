@@ -27,7 +27,12 @@ import { useHistory } from "react-router";
 import { useSelector, useDispatch } from 'react-redux';
 import moment from 'moment'
 import { Button } from '@material-ui/core';
-
+import { Translate } from '@material-ui/icons';
+import Dialog from "@material-ui/core/Dialog";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
 
  
 const loader = {
@@ -51,14 +56,27 @@ const loader = {
     draggable: true,
     progress: undefined,
   }
+  const button_style={
+    fontSize: "26px",
+    color: "#999",
+    background: "none",
+    border: "1px solid #999",
+    borderRadius: "50px",
+    width: "30px",
+    height: "30px",
+    float: "right",
+    lineHeight: 0, 
+}
 const IssueHistoryData=()=>
 {
     const history = useHistory();
     const [Isloader, setIsloader] = useState(false);
     const [historyData, setHistoryData] = useState([]);
     const compId = useSelector(state => state.companyId)
+const [rowAndColumn,setRowAndColumn]=useState(false)
+const [rowColumnData,setRowColumnData]=useState([])
 
-
+console.log(rowColumnData,'table')
     useEffect(() => {
       if(compId){
         getHistoryData()
@@ -112,9 +130,24 @@ const IssueHistoryData=()=>
     });
 
     }
+const getIsuessRowAndColumn=(ctx)=>{
+  let data=[]
+  Object.keys(ctx.item["Error Message"]["reportIsuueCells"]).map((item)=>{
+    //  rowcolumnTable.push((values) => ({ ...values, [item]:rowColumnData.item["Error Message"]["reportIsuueCells"][item] }))
+    data.push({ [item]:(ctx.item["Error Message"]["reportIsuueCells"][item] )})
 
-console.log(historyData,'history issue')
+     })
+  
+  setRowAndColumn(true)
+  setRowColumnData(data)
+    }
+    const rowcolumnclose=()=>{
+    setRowAndColumn(false)
+    setRowColumnData([])
+    }
+ console.log(historyData,'history issue')
   return (
+    <>
     <Grid className="container-fluid" style={{marginTop:40}}>
         <Grid item xs={12} style={{ marginTop: 25}}>
            {historyData && historyData.length>0 ?
@@ -124,10 +157,12 @@ console.log(historyData,'history issue')
            autoGenerateColumns={false}
            // initialized={this.initializeDailyGrid}
            itemsSource={historyData}
+          //  textAlign="center"
+          //  margin="0 auto"
            style={{
              height: "auto",
              maxHeight: 400,
-             margin: 0,
+            margin:'0 auto'
            }}
          >
            <FlexGridColumn
@@ -135,8 +170,18 @@ console.log(historyData,'history issue')
            header="USER EMAIL"
            cssClass="cell-header"
            width="*"
+           margin="auto"
            style={{backgroundColor:'grey'}}
-           ></FlexGridColumn>
+           >
+{/* 
+<FlexGridCellTemplate cellType="Cell" template={ctx =>
+        
+        <React.Fragment>
+            <div style={{position:'absolute',transform:'translateY(-50%)',  top: '50%'}}> {ctx.item["User Email"]}</div>
+        </React.Fragment>} /> */}
+
+
+           </FlexGridColumn>
            <FlexGridColumn
            binding="Error Message"
            header="ERROR MESSAGE"
@@ -148,23 +193,106 @@ console.log(historyData,'history issue')
         
                   <React.Fragment>
                        {console.log(ctx,'ctx')}
-                    {ctx.item["Error Message"].issue}
+                       <div >   {ctx.item["Error Message"].issue}</div>
                   </React.Fragment>} />
            </FlexGridColumn>
+         
            <FlexGridColumn
                 binding="Insert Time"
                 header="INSERT TIME"
                 cssClass="cell-header"
                 width="*"
                 style={{ backgroundColor: 'grey' }}>
-                <FlexGridCellTemplate cellType="Cell" template={ctx =>
+                {/* <FlexGridCellTemplate cellType="Cell" template={ctx =>
                   <React.Fragment>
                     {ctx.item["Insert Time"] ?
-                      <span>{moment(ctx.item["Insert Time"]).format("MM/DD/YYYY hh:mm A")}</span>
+                     <div style={{position:'absolute',transform:'translateY(-50%)',  top: '50%'}}><span>{moment(ctx.item["Insert Time"]).format("MM/DD/YYYY hh:mm A")}</span></div>
                       :""
                     }
-                  </React.Fragment>} />
+                  </React.Fragment>} /> */}
               </FlexGridColumn>
+              <FlexGridColumn
+          //  binding="Error Message"
+          //  header="ISSUES ROWS AND COLUMN"
+           cssClass="cell-header"
+          //  width="*"
+           maxHeight="20px"
+     
+           multiLine={true}
+           style={{backgroundColor:'grey'}}
+           >
+             <FlexGridCellTemplate cellType="Cell"  template={ctx =>
+        
+  <React.Fragment>
+ {Object.keys(ctx.item["Error Message"]["reportIsuueCells"]).length>0?
+   <span style={{ cursor: "pointer" ,marginLeft:'50%'}}>
+                        <img
+                          src="../error-icon-org.png"
+                          style={{ height: 16 }}
+                          onClick={()=>getIsuessRowAndColumn(ctx)}
+                        />                  
+                      </span>:''}
+    </React.Fragment>} 
+            
+                  />
+           </FlexGridColumn>
+           {rowAndColumn &&
+            <Dialog open={rowAndColumn}
+            onClose={rowcolumnclose}>
+            <DialogTitle style={{fontWeight:'bold',fontSize:18}}>Rows And Columns
+            <button
+        style={button_style}
+        onClick={rowcolumnclose}>&times;</button></DialogTitle>
+           
+            <DialogContent style={{ minWidth: 100 }}>
+              <DialogContentText>
+             
+
+  <FlexGrid
+                     headersVisibility="Column"
+                      autoGenerateColumns={false}
+                      isReadOnly={true}
+                      itemsSource={rowColumnData}
+                      // initialized={initializeGrid}
+                      // ref={this.theGrid}
+                   
+                      style={{
+                        height: "auto",
+                        maxHeight: 400,
+                        margin: 0,
+                      }}
+
+                      selectionMode="MultiRange"
+                      showSelectedHeaders="All"
+                      // selectionChanged={(s) => {s.selection._col=3}}
+                      
+                        
+                    >
+                      
+                     {rowColumnData.length>0 && Object.keys(rowColumnData[0]).map(key =>
+                      <FlexGridColumn
+                      binding={key}
+                      header={key}
+                      cssClass="cell-header"
+                      width="*"
+                      minWidth={100}
+                      // visible={key != "user_id"}
+                      style={{backgroundColor:'grey'}}
+                      >
+                       
+
+                      </FlexGridColumn>
+                      )}  
+
+                      <wjFilter.FlexGridFilter></wjFilter.FlexGridFilter>
+                    </FlexGrid>
+             
+
+              </DialogContentText>
+            </DialogContent>
+           
+          </Dialog>
+          }
            <wjFilter.FlexGridFilter></wjFilter.FlexGridFilter>
          </FlexGrid>
          :
@@ -172,7 +300,7 @@ console.log(historyData,'history issue')
            }
             
             </Grid>
-
+           
             {Isloader &&
             <div style={loader}>
               <CircularProgress style={{ margin: "28% auto", display: "block" }} />
@@ -189,7 +317,8 @@ console.log(historyData,'history issue')
               pauseOnHover
             /></div>
         </Grid>
-  );
+        
+  </>);
 }
  
 export default IssueHistoryData;

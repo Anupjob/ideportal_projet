@@ -52,3 +52,24 @@
     background-color: red;
     color: white;
   }
+
+
+  .progressVisualFull {
+    display: flex;
+    /* change the value if you want different thickness */
+    height: 6px;
+    margin: 20px 0;
+    border-radius: 20px;
+  }
+  
+  .progressVisualPart {
+    /* Number of the seconds for complete animation */
+    transition: width 1s;
+    /* border-radius: 20px; */
+  }
+  
+  .progressLabel {
+    /* Nothing here, move along */
+    font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+      "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+  }

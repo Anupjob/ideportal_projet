@@ -31,7 +31,8 @@ import * as wjGrid from '@grapecity/wijmo.react.grid';
 import '@grapecity/wijmo.styles/wijmo.css';
 import * as wjcCore from "@grapecity/wijmo";
 import Grid from "@material-ui/core/Grid";
-
+import ProgressBar from 'react-bootstrap/ProgressBar'
+import ProgressLine from "./ProgressLine";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
@@ -506,7 +507,30 @@ class PdfViewGoogleAzure extends React.Component {
           labelPlacement="Show Results from Google Vision"
           name="gender"
         />
-
+        <div style={{width:'100%',marginLeft:'96%',marginTop:'-20px'}}><span style={{marginTop:'0px',fontSize:'12px',color:'steelblue'}}>98%<br/>Actual</span><span><i class="fa fa-caret-up" aria-hidden="true" style={{color:'steelblue'}}></i></span></div>
+        <div style={{width:'100%',borderRadius:'20px',marginTop:'-28px'}}><ProgressLine
+       
+        backgroundColor="lightgrey"
+        visualParts={[
+          {
+            percentage: "91%",
+            color: "deepskyblue"
+          },
+          {
+            percentage: "7%",
+            color: "steelblue"
+          }
+        ]}
+      /></div>
+      <div style={{display:'flex',width:'100%',marginTop:'-20px'}}>
+        <div style={{width:'94%'}}>
+          0
+        </div>
+        <div style={{width:'6%'}}>
+          100
+        </div>
+      </div>
+        
                 {/* <input type="radio" value="GoogleVision" name="gender" /> Show Results from Google Vision<br /> */}
                 
                 {this.state.googleVisionVisible &&
@@ -556,7 +580,29 @@ class PdfViewGoogleAzure extends React.Component {
           labelPlacement="Simple Google Vision"
           name="gender"
         />
-
+  <div style={{width:'100%',marginLeft:'98%',marginTop:'-20px'}}>98%</div>
+        <div style={{width:'100%',borderRadius:'20px',marginTop:'-20px'}}><ProgressLine
+       
+        backgroundColor="lightgrey"
+        visualParts={[
+          {
+            percentage: "91%",
+            color: "deepskyblue"
+          },
+          {
+            percentage: "7%",
+            color: "steelblue"
+          }
+        ]}
+      /></div>
+      <div style={{display:'flex',width:'100%',marginTop:'-20px'}}>
+        <div style={{width:'94%'}}>
+          0
+        </div>
+        <div style={{width:'6%'}}>
+          100
+        </div>
+      </div>
 <FormControlLabel
           value="AdvancedGoogleVision"
           control={<Radio color="primary" />}
@@ -564,7 +610,29 @@ class PdfViewGoogleAzure extends React.Component {
           labelPlacement="Advanced Google Vision"
           name="gender"
         />
-                
+             <div style={{width:'100%',marginLeft:'98%',marginTop:'-20px'}}>98%</div>
+        <div style={{width:'100%',borderRadius:'20px',marginTop:'-20px'}}><ProgressLine
+       
+        backgroundColor="lightgrey"
+        visualParts={[
+          {
+            percentage: "91%",
+            color: "deepskyblue"
+          },
+          {
+            percentage: "7%",
+            color: "steelblue"
+          }
+        ]}
+      /></div>
+      <div style={{display:'flex',width:'100%',marginTop:'-20px'}}>
+        <div style={{width:'94%'}}>
+          0
+        </div>
+        <div style={{width:'6%'}}>
+          100
+        </div>
+      </div>
                 {/* <input type="radio" value="SimpleGoogleVision" name="gender" /> Simple Google Vision<br /> */}
                 {/* <input type="radio" value="AdvancedGoogleVision" name="gender" /> Advanced Google Vision<br /> */}
                 {/* <hr style={horizontalLine} /> */}
@@ -576,6 +644,29 @@ class PdfViewGoogleAzure extends React.Component {
           labelPlacement="Show Results from Azure Tables"
           name="gender"
         />
+         <div style={{width:'100%',marginLeft:'98%',marginTop:'-20px'}}>98%</div>
+        <div style={{width:'100%',borderRadius:'20px',marginTop:'-20px'}}><ProgressLine
+       
+        backgroundColor="lightgrey"
+        visualParts={[
+          {
+            percentage: "91%",
+            color: "deepskyblue"
+          },
+          {
+            percentage: "7%",
+            color: "steelblue"
+          }
+        ]}
+      /></div>
+      <div style={{display:'flex',width:'100%',marginTop:'-20px'}}>
+        <div style={{width:'94%'}}>
+          0
+        </div>
+        <div style={{width:'6%'}}>
+          100
+        </div>
+      </div>
                 {/* <input type="radio" value="AzureTables" name="gender" /> Show Results from Azure Tables<br /> */}
                 
                 {this.state.azureTableVisible &&
@@ -622,6 +713,30 @@ class PdfViewGoogleAzure extends React.Component {
           labelPlacement="Azure Form"
           name="gender"
         />
+         <div style={{width:'100%',marginLeft:'98%',marginTop:'-20px'}}>98%</div>
+        <div style={{width:'100%',borderRadius:'20px',marginTop:'-20px'}}><ProgressLine
+       
+        backgroundColor="lightgrey"
+        visualParts={[
+          {
+            percentage: "91%",
+            color: "deepskyblue"
+          },
+          {
+            percentage: "7%",
+            color: "steelblue"
+          }
+        ]}
+      /></div>
+      <div style={{display:'flex',width:'100%',marginTop:'-20px'}}>
+        <div style={{width:'94%'}}>
+          0
+        </div>
+        <div style={{width:'6%'}}>
+          100
+        </div>
+      </div>
+               
                 {/* <input type="radio" value="AzureForm" name="gender" /> Azure Form<br /> */}
                 <FormControlLabel
           value="AzureDocAnalyzer"
@@ -630,6 +745,29 @@ class PdfViewGoogleAzure extends React.Component {
           labelPlacement="Azure Document Analyzer"
           name="gender"
         />
+ <div style={{width:'100%',marginLeft:'98%',marginTop:'-20px'}}>98%</div>
+        <div style={{width:'100%',borderRadius:'20px',marginTop:'-20px'}}><ProgressLine
+       
+        backgroundColor="lightgrey"
+        visualParts={[
+          {
+            percentage: "91%",
+            color: "deepskyblue"
+          },
+          {
+            percentage: "7%",
+            color: "steelblue"
+          }
+        ]}
+      /></div>
+      <div style={{display:'flex',width:'100%',marginTop:'-20px'}}>
+        <div style={{width:'94%'}}>
+          0
+        </div>
+        <div style={{width:'6%'}}>
+          100
+        </div>
+      </div>
                 {/* <input type="radio" value="AzureDocAnalyzer" name="gender" /> Azure Document Analyzer<br /> */}
 
                 <FormControlLabel
@@ -639,6 +777,29 @@ class PdfViewGoogleAzure extends React.Component {
           labelPlacement="Show Results from Google Tables"
           name="gender"
         />
+         <div style={{width:'100%',marginLeft:'98%',marginTop:'-20px'}}>98%</div>
+        <div style={{width:'100%',borderRadius:'20px',marginTop:'-20px'}}><ProgressLine
+       
+        backgroundColor="lightgrey"
+        visualParts={[
+          {
+            percentage: "91%",
+            color: "deepskyblue"
+          },
+          {
+            percentage: "7%",
+            color: "steelblue"
+          }
+        ]}
+      /></div>
+      <div style={{display:'flex',width:'100%',marginTop:'-20px'}}>
+        <div style={{width:'94%'}}>
+          0
+        </div>
+        <div style={{width:'6%'}}>
+          100
+        </div>
+      </div>
                 {/* <hr style={horizontalLine} /> */}
                 {/* <input type="radio" value="GoogleTables" name="gender" /> Show Results from Google Tables<br/> */}
                 <FormControlLabel
@@ -648,6 +809,29 @@ class PdfViewGoogleAzure extends React.Component {
           labelPlacement="Tesseract Tables"
           name="gender"
         />
+       <div style={{width:'100%',marginLeft:'98%',marginTop:'-20px'}}>98%</div>
+        <div style={{width:'100%',borderRadius:'20px',marginTop:'-20px'}}><ProgressLine
+       
+        backgroundColor="lightgrey"
+        visualParts={[
+          {
+            percentage: "91%",
+            color: "deepskyblue"
+          },
+          {
+            percentage: "7%",
+            color: "steelblue"
+          }
+        ]}
+      /></div>
+      <div style={{display:'flex',width:'100%',marginTop:'-20px'}}>
+        <div style={{width:'94%'}}>
+          0
+        </div>
+        <div style={{width:'6%'}}>
+          100
+        </div>
+      </div>
                 {/* <input type="radio" value="TesseractTables" name="gender" /> Tesseract Tables<br/> */}
 
                 <FormControlLabel
@@ -657,6 +841,29 @@ class PdfViewGoogleAzure extends React.Component {
           labelPlacement="Azure CV"
           name="gender"
         />
+         <div style={{width:'100%',marginLeft:'98%',marginTop:'-20px'}}>98%</div>
+        <div style={{width:'100%',borderRadius:'20px',marginTop:'-20px'}}><ProgressLine
+       
+        backgroundColor="lightgrey"
+        visualParts={[
+          {
+            percentage: "91%",
+            color: "deepskyblue"
+          },
+          {
+            percentage: "7%",
+            color: "steelblue"
+          }
+        ]}
+      /></div>
+      <div style={{display:'flex',width:'100%',marginTop:'-20px'}}>
+        <div style={{width:'94%'}}>
+          0
+        </div>
+        <div style={{width:'6%'}}>
+          100
+        </div>
+      </div>
                 {/* <input type="radio" value="AzureCV" name="gender" /> Azure CV<br/> */}
                 <FormControlLabel
           value="OpenCV"
@@ -665,6 +872,29 @@ class PdfViewGoogleAzure extends React.Component {
           labelPlacement="Open CV"
           name="gender"
         />  
+        <div style={{width:'100%',marginLeft:'98%',marginTop:'-20px'}}>98%</div>
+        <div style={{width:'100%',borderRadius:'20px',marginTop:'-20px'}}><ProgressLine
+       
+        backgroundColor="lightgrey"
+        visualParts={[
+          {
+            percentage: "91%",
+            color: "deepskyblue"
+          },
+          {
+            percentage: "7%",
+            color: "steelblue"
+          }
+        ]}
+      /></div>
+      <div style={{display:'flex',width:'100%',marginTop:'-20px'}}>
+        <div style={{width:'94%'}}>
+          0
+        </div>
+        <div style={{width:'6%'}}>
+          100
+        </div>
+      </div>
                 {/* <input type="radio" value="OpenCV" name="gender" /> Open CV<br/> */}
                 {/* {this.state.googleTableVisible &&
                   <div style={radioBtnMainView}>

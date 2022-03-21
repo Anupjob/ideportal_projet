@@ -153,6 +153,7 @@ const viewDetailBtn = {
   color: '#999',
   whiteSpace: "nowrap",
   margin: "0 10px",
+  cursor:'pointer'
 }
 const issueBtn = {
   backgroundColor: 'red',
@@ -249,8 +250,8 @@ const DocumentDetails = (props) => {
   console.log('props.history.location.state.data DocumentDetails :>> ', props);
 
     
-  const history = useHistory();
-  console.log('history DocumentDetails====', history);
+  const history1 = useHistory();
+  console.log('history DocumentDetails====', history1);
 
   const [totalPages, setTotalPages] = useState(1);
   const [Isloader, setIsloader] = useState(false);
@@ -295,10 +296,13 @@ const DocumentDetails = (props) => {
   const [renderForms, setRenderForms] = useState(true);
   const [renderMode, setRenderMode] = useState('canvas');
   const [renderTextLayer, setRenderTextLayer] = useState(true);
-  
-console.log(newreportIsuueCells,'newCells')
+  const [openReportResolve, setOpenReportResolve] = React.useState(false);
+console.log(finalDataResult,'newCells')
   const compId = useSelector(state => state.companyId)
+  let details = JSON.parse(localStorage.getItem("Deatails"))
 
+  const history=details.history
+  console.log(details,history,'history')
   console.log('enterIssue :>> ', enterIssue);
   useEffect(() => {
     
@@ -407,6 +411,14 @@ console.log(newreportIsuueCells,'newCells')
       setEnterIssue(props.history.location.state.errMsg.issue)
     }
     setOpenReportIssue(true)
+  };
+  const resolveDialog=()=>{
+    // setOpenReportResolve(true)
+    submitResolve()
+  }
+  const resolvehandleClose = () => {
+    // this.setState({ openReportIssue: false });
+    setOpenReportResolve(false)
   };
   const handleClose = () => {
     // this.setState({ openReportIssue: false });
@@ -615,7 +627,40 @@ console.log(newreportIsuueCells,'newCells')
     }
 
   }
+  const submitResolve=()=>{
+  
+    const headers = {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + localStorage.getItem('access_token'),
+      // reqFrom: "ADMIN",
+    };
+    // let requestBody = {resolve: resolveInput}
+    // console.log("requestBody::::", requestBody)
+    axios({
+      method: "POST",
+      url: settings.serverUrl + "/resolveIssue",
+      // data: JSON.stringify(requestBody),
+      headers,
+    }).then((response) => {
+      console.log("Respone from post ", response);
+      // setOpenReportResolve(false)
+      if (response.data.err) {
+        toast.error(response.data.err, toast_options);
+      } else {
+        toast.success(response.data.result, toast_options);
+        // setFlagIssue(true)
+      }
+    }).catch(err => {
+      toast.error(err.message, toast_options);
+      console.log("Record Issue Error", err)
+      if(err.message.includes("403")){
+        localStorage.clear();
+        history.push("/");
+      }
+    });
 
+
+}
   const downloadPdf = () =>{
     var pdfFileName = history.location.state.pdfFilename;
     var processorPath = history.location.state.processorContainerPath;
@@ -1138,7 +1183,7 @@ console.log(gridObject,'gridobject')
                           <Button style={viewDetailBtn}
                             onClick={() => {
                               localStorage.setItem("details", JSON.stringify(history.location.state))    
-                              history.push({
+                              history1.push({
                                 // pathname: '/detail/' + props.history.location.state?props.history.location.state.data.doc_id:'',
                                 pathname: '/detail/' + history.location.state.doc_id,
 
@@ -1155,8 +1200,8 @@ console.log(gridObject,'gridobject')
                         </TableCell>
                         {history.location.state && history.location.state.docStatus == "Error" ?
                         <TableCell style={table_headerMain}>
-                          <Button style={issueBtn}
-                            onClick={() => openDialog()}>REPORT ISSUE</Button>
+                          <Button style={viewDetailBtn}
+                            onClick={() => resolveDialog()}>Resolve ISSUE</Button>
                         </TableCell>:
                         <TableCell style={historyIssueBtn}>
                         <Button style={viewDetailBtn}
@@ -1167,7 +1212,7 @@ console.log(gridObject,'gridobject')
                             // onClick={() => history.push("/issueHistory")}
                             onClick={() => {
                               
-                              history.push("/issueHistory")}}
+                              history1.push("/issueHistory")}}
                           >
                             ISSUE HISTORY
                           </Button>
@@ -1335,7 +1380,24 @@ console.log(gridObject,'gridobject')
               </div>
              
             </SplitPane>
-          
+            {/* {openReportResolve && <Dialog open={openReportResolve}
+                          onClose={resolvehandleClose}>
+                          <DialogTitle>Issue Resolve</DialogTitle>
+                          <DialogContent style={{ minWidth: 500 }}>
+                            <DialogContentText>
+                              <TextField id="outlined-basic" value={resolveInput} label="Enter Resolve" multiline={true} type="text" variant="outlined" style={{ width: "100%" }}
+                                // onChange={this.handleClickReportIssue}
+                                onChange={e => setResolveInput(e.target.value)}
+                              />
+                            </DialogContentText>
+                          </DialogContent>
+                          <DialogActions>
+                            <div style={{ flexDirection: 'row' }}>
+                            <Button style={cancel_dialogBtn} onClick={resolvehandleClose}>&times;</Button>
+                              <Button style={submit_dialogBtn} onClick={submitResolve} >Submit</Button>
+                            </div>
+                          </DialogActions>
+                        </Dialog>} */}
            {openValidateData &&
             <Dialog open={openValidateData}
             onClose={handleValidateClose}>
