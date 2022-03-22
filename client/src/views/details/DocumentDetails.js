@@ -634,12 +634,12 @@ console.log(finalDataResult,'newCells')
       Authorization: "Bearer " + localStorage.getItem('access_token'),
       // reqFrom: "ADMIN",
     };
-    // let requestBody = {resolve: resolveInput}
+    let requestBody = {id: history.location.state.doc_id}
     // console.log("requestBody::::", requestBody)
     axios({
       method: "POST",
       url: settings.serverUrl + "/resolveIssue",
-      // data: JSON.stringify(requestBody),
+      data: JSON.stringify(requestBody),
       headers,
     }).then((response) => {
       console.log("Respone from post ", response);
