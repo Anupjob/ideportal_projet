@@ -131,15 +131,21 @@ console.log(rowColumnData,'table')
 
     }
 const getIsuessRowAndColumn=(ctx)=>{
-  let data=[]
+  
+  let newRows = {}
   Object.keys(ctx.item["Error Message"]["reportIsuueCells"]).map((item)=>{
     //  rowcolumnTable.push((values) => ({ ...values, [item]:rowColumnData.item["Error Message"]["reportIsuueCells"][item] }))
-    data.push({ [item]:(ctx.item["Error Message"]["reportIsuueCells"][item] )})
+    // data.push({ [item]:(ctx.item["Error Message"]["reportIsuueCells"][item] )})
+    newRows[item] =ctx.item["Error Message"]["reportIsuueCells"][item]
 
      })
   
+     let reportIsuueCellsCopy = {
+      ...rowColumnData,
+      ...newRows
+    }
   setRowAndColumn(true)
-  setRowColumnData(data)
+  setRowColumnData([reportIsuueCellsCopy])
     }
     const rowcolumnclose=()=>{
     setRowAndColumn(false)
