@@ -138,6 +138,9 @@ class userProfileSchema(BaseModel):
     userId: str
     userPicData: str
 
+class resolveIssueSchema(BaseModel):
+    id: str
+
 def download_blob_azure(local_path, complete_file_name):
     print("download_blob_azure", local_path, complete_file_name);
 
@@ -780,6 +783,7 @@ async def incoming_data(incData: IncomingData = Body(...)):
         status = ""
         file_date = ""
         uploadedBy = ""
+        issue_resolved = False
 
         if 'noOfPages' in ids_s:
             noOfPages = ids_s["noOfPages"]
@@ -826,6 +830,9 @@ async def incoming_data(incData: IncomingData = Body(...)):
         if 'file_date' in ids_s:
             file_date = ids_s["file_date"]
 
+        if 'issue_resolved' in ids_s:
+            issue_resolved = ids_s["issue_resolved"]
+
         ids_dict.append({
             "doc_id":str(ids_s["_id"]),
             "docStatus": status,
@@ -844,7 +851,8 @@ async def incoming_data(incData: IncomingData = Body(...)):
             "fromEmail":fromEmail,
             "toEmail":toEmail,
             "validatedOn": validatedOn,
-            "uploaded_by":uploadedBy
+            "uploaded_by":uploadedBy,
+            "issue_resolved": issue_resolved
             # "docValidated": docValidatedStr
         })
 
@@ -1222,7 +1230,26 @@ async def validate_doc(incData: ValidateDocSchema = Body(...)):
             if any(x in col for x in columns_to_read):
                 col_val = csv_fileData[col]
                 if (col in Obj_type):
+                    col_val22 = (csv_fileData[col].str.split()).apply(lambda x: print("x[0]",x[0]))
+
                     col_val = (csv_fileData[col].str.split()).apply(lambda x: float(x[0].replace(',', '')))
+                # print("zmzmzmzzmzmzzm::::::",type(col_val))
+                # if (col in Obj_type):
+                #     # check = lambda x: True if (type(x) == int or type(x) == float) else False
+                #     check = lambda x: print(type(x))
+                #
+                #     fileDataArr = csv_fileData[col].str.split()
+                #
+                #     for col1 in fileDataArr:
+                #
+                #         # print("check(col1)", col1[0], float(col1[0]), check(col1[0]))
+                #         print("check(col1)",col1[0],  check(col1[0]))
+                #         if check(col1[0]):
+                #             col_val = float(col1[0].replace(',', ''))
+                #
+                #     # col_val = (csv_fileData[col].str.split()).apply(lambda x: x[0].replace(',', '') if x[0] != "None")
+                #     # col_val = (csv_fileData[col].str.split()).apply(lambda x: x[0].replace(',', '') if (type(x[0]) == int or type(x[0]) == float) else 0)
+                #     # col_val = (csv_fileData[col].str.split()).apply(lambda x: (type(x[0]) == int or type(x[0]) == float) and float(x[0].replace(',', '')))
 
                 if "Check Amount" in col:
                     ValidateResult[col] = col_val[0]
@@ -1247,6 +1274,8 @@ async def validate_doc(incData: ValidateDocSchema = Body(...)):
         total_owner_val = ValidateResult["Owner Value"]
         total_owner_taxes = ValidateResult["Owner Taxes"]
         total_owner_deducts = ValidateResult["Owner Deducts"]
+
+        print("ValidateResult::::::::::::::::", ValidateResult)
 
         final_Value = abs(total_owner_val - total_owner_taxes - total_owner_deducts - net_tax_total - net_deduct_total)
 
@@ -1289,6 +1318,20 @@ async def update_user_pic(incData: userProfileSchema = Body(...)):
     print("update_one result",result)
 
     return {"result": "image updated successfully", "err": None}
+
+@app.post("/resolveIssue", dependencies=[Depends(JWTBearer())])
+async def resolve_issue(incData: resolveIssueSchema = Body(...)):
+    print("resolveIssue", incData)
+    doc_id = incData.id
+
+    db_mongo = getConn()
+    files_incoming_c = db_mongo.files_incoming
+
+    # result = files_incoming_c.update_one({"_id": ObjectId(doc_id)}, {"$unset": {"errMsg": ""}})
+    result = files_incoming_c.update_one({"_id": ObjectId(doc_id)}, {"$set": {"issue_resolved": True, "status": "VALIDATED"}})
+    print("update_one result", result)
+
+    return {"result": "done", "err": None}
 
 @app.get("/provider/{id}", dependencies=[Depends(JWTBearer())], tags=["posts"])
 async def add_post(id: int) -> dict:
