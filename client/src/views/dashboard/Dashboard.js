@@ -120,7 +120,7 @@ const Dashboard = () => {
     {key:"PENDING", value:"Pending"}, 
     {key:"ERROR", value:"Error"}
   ]);
-
+console.log(IncomingArr,'arrainco')
   // const url = useSelector(state => state.url)
   const compId = useSelector(state => state.companyId)
 
@@ -484,7 +484,8 @@ const Dashboard = () => {
               width="*">
                 <FlexGridCellTemplate cellType="Cell" template={ctx =>
                   <React.Fragment>
-                    {ctx.item.docStatus.toLowerCase() == 'error' && ctx.item.errMsg &&
+                 
+                    {ctx.item.docStatus.toLowerCase() == 'error' && ctx.item.errMsg &&ctx.item.issue_resolved===false&&
                       <span style={{color:"#c00",cursor: "pointer"}}><i class="fa fa-exclamation-triangle" aria-hidden="true"
                         onClick={() => handleClickToOpen(ctx.item.errMsg.issue)}
                       ></i></span>
