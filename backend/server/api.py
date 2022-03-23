@@ -1328,10 +1328,10 @@ async def resolve_issue(incData: resolveIssueSchema = Body(...)):
     files_incoming_c = db_mongo.files_incoming
 
     # result = files_incoming_c.update_one({"_id": ObjectId(doc_id)}, {"$unset": {"errMsg": ""}})
-    result = files_incoming_c.update_one({"_id": ObjectId(doc_id)}, {"$set": {"issue_resolved": True, "status": "VALIDATED"}})
+    result = files_incoming_c.update_one({"_id": ObjectId(doc_id)}, {"$set": {"issue_resolved": True, "status": "Validated"}})
     print("update_one result", result)
 
-    return {"result": "done", "err": None}
+    return {"result": "Error resolved successfully", "err": None}
 
 @app.get("/provider/{id}", dependencies=[Depends(JWTBearer())], tags=["posts"])
 async def add_post(id: int) -> dict:
