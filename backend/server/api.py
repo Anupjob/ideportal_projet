@@ -555,7 +555,7 @@ async def report_issue(incData: IssueSchema = Body(...)):
     report_history_c = db_mongo.report_history
     users_c = db_mongo.users
 
-    result = files_incoming_c.update_one({"_id": ObjectId(doc_id)}, {"$set": {"errMsg": errMsg, "status":"Error"}})
+    result = files_incoming_c.update_one({"_id": ObjectId(doc_id)}, {"$set": {"errMsg": errMsg, "status": "Error", "issue_resolved": False}})
 
     files_incoming_p = files_incoming_c.find_one({"_id": ObjectId(doc_id)})
     print("reportIssue files_incoming_p",files_incoming_p)
