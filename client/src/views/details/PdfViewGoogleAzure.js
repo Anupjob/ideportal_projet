@@ -1,4 +1,4 @@
-import React from 'react'
+import React,{useState} from 'react'
 import {
   CCard,
   CCol,
@@ -173,10 +173,13 @@ class PdfViewGoogleAzure extends React.Component {
       totalPages:0,
       Toggle: false,
       sliderData: [],
-      selectedRadioOption: ""
+      selectedRadioOption: "",
+      val:50,
+     
     }
-    // this.onChangeValue = this.onChangeValue.bind(this);
+    
   }
+
   componentDidMount = () => {
 
     console.log("===PdfViewGoogleAzure doc_id :::GoogleAzure",this.props)
@@ -316,7 +319,7 @@ class PdfViewGoogleAzure extends React.Component {
   }
 
   onChangeValue = (event) => {
-    // console.log("===Radio Button click::", event.target.value);
+    console.log("===Radio Button click::", event.target.value);
     let visType = event.target.value;
 
     if (event.target.value == "GoogleVision") {
@@ -344,7 +347,8 @@ class PdfViewGoogleAzure extends React.Component {
       this.setState({ fileType: 'image_rotated' }, () => { this.getPdfImageRotate() })
     }
   }
-
+  
+  
   onPageLoad(info) {
     // pdf org size ::::::::::  width: 826px; height: 1066px;
     const {
@@ -356,11 +360,15 @@ class PdfViewGoogleAzure extends React.Component {
   sliderClick = () => {
     this.setState({Toggle:!this.state.Toggle})
   }
-
+  clghangle=()=>{
+    console.log(this.state.selectedRadioOption,'slect')
+  }
   render() {
     const { classes } = this.props;
     
     console.log("===props in render :::",this.props)
+  
+
     return (
       <CCard style={pdfMainView}>
 
@@ -541,7 +549,7 @@ class PdfViewGoogleAzure extends React.Component {
             {/* <div style={{position:"fixed", width:"200px", right:"-200px"}}> */}
             {/* <div style={}><i class="fa fa-chevron-left" aria-hidden="true"></i></div> */}
             <div style={radioBtnDiv}>
-              <div onChange={this.onChangeValue} >
+              <div >
               <FormControl component="fieldset">
       {/* <FormLabel component="legend">labelPlacement</FormLabel> */}
       <RadioGroup row aria-label="position" name="position" defaultValue="top" value={this.state.selectedRadioOption}>
@@ -552,8 +560,9 @@ class PdfViewGoogleAzure extends React.Component {
           label="Show Results from Google Vision"
           labelPlacement="Show Results from Google Vision"
           name="gender"
+          onChange={this.onChangeValue}
         />
-        <div style={{width:'100%',marginLeft:'96%',marginTop:'-20px'}}><span style={{marginTop:'0px',fontSize:'12px',color:'steelblue'}}>98%<br/>Actual</span><span><i class="fa fa-caret-up" aria-hidden="true" style={{color:'steelblue'}}></i></span></div>
+        {/* <div style={{width:'100%',marginLeft:'96%',marginTop:'-20px'}}><span style={{marginTop:'0px',fontSize:'12px',color:'steelblue'}}>98%<br/>Actual</span><span><i class="fa fa-caret-up" aria-hidden="true" style={{color:'steelblue'}}></i></span></div>
         <div style={{width:'100%',borderRadius:'20px',marginTop:'-28px'}}><ProgressLine
        
         backgroundColor="lightgrey"
@@ -575,8 +584,31 @@ class PdfViewGoogleAzure extends React.Component {
         <div style={{width:'6%'}}>
           100
         </div>
-      </div>
-        
+      </div> */}
+     {/* < InputRange
+            style={{width:'100%'}}
+            maxValue={100}
+        minValue={0}
+        value={this.state.val.max}
+        onChange={value => this.setState({ value })}
+            /> */}
+            {this.state.selectedRadioOption==="GoogleVision"&&(<>
+            <input type="range" min={0} max={100} style={{width:'100%'}}className="slider" value={this.state.val} onChange={(e)=>{this.setState({val:e.target.value})}}/>
+          <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            marginTop: "1rem",
+            fontWeight: 500,
+            color: "#8f23b3",
+            width:'100%'
+          }}
+        >
+          <div>0</div>
+          <div>{this.state.val}</div>
+        </div></>
+)}
                 {/* <input type="radio" value="GoogleVision" name="gender" /> Show Results from Google Vision<br /> */}
                 
                 {this.state.googleVisionVisible &&
@@ -625,8 +657,9 @@ class PdfViewGoogleAzure extends React.Component {
           label="Simple Google Vision"
           labelPlacement="Simple Google Vision"
           name="gender"
+          onChange={this.onChangeValue}
         />
-  <div style={{width:'100%',marginLeft:'98%',marginTop:'-20px'}}>98%</div>
+  {/* <div style={{width:'100%',marginLeft:'98%',marginTop:'-20px'}}>98%</div>
         <div style={{width:'100%',borderRadius:'20px',marginTop:'-20px'}}><ProgressLine
        
         backgroundColor="lightgrey"
@@ -648,15 +681,33 @@ class PdfViewGoogleAzure extends React.Component {
         <div style={{width:'6%'}}>
           100
         </div>
-      </div>
+      </div> */}
+       {this.state.selectedRadioOption==="SimpleGoogleVision"&&(<>
+            <input type="range" min={0} max={100} style={{width:'100%'}}className="slider" value={this.state.val} onChange={(e)=>{this.setState({val:e.target.value})}}/>
+          <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            marginTop: "1rem",
+            fontWeight: 500,
+            color: "#8f23b3",
+            width:'100%'
+          }}
+        >
+          <div>0</div>
+          <div>{this.state.val}</div>
+        </div></>
+)}
 <FormControlLabel
           value="AdvancedGoogleVision"
           control={<Radio color="primary" />}
           label="Advanced Google Vision"
           labelPlacement="Advanced Google Vision"
           name="gender"
+          onChange={this.onChangeValue}
         />
-             <div style={{width:'100%',marginLeft:'98%',marginTop:'-20px'}}>98%</div>
+             {/* <div style={{width:'100%',marginLeft:'98%',marginTop:'-20px'}}>98%</div>
         <div style={{width:'100%',borderRadius:'20px',marginTop:'-20px'}}><ProgressLine
        
         backgroundColor="lightgrey"
@@ -678,7 +729,25 @@ class PdfViewGoogleAzure extends React.Component {
         <div style={{width:'6%'}}>
           100
         </div>
-      </div>
+      </div> */}
+ {this.state.selectedRadioOption==="AdvancedGoogleVision"&&(<>
+            <input type="range" min={0} max={100} style={{width:'100%'}}className="slider" value={this.state.val} onChange={(e)=>{this.setState({val:e.target.value})}}/>
+          <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            marginTop: "1rem",
+            fontWeight: 500,
+            color: "#8f23b3",
+            width:'100%'
+          }}
+        >
+          <div>0</div>
+          <div>{this.state.val}</div>
+        </div></>
+)}
+      
                 {/* <input type="radio" value="SimpleGoogleVision" name="gender" /> Simple Google Vision<br /> */}
                 {/* <input type="radio" value="AdvancedGoogleVision" name="gender" /> Advanced Google Vision<br /> */}
                 {/* <hr style={horizontalLine} /> */}
@@ -689,8 +758,9 @@ class PdfViewGoogleAzure extends React.Component {
           label="Show Results from Azure Tables"
           labelPlacement="Show Results from Azure Tables"
           name="gender"
+          onChange={this.onChangeValue}
         />
-         <div style={{width:'100%',marginLeft:'98%',marginTop:'-20px'}}>98%</div>
+         {/* <div style={{width:'100%',marginLeft:'98%',marginTop:'-20px'}}>98%</div>
         <div style={{width:'100%',borderRadius:'20px',marginTop:'-20px'}}><ProgressLine
        
         backgroundColor="lightgrey"
@@ -712,7 +782,25 @@ class PdfViewGoogleAzure extends React.Component {
         <div style={{width:'6%'}}>
           100
         </div>
-      </div>
+        
+      </div> */}
+      {this.state.selectedRadioOption==="AzureTables"&&(<>
+            <input type="range" min={0} max={100} style={{width:'100%'}}className="slider" value={this.state.val} onChange={(e)=>{this.setState({val:e.target.value})}}/>
+          <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            marginTop: "1rem",
+            fontWeight: 500,
+            color: "#8f23b3",
+            width:'100%'
+          }}
+        >
+          <div>0</div>
+          <div>{this.state.val}</div>
+        </div></>
+)}
                 {/* <input type="radio" value="AzureTables" name="gender" /> Show Results from Azure Tables<br /> */}
                 
                 {this.state.azureTableVisible &&
@@ -758,8 +846,9 @@ class PdfViewGoogleAzure extends React.Component {
           label="Azure Form"
           labelPlacement="Azure Form"
           name="gender"
+          onChange={this.onChangeValue}
         />
-         <div style={{width:'100%',marginLeft:'98%',marginTop:'-20px'}}>98%</div>
+         {/* <div style={{width:'100%',marginLeft:'98%',marginTop:'-20px'}}>98%</div>
         <div style={{width:'100%',borderRadius:'20px',marginTop:'-20px'}}><ProgressLine
        
         backgroundColor="lightgrey"
@@ -781,7 +870,24 @@ class PdfViewGoogleAzure extends React.Component {
         <div style={{width:'6%'}}>
           100
         </div>
-      </div>
+      </div> */}
+      {this.state.selectedRadioOption==="AzureForm"&&(<>
+            <input type="range" min={0} max={100} style={{width:'100%'}}className="slider" value={this.state.val} onChange={(e)=>{this.setState({val:e.target.value})}}/>
+          <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            marginTop: "1rem",
+            fontWeight: 500,
+            color: "#8f23b3",
+            width:'100%'
+          }}
+        >
+          <div>0</div>
+          <div>{this.state.val}</div>
+        </div></>
+)}
                
                 {/* <input type="radio" value="AzureForm" name="gender" /> Azure Form<br /> */}
                 <FormControlLabel
@@ -790,8 +896,9 @@ class PdfViewGoogleAzure extends React.Component {
           label="Azure Document Analyzer"
           labelPlacement="Azure Document Analyzer"
           name="gender"
+          onChange={this.onChangeValue}
         />
- <div style={{width:'100%',marginLeft:'98%',marginTop:'-20px'}}>98%</div>
+ {/* <div style={{width:'100%',marginLeft:'98%',marginTop:'-20px'}}>98%</div>
         <div style={{width:'100%',borderRadius:'20px',marginTop:'-20px'}}><ProgressLine
        
         backgroundColor="lightgrey"
@@ -813,7 +920,24 @@ class PdfViewGoogleAzure extends React.Component {
         <div style={{width:'6%'}}>
           100
         </div>
-      </div>
+      </div> */}
+        {this.state.selectedRadioOption==="AzureDocAnalyzer"&&(<>
+            <input type="range" min={0} max={100} style={{width:'100%'}}className="slider" value={this.state.val} onChange={(e)=>{this.setState({val:e.target.value})}}/>
+          <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            marginTop: "1rem",
+            fontWeight: 500,
+            color: "#8f23b3",
+            width:'100%'
+          }}
+        >
+          <div>0</div>
+          <div>{this.state.val}</div>
+        </div></>
+)}
                 {/* <input type="radio" value="AzureDocAnalyzer" name="gender" /> Azure Document Analyzer<br /> */}
 
                 <FormControlLabel
@@ -822,8 +946,9 @@ class PdfViewGoogleAzure extends React.Component {
           label="Show Results from Google Tables"
           labelPlacement="Show Results from Google Tables"
           name="gender"
+          onChange={this.onChangeValue}
         />
-         <div style={{width:'100%',marginLeft:'98%',marginTop:'-20px'}}>98%</div>
+         {/* <div style={{width:'100%',marginLeft:'98%',marginTop:'-20px'}}>98%</div>
         <div style={{width:'100%',borderRadius:'20px',marginTop:'-20px'}}><ProgressLine
        
         backgroundColor="lightgrey"
@@ -845,7 +970,24 @@ class PdfViewGoogleAzure extends React.Component {
         <div style={{width:'6%'}}>
           100
         </div>
-      </div>
+      </div> */}
+       {this.state.selectedRadioOption==="GoogleTables"&&(<>
+            <input type="range" min={0} max={100} style={{width:'100%'}}className="slider" value={this.state.val} onChange={(e)=>{this.setState({val:e.target.value})}}/>
+          <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            marginTop: "1rem",
+            fontWeight: 500,
+            color: "#8f23b3",
+            width:'100%'
+          }}
+        >
+          <div>0</div>
+          <div>{this.state.val}</div>
+        </div></>
+)}
                 {/* <hr style={horizontalLine} /> */}
                 {/* <input type="radio" value="GoogleTables" name="gender" /> Show Results from Google Tables<br/> */}
                 <FormControlLabel
@@ -854,8 +996,9 @@ class PdfViewGoogleAzure extends React.Component {
           label="Tesseract Tables"
           labelPlacement="Tesseract Tables"
           name="gender"
+          onChange={this.onChangeValue}
         />
-       <div style={{width:'100%',marginLeft:'98%',marginTop:'-20px'}}>98%</div>
+       {/* <div style={{width:'100%',marginLeft:'98%',marginTop:'-20px'}}>98%</div>
         <div style={{width:'100%',borderRadius:'20px',marginTop:'-20px'}}><ProgressLine
        
         backgroundColor="lightgrey"
@@ -877,7 +1020,24 @@ class PdfViewGoogleAzure extends React.Component {
         <div style={{width:'6%'}}>
           100
         </div>
-      </div>
+      </div> */}
+        {this.state.selectedRadioOption==="TesseractTables"&&(<>
+            <input type="range" min={0} max={100} style={{width:'100%'}}className="slider" value={this.state.val} onChange={(e)=>{this.setState({val:e.target.value})}}/>
+          <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            marginTop: "1rem",
+            fontWeight: 500,
+            color: "#8f23b3",
+            width:'100%'
+          }}
+        >
+          <div>0</div>
+          <div>{this.state.val}</div>
+        </div></>
+)}
                 {/* <input type="radio" value="TesseractTables" name="gender" /> Tesseract Tables<br/> */}
 
                 <FormControlLabel
@@ -886,8 +1046,9 @@ class PdfViewGoogleAzure extends React.Component {
           label="Azure CV"
           labelPlacement="Azure CV"
           name="gender"
+          onChange={this.onChangeValue}
         />
-         <div style={{width:'100%',marginLeft:'98%',marginTop:'-20px'}}>98%</div>
+         {/* <div style={{width:'100%',marginLeft:'98%',marginTop:'-20px'}}>98%</div>
         <div style={{width:'100%',borderRadius:'20px',marginTop:'-20px'}}><ProgressLine
        
         backgroundColor="lightgrey"
@@ -909,7 +1070,24 @@ class PdfViewGoogleAzure extends React.Component {
         <div style={{width:'6%'}}>
           100
         </div>
-      </div>
+      </div> */}
+       {this.state.selectedRadioOption==="AzureCV"&&(<>
+            <input type="range" min={0} max={100} style={{width:'100%'}}className="slider" value={this.state.val} onChange={(e)=>{this.setState({val:e.target.value})}}/>
+          <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            marginTop: "1rem",
+            fontWeight: 500,
+            color: "#8f23b3",
+            width:'100%'
+          }}
+        >
+          <div>0</div>
+          <div>{this.state.val}</div>
+        </div></>
+)}
                 {/* <input type="radio" value="AzureCV" name="gender" /> Azure CV<br/> */}
                 <FormControlLabel
           value="OpenCV"
@@ -917,8 +1095,9 @@ class PdfViewGoogleAzure extends React.Component {
           label="Open CV"
           labelPlacement="Open CV"
           name="gender"
+          onChange={this.onChangeValue}
         />  
-        <div style={{width:'100%',marginLeft:'98%',marginTop:'-20px'}}>98%</div>
+        {/* <div style={{width:'100%',marginLeft:'98%',marginTop:'-20px'}}>98%</div>
         <div style={{width:'100%',borderRadius:'20px',marginTop:'-20px'}}><ProgressLine
        
         backgroundColor="lightgrey"
@@ -940,7 +1119,24 @@ class PdfViewGoogleAzure extends React.Component {
         <div style={{width:'6%'}}>
           100
         </div>
-      </div>
+      </div> */}
+      {this.state.selectedRadioOption==="OpenCV"&&(<>
+            <input type="range" min={0} max={100} style={{width:'100%'}}className="slider" value={this.state.val} onChange={(e)=>{this.setState({val:e.target.value})}}/>
+          <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            marginTop: "1rem",
+            fontWeight: 500,
+            color: "#8f23b3",
+            width:'100%'
+          }}
+        >
+          <div>0</div>
+          <div>{this.state.val}</div>
+        </div></>
+)}
                 {/* <input type="radio" value="OpenCV" name="gender" /> Open CV<br/> */}
                 {/* {this.state.googleTableVisible &&
                   <div style={radioBtnMainView}>

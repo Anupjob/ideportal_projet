@@ -1005,7 +1005,7 @@ const sliderClick = () => {
 flex.itemFormatter = function(panel, r, c, cell) {
   console.log(Object.keys( reportIsuueCells),reportIsuueCells,'celllssss')
 
-  if(reportIsuueCells &&  Object.keys( reportIsuueCells).length !== 0){
+  if(reportIsuueCells &&  Object.keys( reportIsuueCells).length !== 0&&history.location.state.issue_resolved===false){
   let arr = Object.keys(reportIsuueCells)
 for(var i=0;i<arr.length;i++){
   let row = arr[i]
@@ -1198,7 +1198,7 @@ console.log(gridObject,'gridobject')
                               })
                             }}>VIEW DETAILS</Button>
                         </TableCell>
-                        {history.location.state && history.location.state.docStatus == "Error" ?
+                        {history.location.state && history.location.state.docStatus == "Error"&&history.location.state.issue_resolved===false ?
                         <TableCell style={table_headerMain}>
                           <Button style={viewDetailBtn}
                             onClick={() => resolveDialog()}>Resolve ISSUE</Button>
