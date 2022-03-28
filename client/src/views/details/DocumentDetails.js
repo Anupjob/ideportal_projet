@@ -1176,9 +1176,10 @@ console.log(gridObject,'gridobject')
                   <Table aria-label="simple table">
                     <TableHead>
                       <TableRow>
+                      
                       <TableCell style={table_headerMain}><p style={dateTimeView}><span style={{fontWeight:"600"}}>Date/Time Received:</span> {moment(props.history && props.history.location && props.history.location.state && props.history.location.state.dateRec).format("MM/DD/YYYY hh:mm A")}</p></TableCell>
                         <TableCell style={table_headerMain}><p style={dateTimeView}><span style={{fontWeight:"600"}}>Date/Time Processed:</span> {moment( props.history && props.history.location && props.history.location.state && props.history.location.state.dateProcessed).format("MM/DD/YYYY hh:mm A")}</p></TableCell>
-                        <TableCell style={table_headerMain}><p style={dateTimeView}><span style={{fontWeight:"600"}}># of Pages:</span> {props.history && props.history.location && props.history.location.state && props.history.location.state.noOfPages}</p></TableCell>
+                        <TableCell style={table_headerMain}><p style={dateTimeView}><span style={{fontWeight:"600"}}># of Pages:</span> {history && history.location && history.location.state && history.location.state.noOfPages}</p></TableCell>
                         <TableCell style={table_headerMain}>
                           <Button style={viewDetailBtn}
                             onClick={() => {
