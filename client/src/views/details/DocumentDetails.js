@@ -276,7 +276,7 @@ const DocumentDetails = (props) => {
   const [csvFileName,setCsvFileName]=useState('')
   const [openValidateData, setOpenValidateData] = React.useState(false);
   const [validData, setValidData] = useState({});
-  const [reportIsuueCells, setReportIsuueCells] = useState({});
+  const [reportIsuueCells, setReportIsuueCells] = useState([]);
   const [newreportIsuueCells, setNewReportIsuueCells] = useState({})
   const [flagissue,setFlagIssue]=useState(false)
   const [ListVal, setList] = useState(0);
@@ -298,6 +298,8 @@ const DocumentDetails = (props) => {
   const [renderMode, setRenderMode] = useState('canvas');
   const [renderTextLayer, setRenderTextLayer] = useState(true);
   const [openReportResolve, setOpenReportResolve] = React.useState(false);
+  const [issueResolved, setIssueResolved] = useState(false);
+
 console.log(finalDataResult,'newCells')
   const compId = useSelector(state => state.companyId)
   let details = JSON.parse(localStorage.getItem("Deatails"))
@@ -319,8 +321,10 @@ console.log(finalDataResult,'newCells')
       let docValidatedRec = history.location.state.docStatus? history.location.state.docStatus.toLowerCase() === "validated"?"Yes":"No":"No";
       setDocValidated(docValidatedRec)
 
-      let reportIsuueCellsRec = history.location.state.errMsg && history.location.state.errMsg.reportIsuueCells? history.location.state.errMsg.reportIsuueCells: {};
+      let reportIsuueCellsRec = history.location.state.errMsg && history.location.state.errMsg.reportIsuueCells? history.location.state.errMsg.reportIsuueCells: [];
       setReportIsuueCells(reportIsuueCellsRec);
+
+      setIssueResolved(history.location.state.issue_resolved);
 
     }
     
@@ -345,7 +349,7 @@ console.log(finalDataResult,'newCells')
   geCsvData()
  },[csvFileName])
 
- useEffect(()=>{
+//  useEffect(()=>{
 //    var flex =new FlexGrid()
 //   flex.itemFormatter = function(panel, r, c, cell) {
 //     console.log(panel, 5, 5, cell,'celllssss')
@@ -399,7 +403,7 @@ console.log(finalDataResult,'newCells')
 // }
 // }
 
-},[reportIsuueCells]);
+// },[reportIsuueCells]);
 
   const getPdfAndCsv = () => {
     getPdfImage();
@@ -564,7 +568,7 @@ console.log(finalDataResult,'newCells')
       }).catch(err => {
         toast.error(err.message, toast_options);
         setIsCsvLoading(false)
-        Isloader(false)
+        setIsloader(false)
 
 
         console.log("Record Issue Error", err)
@@ -581,6 +585,8 @@ console.log(finalDataResult,'newCells')
     // }
   }
   const submit = () => {
+    setIsloader(true)
+
     let companyId = localStorage.getItem('companyId')
     console.log("===companyId in DocumentDetails:::", companyId)
     let userId = localStorage.getItem('userId')
@@ -591,9 +597,9 @@ console.log(finalDataResult,'newCells')
     else {
 
       let issueCells = reportIsuueCells;
-      if(Object.keys(reportIsuueCells).length>0&&Object.keys(newreportIsuueCells).length>0){
-        issueCells = newreportIsuueCells;
-      }
+      // if(Object.keys(reportIsuueCells).length>0&&Object.keys(newreportIsuueCells).length>0){
+      //   issueCells = newreportIsuueCells;
+      // }
       console.log(issueCells,'cells isuuses')
       const headers = {
         "Content-Type": "application/json",
@@ -615,8 +621,11 @@ console.log(finalDataResult,'newCells')
         } else {
           toast.success(response.data.result, toast_options);
           setFlagIssue(true)
+          setIssueResolved(false)
         }
+        setIsloader(false)
       }).catch(err => {
+        setIsloader(false)
         toast.error(err.message, toast_options);
         console.log("Record Issue Error", err)
         if(err.message.includes("403")){
@@ -629,6 +638,7 @@ console.log(finalDataResult,'newCells')
 
   }
   const submitResolve=()=>{
+    setIsloader(true)
   
     const headers = {
       "Content-Type": "application/json",
@@ -649,9 +659,12 @@ console.log(finalDataResult,'newCells')
         toast.error(response.data.err, toast_options);
       } else {
         toast.success(response.data.result, toast_options);
+        setIssueResolved(true)
         // setFlagIssue(true)
       }
+      setIsloader(false)
     }).catch(err => {
+      setIsloader(false)
       toast.error(err.message, toast_options);
       console.log("Record Issue Error", err)
       if(err.message.includes("403")){
@@ -1004,31 +1017,44 @@ const sliderClick = () => {
   
 
 flex.itemFormatter = function(panel, r, c, cell) {
-  console.log(Object.keys( reportIsuueCells),reportIsuueCells,'celllssss')
+  // console.log(Object.keys( reportIsuueCells),reportIsuueCells,'celllssss')
 
-  if(reportIsuueCells &&  Object.keys( reportIsuueCells).length !== 0&&history.location.state.issue_resolved===false){
-  let arr = Object.keys(reportIsuueCells)
-for(var i=0;i<arr.length;i++){
-  let row = arr[i]
-  let rowIdx = row.substring(3)
+//   if(reportIsuueCells &&  Object.keys( reportIsuueCells).length !== 0&&history.location.state.issue_resolved===false){
+//   let arr = Object.keys(reportIsuueCells)
+// for(var i=0;i<arr.length;i++){
+//   let row = arr[i]
+//   let rowIdx = row.substring(3)
    
-  let colArr = reportIsuueCells[arr[i]]
+//   let colArr = reportIsuueCells[arr[i]]
 
-  colArr.map((cObj)=>{
-    let col = cObj
-    let cIdx = col.substring(3)
+//   colArr.map((cObj)=>{
+//     let col = cObj
+//     let cIdx = col.substring(3)
     
-// remove text      
-if(c==cIdx&&r==rowIdx){
+// // remove text      
+// if(c==cIdx&&r==rowIdx){
 
-return(<>
-      {cell.innerHTML='<div class="diff">' + cell.innerHTML + '</div>'}
-      </> )
-     }
-  })
+// return(<>
+//       {cell.innerHTML='<div class="diff">' + cell.innerHTML + '</div>'}
+//       </> )
+//      }
+//   })
   
-}
-}
+// }
+// }
+if(!issueResolved){
+reportIsuueCells.map(rng=>{
+
+  for (let rowIdx = rng.topRow; rowIdx <= rng.bottomRow; rowIdx++) {
+    for (let cIdx = rng.leftCol; cIdx <= rng.rightCol; cIdx++) {
+    if(c==cIdx&&r==rowIdx){
+    return(<>
+    {cell.innerHTML='<div class="diff">' + cell.innerHTML + '</div>'}
+    </> )
+    }
+    }
+    }
+})}
 }
 
   };
@@ -1200,7 +1226,7 @@ console.log(gridObject,'gridobject')
                               })
                             }}>VIEW DETAILS</Button>
                         </TableCell>
-                        {history.location.state && history.location.state.docStatus == "Error"&&history.location.state.issue_resolved===false ?
+                        {history.location.state && history.location.state.docStatus == "Error"&& !issueResolved ?
                         <TableCell style={table_headerMain}>
                           <Button style={viewDetailBtn}
                             onClick={() => resolveDialog()}>Resolve ISSUE</Button>
@@ -1306,52 +1332,58 @@ console.log(gridObject,'gridobject')
                         console.log(s,'flex')
                         let ranges = s.selectedRanges;
                         console.log('selectionChanged ranges', ranges);
+                        // setReportIsuueCells(ranges)
                      
-                        let newRows = {}
+                        let rangescpy = []
                         for (let i = 0; i < ranges.length; i++) {
+                          let newRows = {}
 
                           let rng = ranges[i];
-                          
-                         
-                          for (let r = rng.topRow; r <= rng.bottomRow; r++) {
-                            let colarr = []
-                            console.log("row"+r,'row')
-                            // console.log(r,'row')
-                            for (let c = rng.leftCol; c <= rng.rightCol; c++) {
+                          newRows["topRow"] = rng.topRow
+                          newRows["bottomRow"] = rng.bottomRow
+                          newRows["leftCol"] = rng.leftCol
+                          newRows["rightCol"] = rng.rightCol
+                          rangescpy.push(newRows)
+                        //   for (let r = rng.topRow; r <= rng.bottomRow; r++) {
+                        //     let colarr = []
+                        //     console.log("row"+r,'row')
+                        //     // console.log(r,'row')
+                        //     for (let c = rng.leftCol; c <= rng.rightCol; c++) {
                              
-                              // console.log("row"+r,'row')
-                              console.log("col"+c, ' cranges')
-                              colarr.push("col" + c)
-                             }
-                            newRows["row" + r] = colarr
+                        //       // console.log("row"+r,'row')
+                        //       console.log("col"+c, ' cranges')
+                        //       colarr.push("col" + c)
+                        //      }
+                        //     newRows["row" + r] = colarr
                            
-                          }
+                        //   }
                         }
+                        setReportIsuueCells(rangescpy)
 
-                        console.log('reportIsuueCells', reportIsuueCells);
-                        console.log('newRows', newRows);
+                        // console.log('reportIsuueCells', reportIsuueCells);
+                        // console.log('newRows', newRows);
 
-                        if(Object.keys(reportIsuueCells).length>0){
+                        // if(Object.keys(reportIsuueCells).length>0){
 
-                          let reportIsuueCellsCopy = {
-                            ...newreportIsuueCells,
-                            ...newRows
-                          }
-                          console.log('reportIsuueCellsCopy', reportIsuueCellsCopy);
+                        //   let reportIsuueCellsCopy = {
+                        //     ...newreportIsuueCells,
+                        //     ...newRows
+                        //   }
+                        //   console.log('reportIsuueCellsCopy', reportIsuueCellsCopy);
   
-                          setNewReportIsuueCells(reportIsuueCellsCopy)
-                        }else{
+                        //   setNewReportIsuueCells(reportIsuueCellsCopy)
+                        // }else{
 
-                          let reportIsuueCellsCopy = {
-                            ...reportIsuueCells,
-                            ...newRows
-                          }
+                        //   let reportIsuueCellsCopy = {
+                        //     ...reportIsuueCells,
+                        //     ...newRows
+                        //   }
 
-                          console.log('reportIsuueCellsCopy', reportIsuueCellsCopy);
+                        //   console.log('reportIsuueCellsCopy', reportIsuueCellsCopy);
   
-                          setReportIsuueCells(reportIsuueCellsCopy)
+                        //   setReportIsuueCells(reportIsuueCellsCopy)
                          
-                        }
+                        // }
 
                       }}
 
