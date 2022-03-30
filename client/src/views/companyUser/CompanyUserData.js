@@ -387,7 +387,8 @@ const CompanyUserData = () => {
                                   cursor:"pointer", 
                                   padding:"20px 0", 
                                   position:"relative", 
-                                  zIndex:"2"
+                                  zIndex:"2",
+                                  width:'100%'
                                   }} 
                                   name="image"
                         onChange={handleChange}
