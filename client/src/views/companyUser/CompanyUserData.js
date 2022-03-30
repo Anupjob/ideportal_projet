@@ -34,7 +34,7 @@ import { useHistory } from "react-router";
 import { useSelector, useDispatch } from 'react-redux';
 import Avatar from "@material-ui/core/Avatar";
 import zIndex from '@material-ui/core/styles/zIndex';
-
+import { GroupPanel } from "@grapecity/wijmo.react.grid.grouppanel";
 
 const loader = {
   position: "fixed",
@@ -87,6 +87,7 @@ const CompanyUserData = () => {
   const [email, setEmail] = useState('');
   const [image, setImage] = useState('');
   const [name, setName] = useState('');
+  const [gridObject, setGridObject] = useState();
   const compId = useSelector(state => state.companyId)
 
 
@@ -115,6 +116,12 @@ const CompanyUserData = () => {
     getUsersData()
   }, [])
 
+  const initializeGrid = (flex) => {
+    // flex.rows.defaultSize = 40;
+    setGridObject(flex);
+
+    flex.columnHeaders.rows.defaultSize = 40;
+  };
   const getUsersData = () => {
     setIsloader(true)
 
@@ -192,6 +199,7 @@ const CompanyUserData = () => {
           toast.error(response.data.err, toast_options);
           setIsloader(false)
         } else {
+          toast.success(response.data.result, toast_options);
           getUsersData()
         }
         setEmail("");
@@ -214,10 +222,13 @@ const CompanyUserData = () => {
 
       <Grid>
             <Grid item xs={12} style={{ marginTop: 25 }}>
+            <GroupPanel className="group-panel" grid={gridObject} placeholder="Drag columns here to create groups" style={{position:'relative',zIndex:1}}/>
               <FlexGrid
                 headersVisibility="Column"
                 autoGenerateColumns={false}
+                initialized={initializeGrid}
                 itemsSource={tableData}
+                isReadOnly={true}
                 style={{
                   height: "auto",
                   maxHeight: 400,

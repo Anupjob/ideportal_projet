@@ -41,6 +41,8 @@ import * as wjGrid from '@grapecity/wijmo.react.grid';
 import '@grapecity/wijmo.styles/wijmo.css';
 import * as wjcCore from "@grapecity/wijmo";
 import Grid from "@material-ui/core/Grid";
+import { GroupPanel } from "@grapecity/wijmo.react.grid.grouppanel";
+
 
 const loader = {
   position: "fixed",
@@ -112,6 +114,7 @@ const Dashboard = () => {
   const [errorMsg, setErrorMsg] = React.useState('');
   const [ArrNull, setArrNull] = React.useState(false);
   const [selectedFile, setSelectedFile] = useState();
+  const [gridObject, setGridObject] = useState();
   const [statusOptions, setStatusOptions] = useState([
     {key:"ALL", value:"all"}, 
     {key:"UPLOADED", value:"Uploaded"}, 
@@ -138,6 +141,12 @@ console.log(IncomingArr,'arrainco')
     }
   }, [])
 
+  const initializeGrid = (flex) => {
+    // flex.rows.defaultSize = 40;
+    setGridObject(flex);
+
+    flex.columnHeaders.rows.defaultSize = 40;
+  };
   const searchIfDataExists = () =>{
     console.log('searchIfDataExists localStorage.getItem("dashboardData") :>> ', localStorage.getItem("dashboardData"));
     let doc = JSON.parse(localStorage.getItem("dashboardData"))
@@ -469,12 +478,15 @@ console.log(IncomingArr,'arrainco')
 
       <Grid className="container-fluid">
         <Grid item xs={12} style={{ marginTop: 25 }}>
+        <GroupPanel className="group-panel" grid={gridObject} placeholder="Drag columns here to create groups" style={{position:'relative',zIndex:1}}/>
           {IncomingArr.length > 0 && !ArrNull ?
             <FlexGrid
               headersVisibility="Column"
               autoGenerateColumns={false}
               isReadOnly={true}
               itemsSource={IncomingArr}
+              initialized={initializeGrid}
+
               style={{
                 height: "auto",
                 maxHeight: 400,
