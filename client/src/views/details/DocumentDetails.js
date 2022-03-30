@@ -53,6 +53,7 @@ import { withStyles } from "@material-ui/core/styles";
 import { useSelector, useDispatch } from 'react-redux';
 import { cilBurger } from '@coreui/icons';
 import ViewOptions from './ViewOptions';
+import { GroupPanel } from "@grapecity/wijmo.react.grid.grouppanel";
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 const master_dropdown={
@@ -1283,6 +1284,7 @@ console.log(gridObject,'gridobject')
            </select> 
 } </>):''}
                 <Grid item xs={12} style={{ marginTop: 25}}>
+                <GroupPanel className="group-panel" grid={gridObject} placeholder="Drag columns here to create groups"/> 
                 <FlexGrid
                       headersVisibility="Column"
                       autoGenerateColumns={false}

@@ -32,6 +32,8 @@ import TextField from "@material-ui/core/TextField";
 import 'react-toastify/dist/ReactToastify.css';
 import { useHistory } from "react-router";
 import { useSelector, useDispatch } from 'react-redux';
+import { GroupPanel } from "@grapecity/wijmo.react.grid.grouppanel";
+
 
 const loader = {
   position: "fixed",
@@ -86,6 +88,7 @@ const CompniesData = () => {
   const [state, setState] = useState('');
   const [zip, setZip] = useState('');
   const [contact, setContact] = useState('');
+  const [gridObject, setGridObject] = useState();
   const dispatch = useDispatch()
 
 
@@ -93,6 +96,12 @@ const CompniesData = () => {
     getCompanyData()
   }, [])
 
+  const initializeGrid = (flex) => {
+    // flex.rows.defaultSize = 40;
+    setGridObject(flex);
+
+    flex.columnHeaders.rows.defaultSize = 40;
+  };
   const getCompanyData = () => {
     setIsloader(true)
     // setTableData([])
@@ -173,6 +182,7 @@ const CompniesData = () => {
         toast.error(response.data.err, toast_options);
         setIsloader(false)
       } else {
+        toast.success(response.data.result, toast_options);
         getCompanyData()
       }
       setName("");
@@ -199,11 +209,13 @@ const CompniesData = () => {
         <CButton type="submit" color="primary" size="lg" style={btn_style} onClick={() => handleClickToOpen()}>Add Company</CButton>
         {tableData.length>0 ?
         <Grid item xs={12} style={{ marginTop: 25}}>
+        <GroupPanel className="group-panel" grid={gridObject} placeholder="Drag columns here to create groups" style={{position:'relative',zIndex:1}}/>
           <FlexGrid
               headersVisibility="Column"
               autoGenerateColumns={false}
-              // initialized={this.initializeDailyGrid}
+              initialized={initializeGrid}
               itemsSource={tableData}
+              isReadOnly={true}
               style={{
                 height: "auto",
                 maxHeight: 400,

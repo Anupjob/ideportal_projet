@@ -38,6 +38,8 @@ import MenuItem from '@material-ui/core/MenuItem';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 import { makeStyles } from '@material-ui/core/styles';
+import { GroupPanel } from "@grapecity/wijmo.react.grid.grouppanel";
+
 
 //const [age, setAge] = React.useState('');
 
@@ -130,6 +132,7 @@ const ProcessorsData = () => {
   const [azureFormVal, setAzureFormVal] = useState('');
   const [textractVal, setTextract] = useState('');
   const [keywordsField, setkeywordsField] = useState([""]);
+  const [gridObject, setGridObject] = useState();
   const compId = useSelector(state => state.companyId)
 
   const CompanyList = ["Digital Glyde","Maverick","Questa Energy Corporation","Demo Resources"]
@@ -148,7 +151,12 @@ const ProcessorsData = () => {
         }, 1000);
       }
   }, [])
+  const initializeGrid = (flex) => {
+    // flex.rows.defaultSize = 40;
+    setGridObject(flex);
 
+    flex.columnHeaders.rows.defaultSize = 40;
+  };
   const getProcessorData = () => {
     setIsloader(true)
     const headers = {
@@ -254,6 +262,7 @@ const ProcessorsData = () => {
           toast.error(response.data.err, toast_options);
           setIsloader(false)
         } else {
+          toast.success(response.data.result, toast_options);
           getProcessorData()
         }
         setGroup("");
@@ -301,10 +310,12 @@ const ProcessorsData = () => {
         <CButton type="submit" color="primary" size="lg" style={btn_style} onClick={() => handleClickToOpen()}>Add Processor</CButton>
          {tableData.length>0 ?
           <Grid item xs={12} style={{ marginTop: 25}}>
+          <GroupPanel className="group-panel" grid={gridObject} placeholder="Drag columns here to create groups" style={{position:'relative',zIndex:1}}/>
             <FlexGrid
                 headersVisibility="Column"
                 autoGenerateColumns={false}
-                // initialized={this.initializeDailyGrid}
+                initialized={initializeGrid}
+                isReadOnly={true}
                 itemsSource={tableData}
                 style={{
                   height: "auto",

@@ -189,7 +189,7 @@ class PdfViewGoogleAzure extends React.Component {
       Toggle: false,
       sliderData: [],
       selectedRadioOption: "",
-      val:50,
+      val:100,
      
     }
     
@@ -621,7 +621,7 @@ class PdfViewGoogleAzure extends React.Component {
         onChange={value => this.setState({ value })}
             /> */}
             {this.state.selectedRadioOption==="GoogleVision"&&(<>
-            <input type="range" min={0} max={100} style={{width:'100%'}}className="slider" value={this.state.val} onChange={(e)=>{this.setState({val:e.target.value})}}/>
+            <input type="range" min={0} max={100} style={{width:'70%'}}className="slider" value={this.state.val} onChange={(e)=>{this.setState({val:e.target.value})}}/>
           <div
           style={{
             display: "flex",
@@ -630,7 +630,7 @@ class PdfViewGoogleAzure extends React.Component {
             marginTop: "1rem",
             fontWeight: 500,
             color: "#8f23b3",
-            width:'100%'
+            width:'70%'
           }}
         >
           <div>0</div>
@@ -644,13 +644,14 @@ class PdfViewGoogleAzure extends React.Component {
 
                     {
                       this.state.finalDataResult && Object.keys(this.state.finalDataResult).length > 0 && this.state.finalDataResult.pages.map((pageData) =>
-                        <div >
+                        <div style={{width:'70%'}}>
                           {
                             pageData.blocks.map((blockData, blockIdx) =>
                               <div style={{ padding: 0 }}>
                                 <div>
                                   <span style={{ backgroundColor: '#824CC0', color: 'white', flexWrap: 'wrap', padding: 5, marginTop: 5, borderRadius: 10 }}>
-                                    +Block {blockIdx + 1} (score : {blockData.confidence})
+                                    +Block {blockIdx + 1} 
+                                    {/* (score : {blockData.confidence}) */}
                                   </span>
                                 </div>
                                 {
@@ -711,7 +712,7 @@ class PdfViewGoogleAzure extends React.Component {
         </div>
       </div> */}
        {this.state.selectedRadioOption==="SimpleGoogleVision"&&(<>
-            <input type="range" min={0} max={100} style={{width:'100%'}}className="slider" value={this.state.val} onChange={(e)=>{this.setState({val:e.target.value})}}/>
+            <input type="range" min={0} max={100} style={{width:'70%'}}className="slider" value={this.state.val} onChange={(e)=>{this.setState({val:e.target.value})}}/>
           <div
           style={{
             display: "flex",
@@ -720,7 +721,7 @@ class PdfViewGoogleAzure extends React.Component {
             marginTop: "1rem",
             fontWeight: 500,
             color: "#8f23b3",
-            width:'100%'
+            width:'70%'
           }}
         >
           <div>0</div>
@@ -759,7 +760,7 @@ class PdfViewGoogleAzure extends React.Component {
         </div>
       </div> */}
  {this.state.selectedRadioOption==="AdvancedGoogleVision"&&(<>
-            <input type="range" min={0} max={100} style={{width:'100%'}}className="slider" value={this.state.val} onChange={(e)=>{this.setState({val:e.target.value})}}/>
+            <input type="range" min={0} max={100} style={{width:'70%'}}className="slider" value={this.state.val} onChange={(e)=>{this.setState({val:e.target.value})}}/>
           <div
           style={{
             display: "flex",
@@ -768,7 +769,7 @@ class PdfViewGoogleAzure extends React.Component {
             marginTop: "1rem",
             fontWeight: 500,
             color: "#8f23b3",
-            width:'100%'
+            width:'70%'
           }}
         >
           <div>0</div>
@@ -813,7 +814,7 @@ class PdfViewGoogleAzure extends React.Component {
         
       </div> */}
       {this.state.selectedRadioOption==="AzureTables"&&(<>
-            <input type="range" min={0} max={100} style={{width:'100%'}}className="slider" value={this.state.val} onChange={(e)=>{this.setState({val:e.target.value})}}/>
+            <input type="range" min={0} max={100} style={{width:'70%'}}className="slider" value={this.state.val} onChange={(e)=>{this.setState({val:e.target.value})}}/>
           <div
           style={{
             display: "flex",
@@ -822,7 +823,7 @@ class PdfViewGoogleAzure extends React.Component {
             marginTop: "1rem",
             fontWeight: 500,
             color: "#8f23b3",
-            width:'100%'
+            width:'70%'
           }}
         >
           <div>0</div>
@@ -900,7 +901,7 @@ class PdfViewGoogleAzure extends React.Component {
         </div>
       </div> */}
       {this.state.selectedRadioOption==="AzureForm"&&(<>
-            <input type="range" min={0} max={100} style={{width:'100%'}}className="slider" value={this.state.val} onChange={(e)=>{this.setState({val:e.target.value})}}/>
+            <input type="range" min={0} max={100} style={{width:'70%'}}className="slider" value={this.state.val} onChange={(e)=>{this.setState({val:e.target.value})}}/>
           <div
           style={{
             display: "flex",
@@ -909,7 +910,7 @@ class PdfViewGoogleAzure extends React.Component {
             marginTop: "1rem",
             fontWeight: 500,
             color: "#8f23b3",
-            width:'100%'
+            width:'70%'
           }}
         >
           <div>0</div>
@@ -950,7 +951,7 @@ class PdfViewGoogleAzure extends React.Component {
         </div>
       </div> */}
         {this.state.selectedRadioOption==="AzureDocAnalyzer"&&(<>
-            <input type="range" min={0} max={100} style={{width:'100%'}}className="slider" value={this.state.val} onChange={(e)=>{this.setState({val:e.target.value})}}/>
+            <input type="range" min={0} max={100} style={{width:'70%'}}className="slider" value={this.state.val} onChange={(e)=>{this.setState({val:e.target.value})}}/>
           <div
           style={{
             display: "flex",
@@ -959,7 +960,7 @@ class PdfViewGoogleAzure extends React.Component {
             marginTop: "1rem",
             fontWeight: 500,
             color: "#8f23b3",
-            width:'100%'
+            width:'70%'
           }}
         >
           <div>0</div>
@@ -1000,7 +1001,7 @@ class PdfViewGoogleAzure extends React.Component {
         </div>
       </div> */}
        {this.state.selectedRadioOption==="GoogleTables"&&(<>
-            <input type="range" min={0} max={100} style={{width:'100%'}}className="slider" value={this.state.val} onChange={(e)=>{this.setState({val:e.target.value})}}/>
+            <input type="range" min={0} max={100} style={{width:'70%'}}className="slider" value={this.state.val} onChange={(e)=>{this.setState({val:e.target.value})}}/>
           <div
           style={{
             display: "flex",
@@ -1009,7 +1010,7 @@ class PdfViewGoogleAzure extends React.Component {
             marginTop: "1rem",
             fontWeight: 500,
             color: "#8f23b3",
-            width:'100%'
+            width:'70%'
           }}
         >
           <div>0</div>
@@ -1050,7 +1051,7 @@ class PdfViewGoogleAzure extends React.Component {
         </div>
       </div> */}
         {this.state.selectedRadioOption==="TesseractTables"&&(<>
-            <input type="range" min={0} max={100} style={{width:'100%'}}className="slider" value={this.state.val} onChange={(e)=>{this.setState({val:e.target.value})}}/>
+            <input type="range" min={0} max={100} style={{width:'70%'}}className="slider" value={this.state.val} onChange={(e)=>{this.setState({val:e.target.value})}}/>
           <div
           style={{
             display: "flex",
@@ -1059,7 +1060,7 @@ class PdfViewGoogleAzure extends React.Component {
             marginTop: "1rem",
             fontWeight: 500,
             color: "#8f23b3",
-            width:'100%'
+            width:'70%'
           }}
         >
           <div>0</div>
@@ -1100,7 +1101,7 @@ class PdfViewGoogleAzure extends React.Component {
         </div>
       </div> */}
        {this.state.selectedRadioOption==="AzureCV"&&(<>
-            <input type="range" min={0} max={100} style={{width:'100%'}}className="slider" value={this.state.val} onChange={(e)=>{this.setState({val:e.target.value})}}/>
+            <input type="range" min={0} max={100} style={{width:'70%'}}className="slider" value={this.state.val} onChange={(e)=>{this.setState({val:e.target.value})}}/>
           <div
           style={{
             display: "flex",
@@ -1109,7 +1110,7 @@ class PdfViewGoogleAzure extends React.Component {
             marginTop: "1rem",
             fontWeight: 500,
             color: "#8f23b3",
-            width:'100%'
+            width:'70%'
           }}
         >
           <div>0</div>
@@ -1149,7 +1150,7 @@ class PdfViewGoogleAzure extends React.Component {
         </div>
       </div> */}
       {this.state.selectedRadioOption==="OpenCV"&&(<>
-            <input type="range" min={0} max={100} style={{width:'100%'}}className="slider" value={this.state.val} onChange={(e)=>{this.setState({val:e.target.value})}}/>
+            <input type="range" min={0} max={100} style={{width:'70%'}}className="slider" value={this.state.val} onChange={(e)=>{this.setState({val:e.target.value})}}/>
           <div
           style={{
             display: "flex",
@@ -1158,7 +1159,7 @@ class PdfViewGoogleAzure extends React.Component {
             marginTop: "1rem",
             fontWeight: 500,
             color: "#8f23b3",
-            width:'100%'
+            width:'70%'
           }}
         >
           <div>0</div>
