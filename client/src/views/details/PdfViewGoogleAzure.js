@@ -36,13 +36,27 @@ import ProgressLine from "./ProgressLine";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
+// let pagePadding = 30;
+// let xPercentageChange = 0.36;
+// let yPercentageChange = 0.36;
+// let boxLeftMargin = 13;
+// let boxTopMargin = 1;
+// let boxExtraWidth = 5;
+// let boxExtraHeight = 2;
+
 let pagePadding = 30;
-let xPercentageChange = 0.36;
-let yPercentageChange = 0.36;
+
+let xPercentageChange = 0.43;
+
+let yPercentageChange = 0.43;
+
 let boxLeftMargin = 13;
-let boxTopMargin = 1;
-let boxExtraWidth = 5;
-let boxExtraHeight = 2;
+
+let boxTopMargin = 5;
+
+let boxExtraWidth = 8;
+
+let boxExtraHeight = 5;
 
 const pdfMainView = {
   backgroundColor: '#fff',
@@ -54,7 +68,7 @@ const pdfContentView = {
   display: 'table',
   backgroundColor: 'white',
   //boxShadow: '0px 4px 32px 1px #00000029',
-  //minWidth: 600,
+  minWidth: 700,
   //  width: "90%"
 }
 const carousel_arrow_right= {
@@ -98,11 +112,12 @@ backgroundColor: "white",
 boxShadow: "0px 0px 8px #0000001c",
 padding: pagePadding+"px",
 border: "1px solid #dbdbdb",
+
 // marginBottom:"20px"
 }
 const radioBtnDiv = {
   backgroundColor: 'white',
-  padding: 5
+  padding: 5,
 }
 const radioBtnMainView = {
   padding: 5, overflowY: 'scroll',
@@ -445,22 +460,27 @@ class PdfViewGoogleAzure extends React.Component {
   <div style={{background: "#fff", padding: "0 30px", width:"100%", display:"table",  borderBottom:"1px solid rgb(157, 157, 157)"}}>
   <CRow>
   <CCol xs="6" style={{ backgroundColor: 'white', height: 50 }}>
-            <div style={{ width: "100%", display: 'table' }} onChange={this.onChangeRadioValue}>
-            <FormControlLabel
+  <RadioGroup 
+  aria-labelledby="demo-radio-buttons-group-label"
+  defaultValue="PDF"
+  name="radio-buttons-group"
+  onChange={this.onChangeRadioValue}>
+          <div style={{ width: "100%", display: 'table' }} >
+          <FormControlLabel
           value="PDF"
           control={<Radio color="primary" />}
           label="PDF"
           labelPlacement="PDF"
           name="check"
-          defaultChecked
           style={{fontSize:"0.8rem", fontWeight: "300"}}
         />
+
         <FormControlLabel
           value="Image"
           control={<Radio color="primary" />}
           label="Image"
           labelPlacement="Image"
-          name="check"
+          // name="check"
           style={{fontSize:"0.8rem", fontWeight: "300"}}
         />
         <FormControlLabel
@@ -468,13 +488,14 @@ class PdfViewGoogleAzure extends React.Component {
           control={<Radio color="primary" />}
           label="RotatedImage"
           labelPlacement="RotatedImage"
-          name="check"
+          // name="check"
           style={{fontSize:"0.8rem", fontWeight: "300"}}
         />
               {/* <input type="radio" value="PDF" name="check" defaultChecked style={{ margin: 10 }} /> PDF */}
               {/* <input type="radio" value="Image" name="check" style={{ margin: 10 }} /> Image */}
               {/* <input type="radio" value="RotatedImage" name="check" style={{ margin: 10 }} /> Rotated Image */}
             </div>
+            </RadioGroup>
           </CCol>
           <CCol xs='6'>
             <div style={{display:"table", float:"right", marginTop: "10px" }}>
@@ -494,7 +515,7 @@ class PdfViewGoogleAzure extends React.Component {
 
 
 
-        <CRow style={{ marginTop: 5 }}>
+        <CRow style={{ marginTop: "3%" }}>
           <CCol xs="8">
             <div style={pdfContentBox}>
 
@@ -512,10 +533,17 @@ class PdfViewGoogleAzure extends React.Component {
                   {
                     this.state.finalDataResult && Object.keys(this.state.finalDataResult).length > 0 && this.state.finalDataResult.pages[0].blocks.map((blockData, blockIdx) =>
                     <div style={{
-                      top:(blockData.boundingBox.vertices[0].y * yPercentageChange)+boxTopMargin+pagePadding, 
-                      left:(blockData.boundingBox.vertices[0].x * xPercentageChange)+boxLeftMargin+pagePadding , 
-                      width:(blockData.boundingBox.vertices[1].x * xPercentageChange - blockData.boundingBox.vertices[0].x * xPercentageChange)+boxExtraWidth, 
-                      height:(blockData.boundingBox.vertices[2].y * yPercentageChange - blockData.boundingBox.vertices[0].y * yPercentageChange)+boxExtraHeight, 
+                      // top:(blockData.boundingBox.vertices[0].y * yPercentageChange)+boxTopMargin+pagePadding, 
+                      // left:(blockData.boundingBox.vertices[0].x * xPercentageChange)+boxLeftMargin+pagePadding , 
+                      // width:(blockData.boundingBox.vertices[1].x * xPercentageChange - blockData.boundingBox.vertices[0].x * xPercentageChange)+boxExtraWidth, 
+                      // height:(blockData.boundingBox.vertices[2].y * yPercentageChange - blockData.boundingBox.vertices[0].y * yPercentageChange)+boxExtraHeight, 
+                      top:`${((blockData.boundingBox.vertices[0].y * yPercentageChange)+boxTopMargin+pagePadding)/10.2}%`,
+
+                      left:`${((blockData.boundingBox.vertices[0].x * xPercentageChange)+boxLeftMargin+pagePadding)/10}%` ,
+
+                      width:`${((blockData.boundingBox.vertices[1].x * xPercentageChange - blockData.boundingBox.vertices[0].x * xPercentageChange)+boxExtraWidth)/10}%`,
+
+                      height:`${((blockData.boundingBox.vertices[2].y * yPercentageChange - blockData.boundingBox.vertices[0].y * yPercentageChange)+boxExtraHeight)/10}%`,
                       border: '0.2px solid #FF0000',
                       position: "absolute"}}>
                         { blockIdx == 0 &&
@@ -535,7 +563,7 @@ class PdfViewGoogleAzure extends React.Component {
                 </div> :
                 <div style={this.state.isLoading ? { ...pdfContentView, ...{ boxShadow: "none" } } : pdfContentView}>
                   {this.state.pdfImage ?
-                    <img style={{ width: "100%" }}
+                    <img style={{ width: 700 }}
                       src={"data:image/jpeg;base64," + this.state.pdfImage}>
                     </img> :
                     <p>loading PDF</p>
@@ -621,7 +649,7 @@ class PdfViewGoogleAzure extends React.Component {
                             pageData.blocks.map((blockData, blockIdx) =>
                               <div style={{ padding: 0 }}>
                                 <div>
-                                  <span style={{ backgroundColor: '#824CC0', color: 'white', flexWrap: 'wrap', padding: 0, marginTop: 5, borderRadius: 10 }}>
+                                  <span style={{ backgroundColor: '#824CC0', color: 'white', flexWrap: 'wrap', padding: 5, marginTop: 5, borderRadius: 10 }}>
                                     +Block {blockIdx + 1} (score : {blockData.confidence})
                                   </span>
                                 </div>
