@@ -218,7 +218,7 @@ const CompniesData = () => {
               isReadOnly={true}
               style={{
                 height: "auto",
-                maxHeight: 400,
+                maxHeight: (window.innerHeight-400) + "px",
                 margin: 0,
               }}>
               {tableData.length>0 && Object.keys(tableData[0]).map(key =>

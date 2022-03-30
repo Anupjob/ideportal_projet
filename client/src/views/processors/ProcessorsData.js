@@ -69,10 +69,11 @@ const toast_options = {
   progress: undefined,
 }
 const btn_style = {
-  width: "15%", 
+  // width: "15%", 
   background: "#4ea7d8", 
   border: "#4ea7d8",
-  marginTop:30 
+  marginTop:30 ,
+  position: "relative"
 }
 const cancel_dialogBtn = {
   background: 'none', 
@@ -306,7 +307,7 @@ const ProcessorsData = () => {
     }
   return (
     
-      <Grid className="container-fluid" style={{marginTop:55}}>
+      <Grid className="container-fluid" style={{marginTop:40}}>
         <CButton type="submit" color="primary" size="lg" style={btn_style} onClick={() => handleClickToOpen()}>Add Processor</CButton>
          {tableData.length>0 ?
           <Grid item xs={12} style={{ marginTop: 25}}>
@@ -319,7 +320,7 @@ const ProcessorsData = () => {
                 itemsSource={tableData}
                 style={{
                   height: "auto",
-                  maxHeight: 400,
+                  maxHeight: (window.innerHeight-400) + "px",
                   margin: 0,
                 }}
               >
