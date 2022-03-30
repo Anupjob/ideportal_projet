@@ -146,7 +146,7 @@ def download_blob_azure(local_path, complete_file_name):
 
     try:
         blob_service_client = blob_connection()
-        print("blob_service_client",blob_service_client)
+        # print("blob_service_client",blob_service_client)
         blob_client = blob_service_client.get_blob_client(container=container, blob=complete_file_name)
         with open(local_path, "wb") as my_blob:
             download_stream = blob_client.download_blob()
@@ -160,7 +160,7 @@ def download_blob_azure_buffer(complete_file_name):
 
     try:
         blob_service_client = blob_connection()
-        print("blob_service_client",blob_service_client)
+        # print("blob_service_client",blob_service_client)
 
         blob_client = blob_service_client.get_blob_client(container=container, blob=complete_file_name)
 
@@ -190,7 +190,7 @@ def pdf_blob_azure_buffer(complete_file_name):
         blob_service_client = blob_connection()
 
         blob_client = blob_service_client.get_blob_client(container=container, blob=complete_file_name)
-        print("blob_client",blob_client)
+        # print("blob_client",blob_client)
 
         with BytesIO() as my_blob:
             # Download as a stream
@@ -296,13 +296,23 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# conf = ConnectionConfig(
+#     MAIL_FROM='support@vercx.com',
+#     MAIL_USERNAME='support@vercx.com',
+#     # MAIL_PASSWORD='VercX2018$$',
+#     MAIL_PASSWORD='VercXA2022$$',
+#     MAIL_PORT=587,
+#     MAIL_SERVER="smtp.gmail.com",
+#     MAIL_TLS=True,
+#     MAIL_SSL=False
+# )
+
 conf = ConnectionConfig(
-    MAIL_FROM='support@vercx.com',
-    MAIL_USERNAME='support@vercx.com',
-    # MAIL_PASSWORD='VercX2018$$',
-    MAIL_PASSWORD='VercXA2022$$',
+    MAIL_FROM='info@digitalglyde.com',
+    MAIL_USERNAME='info@digitalglyde.com',
+    MAIL_PASSWORD='GlydeDG2020%%',
     MAIL_PORT=587,
-    MAIL_SERVER="smtp.gmail.com",
+    MAIL_SERVER="smtp.office365.com",
     MAIL_TLS=True,
     MAIL_SSL=False
 )
@@ -326,32 +336,32 @@ def getIncomingData(dateRec, dateProcessed, docStatus, docType, companyId):
 
     if len(startDate) > 0 and len(endDate) > 0:
         start_date_str = startDate + " 00:00:01"
-        print("start_date_str", start_date_str)
+        # print("start_date_str", start_date_str)
         start_date = datetime.datetime.fromisoformat(start_date_str)
-        print("start_date", start_date)
+        # print("start_date", start_date)
 
         end_date_str = endDate + " 11:59:59"
-        print("end_date_str", end_date_str)
+        # print("end_date_str", end_date_str)
         end_date = datetime.datetime.fromisoformat(end_date_str)
-        print("end_date", end_date)
+        # print("end_date", end_date)
 
         query_str["file_date"] = {"$gte": start_date, "$lte": end_date}
 
     elif len(startDate) > 0:
 
         start_date_str = startDate + " 00:00:01"
-        print("start_date_str", start_date_str)
+        # print("start_date_str", start_date_str)
         start_date = datetime.datetime.fromisoformat(start_date_str)
-        print("start_date", start_date)
+        # print("start_date", start_date)
 
         query_str["file_date"] = {"$gte": start_date}
 
     elif len(endDate) > 0:
 
         end_date_str = endDate + " 11:59:59"
-        print("end_date_str", end_date_str)
+        # print("end_date_str", end_date_str)
         end_date = datetime.datetime.fromisoformat(end_date_str)
-        print("end_date", end_date)
+        # print("end_date", end_date)
 
         query_str["file_date"] = {"$lte": end_date}
 
@@ -409,7 +419,7 @@ async def send_otp_mail(otp, recipient):
     )
 
     print("message", message)
-    print("conf", conf)
+    # print("conf", conf)
 
     fm = FastMail(conf)
     print("sending email")
@@ -466,16 +476,16 @@ async def user_login(user: UserLogin = Body(...)):
     if user and user.otp and user.otp > 0:
         print("user found", user.email, user.otp)
         userres = checkOTP(user.email, user.otp)
-        print("userres",userres)
+        # print("userres",userres)
         userfound = False
 
         tokenRes = signJWT()
-        print("tokenRes", tokenRes)
+        # print("tokenRes", tokenRes)
 
         if userres:
             for user_s in userres:
                 userfound = True
-                print(user_s)
+                # print(user_s)
             if (userfound):
                 return {"result":tokenRes, "err":None}
             else:
@@ -490,11 +500,11 @@ async def user_login(user: UserLogin = Body(...)):
             user_data = None
             for user_s in users_p:
                 userfound = True
-                print("user_s",user_s)
+                # print("user_s",user_s)
                 user_data = user_s
             if (userfound):
                 companyData = getCompany(user_data["companyId"])
-                print("companyData", companyData)
+                # print("companyData", companyData)
 
                 if companyData:
 
@@ -558,7 +568,7 @@ async def report_issue(incData: IssueSchema = Body(...)):
     result = files_incoming_c.update_one({"_id": ObjectId(doc_id)}, {"$set": {"errMsg": errMsg, "status": "Error", "issue_resolved": False}})
 
     files_incoming_p = files_incoming_c.find_one({"_id": ObjectId(doc_id)})
-    print("reportIssue files_incoming_p",files_incoming_p)
+    # print("reportIssue files_incoming_p",files_incoming_p)
 
     if files_incoming_p:
         # uid = files_incoming_p["userId"]
@@ -571,12 +581,12 @@ async def report_issue(incData: IssueSchema = Body(...)):
         # cid = users_p["companyId"]
         # cName = files_incoming_p["companyName"]
         hist_obj = {"userId": ObjectId(user_id), "userEmail": users_p["email"], "companyId": ObjectId(cid), "fileIncomingId": ObjectId(doc_id), "errMsg": errMsg, "insertTime": datetime.datetime.now()}
-        print("hist_obj", hist_obj)
+        # print("hist_obj", hist_obj)
 
         report_history_result = report_history_c.insert_one(hist_obj)
-        print("report_history_result", report_history_result)
+        # print("report_history_result", report_history_result)
 
-    print("reportIssue  result", result)
+    # print("reportIssue  result", result)
     return {"result": "issue reported successfully", "err": None}
 
 @app.post("/getPdfFile", dependencies=[Depends(JWTBearer())])
@@ -596,7 +606,7 @@ async def get_pdf_file(incData: PdfDataSchema = Body(...)):
 
     files_incoming_breakup_p = files_incoming_breakup_c.find_one({"filenameprocessing": fileName, "pageNo": pageNum})
     files_incoming_p = files_incoming_c.find_one({"filenameprocessing": fileName})
-    print("files_incoming_breakup_p",files_incoming_breakup_p)
+    # print("files_incoming_breakup_p",files_incoming_breakup_p)
 
     if files_incoming_breakup_p :
         file_type_str = "pdf"
@@ -641,7 +651,7 @@ async def get_google_vision_data(incData: GoogleVisionSchema = Body(...)):
     files_incoming_c = db_mongo.files_incoming
 
     files_incoming_p = files_incoming_c.find_one({"_id": ObjectId(docId)})
-    print("files_incoming_p",files_incoming_p)
+    # print("files_incoming_p",files_incoming_p)
 
     colName = 'google_vision_response_filename'
 
@@ -661,7 +671,7 @@ async def get_google_vision_data(incData: GoogleVisionSchema = Body(...)):
             print("complete_file_name", complete_file_name)
 
             blob_client = blob_service_client.get_blob_client(container=container, blob=complete_file_name)
-            print("blob_client", blob_client)
+            # print("blob_client", blob_client)
 
             download_stream = blob_client.download_blob()
             my_blob = download_stream.readall()
@@ -679,7 +689,7 @@ async def get_google_vision_data(incData: GoogleVisionSchema = Body(...)):
                 return {"result": fullTextAnnotation_text, "err": None}
 
             else:
-                print("after loading the files", len(jsonFileData))
+                # print("after loading the files", len(jsonFileData))
 
                 df_final = pd.DataFrame()
 
@@ -699,11 +709,11 @@ async def get_google_vision_data(incData: GoogleVisionSchema = Body(...)):
 
                     table = json.loads(dats['data'])
                     table_count = dats['tableCount']
-                    print("***********complete table, ", type(table))
+                    # print("***********complete table, ", type(table))
 
                     rows = table['row_count']
                     columns = table['column_count']
-                    print(rows, columns)
+                    # print(rows, columns)
 
                     col_list = list(range(0, columns))
                     indx_list = list(range(0, rows))
@@ -717,7 +727,7 @@ async def get_google_vision_data(incData: GoogleVisionSchema = Body(...)):
                         text = cell['text']
                         # text = cell['content']
 
-                        print(row_index,col_index,text)
+                        # print(row_index,col_index,text)
                         df_table[col_index][row_index] = text
 
                     df_table.columns = df_table.iloc[0]
@@ -728,7 +738,7 @@ async def get_google_vision_data(incData: GoogleVisionSchema = Body(...)):
                     s = s.fillna('empty_' + (s.groupby(s.isnull()).cumcount() + 1).astype(str))
                     df_table.columns = s
 
-                    print("df_table.columns::",df_table.columns)
+                    # print("df_table.columns::",df_table.columns)
 
                     # df_table = df_table.drop("index", axis=1)
                     df_table = df_table.fillna("0")
@@ -740,7 +750,7 @@ async def get_google_vision_data(incData: GoogleVisionSchema = Body(...)):
                         final_csv_arr.append(value)
 
                     # print(df_table)
-                    print("final_csv_arr",final_csv_arr)
+                    # print("final_csv_arr",final_csv_arr)
                 return {"result": final_csv_arr, "err": None}
 
             # download_stream = blob_client.download_blob()
@@ -864,10 +874,8 @@ async def final_data(incData: FinalData = Body(...)):
     file_name = incData.fileName
     processorContainerPath = incData.processorContainerPath
 
-    print("final_data", incData)
-
     finalDataRes = getFinalData(file_name)
-    print("finalDataRes", finalDataRes)
+    # print("finalDataRes", finalDataRes)
 
     # local_path = "../csv_final_data/"+file_name
     local_path = "csv_final.csv"
@@ -876,7 +884,7 @@ async def final_data(incData: FinalData = Body(...)):
 
     # download_blob_azure(local_path, complete_file_name)
     file_buffer = download_blob_azure_buffer(complete_file_name)
-    print("file_buffer", file_buffer)
+    # print("file_buffer", file_buffer)
 
     if file_buffer:
         data = pd.read_csv(BytesIO(file_buffer))
@@ -902,7 +910,7 @@ async def get_processors(incData: ProcessorDataSchema = Body(...)):
     processors_c = db_mongo.processors
 
     processors_p = processors_c.find({"company_id": ObjectId(companyId)})
-    print("processors_p",processors_p)
+    # print("processors_p",processors_p)
 
     if processors_p :
 
@@ -951,7 +959,7 @@ async def get_report_hist(incData: ReportHistSchema = Body(...)):
     report_history_c = db_mongo.report_history
 
     report_history_p = report_history_c.find({"companyId": ObjectId(companyId), "userId": ObjectId(userId)})
-    print("report_history_p",report_history_p)
+    # print("report_history_p",report_history_p)
 
     if report_history_p :
 
@@ -979,7 +987,7 @@ async def get_report_hist(incData: ReportHistSchema = Body(...)):
                     "Insert Time": insertTime
                 }
             )
-        print("hist_data",hist_data)
+        # print("hist_data",hist_data)
         return {"result": hist_data, "err": None}
     else:
         return {"result": None, "err": "no records found"}
@@ -1004,9 +1012,18 @@ async def add_processor(incData: AddProcessorSchema = Body(...)):
     db_mongo = getConn()
     processors_c = db_mongo.processors
 
-    processor_ins_result = processors_c.insert_one({"company_id": ObjectId(company_id), "group": group, "name": name, "folder": folder, "processor": processor, "collection": collection, "identify_keywords": identify_keywords, "google_vision": googlevision, "google_vision_response": "all", "azure_form": azure, "azure_document_analyzer": "","textract": textract})
+    processor_exists = processors_c.find_one({"name": {"$regex": name, "$options": "i"}})
 
-    return {"result": processor_ins_result, "err": None}
+    if processor_exists:
+        return {"result": None, "err": "Processor already exists"}
+    else:
+        processor_ins_result = processors_c.insert_one({"company_id": ObjectId(company_id), "group": group, "name": name, "folder": folder, "processor": processor, "collection": collection, "identify_keywords": identify_keywords, "google_vision": googlevision, "google_vision_response": "all", "azure_form": azure, "azure_document_analyzer": "","textract": textract})
+
+        return {"result": "Processor added successfully", "err": None}
+
+    # processor_ins_result = processors_c.insert_one({"company_id": ObjectId(company_id), "group": group, "name": name, "folder": folder, "processor": processor, "collection": collection, "identify_keywords": identify_keywords, "google_vision": googlevision, "google_vision_response": "all", "azure_form": azure, "azure_document_analyzer": "","textract": textract})
+    #
+    # return {"result": processor_ins_result, "err": None}
 
 @app.get("/getCompaniesData", dependencies=[Depends(JWTBearer())])
 async def get_companies():
@@ -1015,7 +1032,7 @@ async def get_companies():
     companies_c = db_mongo.companies
 
     companies_p = companies_c.find({})
-    print("companies_p",companies_p)
+    # print("companies_p",companies_p)
 
     if companies_p :
 
@@ -1052,9 +1069,18 @@ async def add_company(incData: CompanySchema = Body(...)):
     db_mongo = getConn()
     companies_c = db_mongo.companies
 
-    comp_ins_result = companies_c.insert_one({"companyName": companyName, "street1": street1, "street2": street2, "city": city, "state": state, "zip": zip, "contact": contact})
+    company_exists = companies_c.find_one({"companyName": {"$regex": companyName, "$options": "i"}})
+    # print("user_exists", user_exists)
 
-    return {"result": comp_ins_result, "err": None}
+    if company_exists:
+        return {"result": None, "err": "Company already exists"}
+    else:
+        comp_ins_result = companies_c.insert_one({"companyName": companyName, "street1": street1, "street2": street2, "city": city, "state": state, "zip": zip, "contact": contact})
+        return {"result": "Company added successfully", "err": None}
+
+    # comp_ins_result = companies_c.insert_one({"companyName": companyName, "street1": street1, "street2": street2, "city": city, "state": state, "zip": zip, "contact": contact})
+    #
+    # return {"result": comp_ins_result, "err": None}
 
 @app.post("/getUsersData", dependencies=[Depends(JWTBearer())])
 async def get_users(incData: UserDataSchema = Body(...)):
@@ -1065,7 +1091,7 @@ async def get_users(incData: UserDataSchema = Body(...)):
     users_c = db_mongo.users
 
     users_p = users_c.find({"companyId": ObjectId(companyId)})
-    print("users_p",users_p)
+    # print("users_p",users_p)
 
     if users_p :
 
@@ -1100,9 +1126,18 @@ async def add_user(incData: AddUserSchema = Body(...)):
     db_mongo = getConn()
     users_c = db_mongo.users
 
-    user_ins_result = users_c.insert_one({"companyId": ObjectId(company_id), "email": email, "name": name, "image": image})
+    user_exists = users_c.find_one({"email": {"$regex": email, "$options": "i"}})
+    # print("user_exists", user_exists)
 
-    return {"result": user_ins_result, "err": None}
+    if user_exists:
+        return {"result": None, "err": "User already exists"}
+    else:
+        user_ins_result = users_c.insert_one({"companyId": ObjectId(company_id), "email": email, "name": name, "image": image})
+        return {"result": "User added successfully", "err": None}
+
+    # user_ins_result = users_c.insert_one({"companyId": ObjectId(company_id), "email": email, "name": name, "image": image})
+    #
+    # return {"result": user_ins_result, "err": None}
 
 @app.post("/uploadFile", dependencies=[Depends(JWTBearer())])
 async def add_user(companyId: str = Form(...), companyName: str = Form(...), userId: str = Form(...), email: str = Form(...), fileSize: str = Form(...), doc_file: UploadFile = File(...)):
@@ -1134,7 +1169,7 @@ async def add_user(companyId: str = Form(...), companyName: str = Form(...), use
         print("cleanFile", cleanFile)
 
         file_upload_res = upload_blob_azure_process(cleanFile, content, "manual")
-        print("file_upload_res", file_upload_res)
+        # print("file_upload_res", file_upload_res)
         db_mongo = getConn()
         files_incoming_c = db_mongo.files_incoming
         files_incoming_breakup_c = db_mongo.files_incoming_breakup
@@ -1172,7 +1207,7 @@ async def add_user(companyId: str = Form(...), companyName: str = Form(...), use
             print("fileObj", fileObj)
 
             files_incoming_ins_result = files_incoming_c.insert_one(fileObj)
-            print("files_incoming_ins_result", files_incoming_ins_result)
+            # print("files_incoming_ins_result", files_incoming_ins_result)
 
             # fileBreakupObj = {
             #     "incoming_id": ObjectId(files_incoming_ins_result.inserted_id),
@@ -1213,7 +1248,7 @@ async def validate_doc(incData: ValidateDocSchema = Body(...)):
 
     # download_blob_azure(local_path, complete_file_name)
     file_buffer = download_blob_azure_buffer(complete_file_name)
-    print("file_buffer", file_buffer)
+    # print("file_buffer", file_buffer)
 
     if file_buffer:
         csv_fileData = pd.read_csv(BytesIO(file_buffer))
@@ -1275,7 +1310,7 @@ async def validate_doc(incData: ValidateDocSchema = Body(...)):
         total_owner_taxes = ValidateResult["Owner Taxes"]
         total_owner_deducts = ValidateResult["Owner Deducts"]
 
-        print("ValidateResult::::::::::::::::", ValidateResult)
+        # print("ValidateResult::::::::::::::::", ValidateResult)
 
         final_Value = abs(total_owner_val - total_owner_taxes - total_owner_deducts - net_tax_total - net_deduct_total)
 
@@ -1286,7 +1321,7 @@ async def validate_doc(incData: ValidateDocSchema = Body(...)):
         else:
             ValidateResult["Validated"] = False
 
-        print("ValidateResult:::", ValidateResult)
+        # print("ValidateResult:::", ValidateResult)
 
         return {"result": ValidateResult, "err": None}
     else:
@@ -1315,7 +1350,7 @@ async def update_user_pic(incData: userProfileSchema = Body(...)):
     users_c = db_mongo.users
 
     result = users_c.update_one({"_id": ObjectId(userId)}, {"$set": {"image": userPicData}})
-    print("update_one result",result)
+    # print("update_one result",result)
 
     return {"result": "image updated successfully", "err": None}
 
@@ -1329,7 +1364,7 @@ async def resolve_issue(incData: resolveIssueSchema = Body(...)):
 
     # result = files_incoming_c.update_one({"_id": ObjectId(doc_id)}, {"$unset": {"errMsg": ""}})
     result = files_incoming_c.update_one({"_id": ObjectId(doc_id)}, {"$set": {"issue_resolved": True, "status": "Validated"}})
-    print("update_one result", result)
+    # print("update_one result", result)
 
     return {"result": "Error resolved successfully", "err": None}
 
