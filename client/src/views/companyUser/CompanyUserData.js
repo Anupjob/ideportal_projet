@@ -231,7 +231,7 @@ const CompanyUserData = () => {
                 isReadOnly={true}
                 style={{
                   height: "auto",
-                  maxHeight: 400,
+                  maxHeight: (window.innerHeight-400) + "px",
                   margin: 0,
                 }}
               >
@@ -382,8 +382,8 @@ const CompanyUserData = () => {
                                     }}></i>
                                 <input type="file" 
                                 style={{
-                                  textIndent: "80px", 
-                                  marginLeft: "-185px", 
+                                  textIndent: 250,
+                                  marginLeft: -530,
                                   cursor:"pointer", 
                                   padding:"20px 0", 
                                   position:"relative", 

@@ -335,7 +335,7 @@ console.log(IncomingArr,'arrainco')
   return (
     <>
 
-      <CCard style={{ padding: "1em 3em" }}>
+      <CCard style={{ padding: "1em 3em", position: "relative", zIndex: 10 }}>
         <CForm
         // onSubmit={searchBtn}
         // method={"post"}
@@ -489,7 +489,7 @@ console.log(IncomingArr,'arrainco')
 
               style={{
                 height: "auto",
-                maxHeight: 400,
+                maxHeight: (window.innerHeight-550) + "px",
                 margin: 0,
               }}>
               <FlexGridColumn
