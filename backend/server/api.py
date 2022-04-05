@@ -27,6 +27,7 @@ from io import BytesIO, StringIO
 import base64
 import json
 import re
+import numpy as np
 
 folderFileProcessing = "fileprocessing/"
 container = "incomingfiles"
@@ -1252,7 +1253,13 @@ async def validate_doc(incData: ValidateDocSchema = Body(...)):
 
     if file_buffer:
         csv_fileData = pd.read_csv(BytesIO(file_buffer))
-        csv_fileData = csv_fileData.fillna(0)
+        csv_fileData = csv_fileData.fillna(0.0)
+        # csv_fileData = csv_fileData.fillna('')
+        # csv_fileData['Owner Value'].fillna('', inplace=True)
+
+        # file_to_validate = "file_to_validate.csv"
+        # csv_fileData.to_csv(file_to_validate, index=False)
+
         Obj_type = csv_fileData.select_dtypes(include='object').columns
         # print(Obj_type)
 
@@ -1263,33 +1270,42 @@ async def validate_doc(incData: ValidateDocSchema = Body(...)):
         for index, col in enumerate(csv_fileData.columns):
 
             if any(x in col for x in columns_to_read):
-                col_val = csv_fileData[col]
+                # col_val = csv_fileData[col]
+                final_series = csv_fileData[col]
                 if (col in Obj_type):
-                    col_val22 = (csv_fileData[col].str.split()).apply(lambda x: print("x[0]",x[0]))
+                    print("csv_fileData[col]", csv_fileData[col], type(csv_fileData[col]))
 
-                    col_val = (csv_fileData[col].str.split()).apply(lambda x: float(x[0].replace(',', '')))
-                # print("zmzmzmzzmzmzzm::::::",type(col_val))
-                # if (col in Obj_type):
-                #     # check = lambda x: True if (type(x) == int or type(x) == float) else False
-                #     check = lambda x: print(type(x))
-                #
-                #     fileDataArr = csv_fileData[col].str.split()
-                #
-                #     for col1 in fileDataArr:
-                #
-                #         # print("check(col1)", col1[0], float(col1[0]), check(col1[0]))
-                #         print("check(col1)",col1[0],  check(col1[0]))
-                #         if check(col1[0]):
-                #             col_val = float(col1[0].replace(',', ''))
-                #
-                #     # col_val = (csv_fileData[col].str.split()).apply(lambda x: x[0].replace(',', '') if x[0] != "None")
+                    final_col_data = []
+                    for i, v in csv_fileData[col].items():
+                        print('index: ', i, 'value: ', v)
+                        # replaced_val = v.replace(',', '')
+                        # 
+                        # print("replaced_val", replaced_val)
+                        if(type(eval(str(v))) == int or type(eval(str(v))) == float):
+                            replaced_val = str(v).replace(',', '')
+                            print("replaced_val", replaced_val)
+                            replaced_val_float = float(replaced_val)
+                            print("replaced_val_float", replaced_val_float)
+                        else:
+                            print("else", v)
+                            replaced_val_float = 0.0
+                        final_col_data.append(replaced_val_float)
+
+                    final_series = pd.Series(final_col_data, copy=False)
+                    
+                    # print("final_col_data", final_col_data)
+                    # print("final_series", final_series)
+                    # col_val = (csv_fileData[col].str.split()).apply(lambda x: float(x[0].replace(',', '')))
+
+
                 #     # col_val = (csv_fileData[col].str.split()).apply(lambda x: x[0].replace(',', '') if (type(x[0]) == int or type(x[0]) == float) else 0)
-                #     # col_val = (csv_fileData[col].str.split()).apply(lambda x: (type(x[0]) == int or type(x[0]) == float) and float(x[0].replace(',', '')))
 
                 if "Check Amount" in col:
-                    ValidateResult[col] = col_val[0]
+                    # ValidateResult[col] = col_val[0]
+                    ValidateResult[col] = final_series[0]
                 else:
-                    ValidateResult[col] = col_val.sum()
+                    # ValidateResult[col] = col_val.sum()
+                    ValidateResult[col] = final_series.sum()
 
         net_tax_total = 0
         net_deduct_total = 0
