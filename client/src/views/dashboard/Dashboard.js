@@ -489,11 +489,14 @@ console.log(IncomingArr,'arrainco')
 
               style={{
                 height: "auto",
+                minHeight: 400,
                 maxHeight: (window.innerHeight-550) + "px",
                 margin: 0,
               }}>
               <FlexGridColumn
-              width="*">
+              width="*"
+              minWidth={100}
+              >
                 <FlexGridCellTemplate cellType="Cell" template={ctx =>
                   <React.Fragment>
                  
