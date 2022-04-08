@@ -12,7 +12,8 @@ import {
   CSelect,
   CCardHeader,
   CCardBody,
-  CForm
+  CForm,
+  CDatePicker
 } from '@coreui/react';
 import { useSelector, useDispatch } from 'react-redux';
 import Table from '@material-ui/core/Table';
@@ -331,7 +332,7 @@ console.log(IncomingArr,'arrainco')
 
     }
   }
-
+const today=new Date()
   return (
     <>
 
@@ -361,6 +362,8 @@ console.log(IncomingArr,'arrainco')
                       name='StartDate'
                       onChange={Sdate1}
                       value={Sdate}
+                      max={Edate!==""?Edate:moment(today).format("YYYY-MM-DD")}
+                      // max="2022-04-09"
                     />
                     <div style={{ width: "40px", fontSize: "1.3em", textAlign: "center" }}>to</div>
                     <CInput
@@ -368,6 +371,9 @@ console.log(IncomingArr,'arrainco')
                       name='EndDate'
                       onChange={Edate1}
                       value={Edate}
+                      min={Sdate}
+                      max={moment(today).format("YYYY-MM-DD")}
+                      // max="2022-04-09"
                     />
                   </CInputGroup>
                 </CCol>

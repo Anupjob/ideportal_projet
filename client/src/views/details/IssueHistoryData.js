@@ -67,6 +67,16 @@ const loader = {
     float: "right",
     lineHeight: 0, 
 }
+const title_text = {
+  color: 'white', 
+  position: "fixed", 
+  top: "87px", 
+  left: "85px", 
+  zIndex: "1030", 
+  fontWeight: "bold",
+"@media (max-width: 1200px)": {
+  top: '135px'
+}}
 const IssueHistoryData=()=>
 {
     const history = useHistory();
@@ -133,12 +143,37 @@ console.log(rowColumnData,'table')
 const getIsuessRowAndColumn=(ctx)=>{
   
   let newRows = {}
+  let arr=[]
   Object.keys(ctx.item["Error Message"]["reportIsuueCells"]).map((item)=>{
     //  rowcolumnTable.push((values) => ({ ...values, [item]:rowColumnData.item["Error Message"]["reportIsuueCells"][item] }))
     // data.push({ [item]:(ctx.item["Error Message"]["reportIsuueCells"][item] )})
-    newRows[item] =ctx.item["Error Message"]["reportIsuueCells"][item]
+    // newRows[item] =ctx.item["Error Message"]["reportIsuueCells"][item]
+    // reportIsuueCells.map(rng=>{
+      if((item.substring(0,3))!=="row"){
+      
+      let rng=ctx.item["Error Message"]["reportIsuueCells"][item]
+  
+      for (let rowIdx = rng.topRow; rowIdx <= rng.bottomRow; rowIdx++) {
+        let cols=[]
+       if(Object.keys(newRows).filter(curr=>curr==="row"+rowIdx).length>0){
+        cols= newRows["row"+rowIdx]
+       }
+      
+        console.log("row"+rowIdx)
+        for (let cIdx = rng.leftCol; cIdx <= rng.rightCol; cIdx++) {
+          cols.push("col"+cIdx)
+        console.log("col"+cIdx)
+        }
+        newRows["row"+rowIdx] = cols
+        }
+       
+      }
+        else {
+          newRows[item] =ctx.item["Error Message"]["reportIsuueCells"][item]
+        }
+    })
 
-     })
+   console.log(newRows,'newrows')
   
      let reportIsuueCellsCopy = {
       ...rowColumnData,
@@ -154,6 +189,11 @@ const getIsuessRowAndColumn=(ctx)=>{
  console.log(historyData,'history issue')
   return (
     <>
+    <CCard>
+    <CRow style={title_text}>
+         {JSON.parse(localStorage.getItem("Deatails")).history.location.state.finalFileName}
+        </CRow>
+    </CCard>
     <Grid className="container-fluid" style={{marginTop:40}}>
         <Grid item xs={12} style={{ marginTop: 25}}>
            {historyData && historyData.length>0 ?
