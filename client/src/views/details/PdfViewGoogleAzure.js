@@ -462,7 +462,7 @@ class PdfViewGoogleAzure extends React.Component {
   <CRow>
   <div style={{background: "#fff", padding: "0 30px", width:"100%", display:"table",  borderBottom:"1px solid rgb(157, 157, 157)"}}>
   <CRow>
-  <CCol xs="6" style={{ backgroundColor: 'white', height: 50 }}>
+  <CCol lg="6" style={{ backgroundColor: 'white', height: 50 }}>
   <RadioGroup 
   aria-labelledby="demo-radio-buttons-group-label"
   defaultValue="PDF"
@@ -500,7 +500,7 @@ class PdfViewGoogleAzure extends React.Component {
             </div>
             </RadioGroup>
           </CCol>
-          <CCol xs='6'>
+          <CCol lg='6'>
             <div style={{display:"table", float:"right", marginTop: "10px" }}>
           <Button style={viewDetailBtn} onClick={console.log("==Reprocess Extraction Click::")}><i class="fa fa-repeat fa-lg" aria-hidden="true" style={{padding:'5px'}}></i>Reprocess Extraction</Button>
           <Button style={viewDetailBtn} onClick={console.log("==Reprocess Mapping Click::")}><i class="fa fa-repeat fa-lg" aria-hidden="true" style={{padding:'5px'}}></i>Reprocess Mapping</Button>          
@@ -518,8 +518,8 @@ class PdfViewGoogleAzure extends React.Component {
 
 
 
-        <CRow style={{ marginTop: "3%" }}>
-          <CCol xs="8">
+        <CRow style={{ marginTop: "75px" }}>
+          <CCol lg="8">
             <div style={pdfContentBox}>
 
               {this.state.fileType == 'pdf' ?
@@ -575,7 +575,7 @@ class PdfViewGoogleAzure extends React.Component {
               }
             </div>
           </CCol>
-          <CCol xs="4">
+          <CCol lg="4">
             
             {/* <div style={{position:"fixed", width:"200px", right:"-200px"}}> */}
             {/* <div style={}><i class="fa fa-chevron-left" aria-hidden="true"></i></div> */}

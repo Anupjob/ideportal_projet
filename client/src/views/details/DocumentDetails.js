@@ -1211,7 +1211,7 @@ console.log(gridObject,'gridobject')
                   </div>
               <div style={bottom_View}>
                
-                <TableContainer component={Paper} style={{ position: "relative", zIndex: "5", overflow: 'hidden', padding:20 }}>
+                <TableContainer component={Paper} style={{ position: "relative", zIndex: "5", overflow: 'auto', padding:20 }}>
                   <Table aria-label="simple table">
                     <TableHead>
                       <TableRow>
