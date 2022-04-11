@@ -119,6 +119,7 @@ class AddUserSchema(BaseModel):
 class ReportHistSchema(BaseModel):
    company_id: str
    user_id: str
+   fileId:str
 
 class UploadFileSchema(BaseModel):
    doc_file: UploadFile
@@ -955,11 +956,12 @@ async def get_report_hist(incData: ReportHistSchema = Body(...)):
     print("get_report_hist",incData)
     companyId = incData.company_id
     userId = incData.user_id
+    fileId = incData.fileId
 
     db_mongo = getConn()
     report_history_c = db_mongo.report_history
 
-    report_history_p = report_history_c.find({"companyId": ObjectId(companyId), "userId": ObjectId(userId)})
+    report_history_p = report_history_c.find({"companyId": ObjectId(companyId), "userId": ObjectId(userId), "fileIncomingId": ObjectId(fileId)})
     # print("report_history_p",report_history_p)
 
     if report_history_p :
