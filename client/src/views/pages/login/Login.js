@@ -192,7 +192,16 @@ const Login =()=> {
         console.log("Error on Verification==",err)});
     }
   }
+  function isLoggedIn() {
+    if (localStorage.getItem("access_token")) {
+      return true;
+    }
+    return false;
+  }
 
+  useEffect(() => {
+    isLoggedIn() && history.push("/incoming_list");
+  }, []);
   return (
       <CContainer fluid style={bgColor}>
         <CContainer style={{ padding: "70px 0" }}>

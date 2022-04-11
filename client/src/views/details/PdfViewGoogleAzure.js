@@ -68,7 +68,7 @@ const pdfContentView = {
   display: 'table',
   backgroundColor: 'white',
   //boxShadow: '0px 4px 32px 1px #00000029',
-  minWidth: 700,
+ width:"50%",
   //  width: "90%"
 }
 const carousel_arrow_right= {
@@ -238,6 +238,7 @@ class PdfViewGoogleAzure extends React.Component {
         data: JSON.stringify({ fileName: pdfFileName, containerPath: processorPath, fileType: this.state.fileType, pageNum: this.state.pageNum }),
         headers,
       }).then((response) => {
+        
         console.log("Respone from post getPdfImage in PdfViewGoogleAzure==", response.data.result);
         if (response.data.err) {
           // alert(response.data.err);
@@ -404,6 +405,7 @@ class PdfViewGoogleAzure extends React.Component {
                                         if(pageToChange>=1 && pageToChange <= this.state.sliderData.length){
                                           this.Carousel.goToSlide(pageToChange-1);
                                           // this.setState({pageNum: e.target.value})
+                                          
                                         }
                                       }}
                                       style={{
@@ -427,6 +429,7 @@ class PdfViewGoogleAzure extends React.Component {
                             this.setState({pageNum: newPageNum}, ()=>{
                               this.getPdfImageRotate()
                               // this.getPdfViewData()
+                              this.setState({Toggle:!this.state.Toggle})
                               this.setState({azureTableVisible: false, googleVisionVisible: false, googleTableVisible: false ,
                                 finalDataResult:[],
                                 azureDataResults:[],selectedRadioOption:"" })

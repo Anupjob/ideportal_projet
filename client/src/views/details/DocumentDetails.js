@@ -299,7 +299,7 @@ const DocumentDetails = (props) => {
   const [renderTextLayer, setRenderTextLayer] = useState(true);
   const [openReportResolve, setOpenReportResolve] = React.useState(false);
   const [issueResolved, setIssueResolved] = useState(false);
-
+  const [docState,setDocState]=useState("")
 console.log(finalDataResult,'newCells')
   const compId = useSelector(state => state.companyId)
   let details = JSON.parse(localStorage.getItem("Deatails"))
@@ -325,6 +325,7 @@ console.log(finalDataResult,'newCells')
       setReportIsuueCells(reportIsuueCellsRec);
 
       setIssueResolved(history.location.state.issue_resolved);
+      setDocState(history.location.state && history.location.state.docStatus)
 
     }
     
@@ -585,7 +586,7 @@ console.log(finalDataResult,'newCells')
     // }
   }
   const submit = () => {
-    setIsloader(true)
+  
 
     let companyId = localStorage.getItem('companyId')
     console.log("===companyId in DocumentDetails:::", companyId)
@@ -595,7 +596,7 @@ console.log(finalDataResult,'newCells')
       toast.warn("Please Enter Issue !", toast_options);
     }
     else {
-
+      setIsloader(true)
       let issueCells = reportIsuueCells;
       // if(Object.keys(reportIsuueCells).length>0&&Object.keys(newreportIsuueCells).length>0){
       //   issueCells = newreportIsuueCells;
@@ -622,6 +623,8 @@ console.log(finalDataResult,'newCells')
           toast.success(response.data.result, toast_options);
           setFlagIssue(true)
           setIssueResolved(false)
+          setDocState("Error")
+          initializeGrid(gridObject)
         }
         setIsloader(false)
       }).catch(err => {
@@ -660,6 +663,9 @@ console.log(finalDataResult,'newCells')
       } else {
         toast.success(response.data.result, toast_options);
         setIssueResolved(true)
+        setDocState("Validate")
+        setReportIsuueCells([])
+        initializeGrid(gridObject)
         // setFlagIssue(true)
       }
       setIsloader(false)
@@ -758,6 +764,9 @@ console.log(finalDataResult,'newCells')
     // setDocValidated(valDoc === "Yes"?"No":"Yes")
     if(compId == "619d2b75087f9c908ccf1835"){
       validateDoc()
+    }
+    else{
+      toast.info("Work in progress!", toast_options);
     }
   }
 
@@ -864,7 +873,7 @@ console.log(finalDataResult,'newCells')
     // getPdfAndCsv()
     }
     else{
-      toast.info("Request is invalid", toast_options);
+      toast.info("You are already on first page !", toast_options);
     }
   }
   const pageNumberClicked = (data) => {
@@ -880,7 +889,10 @@ console.log(finalDataResult,'newCells')
        
      }
      else{
-       toast.info("Request is invalid", toast_options);
+      toast.info("You are already on last page !", toast_options);
+     }
+     if(pageNo===totalPages){
+      toast.info("You are already on last page !", toast_options); 
      }
    }
   
@@ -900,7 +912,7 @@ console.log(finalDataResult,'newCells')
     
   }
   else{
-    toast.info("Request is invalid", toast_options);
+    toast.info("You are already on last page !", toast_options);
   }
 }
 const sliderClick = () => {
@@ -1042,7 +1054,7 @@ flex.itemFormatter = function(panel, r, c, cell) {
   
 // }
 // }
-if(!issueResolved){
+if(issueResolved!==true){
 reportIsuueCells.map(rng=>{
 
   for (let rowIdx = rng.topRow; rowIdx <= rng.bottomRow; rowIdx++) {
@@ -1226,7 +1238,7 @@ console.log(gridObject,'gridobject')
                               })
                             }}>VIEW DETAILS</Button>
                         </TableCell>
-                        {history.location.state && history.location.state.docStatus == "Error"&& !issueResolved ?
+                        {docState== "Error"&& issueResolved!==true ?
                         <TableCell style={table_headerMain}>
                           <Button style={viewDetailBtn}
                             onClick={() => resolveDialog()}>Resolve ISSUE</Button>
@@ -1254,7 +1266,8 @@ console.log(gridObject,'gridobject')
                           </Button>
                         </TableCell>
                         {/* {console.log("localStorage.getItem('master') && JSON.parse(localStorage.getItem('master')))==",localStorage.getItem('master') && JSON.parse(localStorage.getItem('master')))} */}
-                        <TableCell style={historyIssueBtn}>
+                           
+                          <TableCell style={historyIssueBtn}>
                           <Button style={viewDetailBtn} 
                           // startIcon= {docValidated.toLowerCase() === "yes"?<CheckIcon/>:<ClearIcon/>}
                           // color={this.state.docValidated?"green":"red"}
