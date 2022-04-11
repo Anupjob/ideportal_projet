@@ -257,7 +257,8 @@ const DocumentDetails = (props) => {
   const [totalPages, setTotalPages] = useState(1);
   const [Isloader, setIsloader] = useState(false);
   const [openReportIssue, setOpenReportIssue] = React.useState(false);
-  const [enterIssue, setEnterIssue] = useState(props.history.location.state ? props.history.location.state.errMsg ?props.history.location.state.errMsg.issue ? props.history.location.state.errMsg.issue:"":"":"");
+  // const [enterIssue, setEnterIssue] = useState(props.history.location.state ? props.history.location.state.errMsg ?props.history.location.state.errMsg.issue ? props.history.location.state.errMsg.issue:"":"":"");
+  const [enterIssue, setEnterIssue] = useState("")
   const [isCsvLoading, setIsCsvLoading] = useState(false);
   const [finalDataResult, setFinalDataResult] = useState([]);
   const [pdfImage, setPdfImage] = useState('');
@@ -307,6 +308,7 @@ console.log(finalDataResult,'newCells')
   const history=details.history
   console.log(details,history,'history')
   console.log('enterIssue :>> ', enterIssue);
+  console.log("reportcells", reportIsuueCells)
   useEffect(() => {
     
       localStorage.setItem('splitPos', 350)
@@ -413,9 +415,9 @@ console.log(finalDataResult,'newCells')
 
   const openDialog = () => {
     
-    if(props.history.location.state && props.history.location.state.errMsg.issue){
-      setEnterIssue(props.history.location.state.errMsg.issue)
-    }
+    // if(props.history.location.state && props.history.location.state.errMsg.issue){
+    //   setEnterIssue(props.history.location.state.errMsg.issue)
+    // }
     setOpenReportIssue(true)
   };
   const resolveDialog=()=>{
@@ -624,7 +626,8 @@ console.log(finalDataResult,'newCells')
           setFlagIssue(true)
           setIssueResolved(false)
           setDocState("Error")
-          initializeGrid(gridObject)
+          initializeGrid(gridObject,false,reportIsuueCells)
+          setEnterIssue("")
         }
         setIsloader(false)
       }).catch(err => {
@@ -665,8 +668,8 @@ console.log(finalDataResult,'newCells')
         setIssueResolved(true)
         setDocState("Validate")
         setReportIsuueCells([])
-        initializeGrid(gridObject)
-        // setFlagIssue(true)
+        initializeGrid(gridObject,true,reportIsuueCells)
+        setEnterIssue("")
       }
       setIsloader(false)
     }).catch(err => {
@@ -681,6 +684,7 @@ console.log(finalDataResult,'newCells')
 
 
 }
+console.log(issueResolved,'resolved')
   const downloadPdf = () =>{
     var pdfFileName = history.location.state.pdfFilename;
     var processorPath = history.location.state.processorContainerPath;
@@ -1011,9 +1015,9 @@ const sliderClick = () => {
     }
   
 
-  const initializeGrid = (flex) => {
+  const initializeGrid = (flex,status,data) => {
     setGridObject(flex);
-    console.log(flex)
+    console.log(flex,'init')
     flex.columnHeaders.rows.defaultSize = 40;
     
   // flex.itemFormatter = function(panel, r, c, cell) {
@@ -1054,8 +1058,11 @@ flex.itemFormatter = function(panel, r, c, cell) {
   
 // }
 // }
-if(issueResolved!==true){
-reportIsuueCells.map(rng=>{
+console.log(data,'reportcell')
+console.log(status,'resolved')
+if(status!==true){
+  console.log(status,'resolved')
+  data.map(rng=>{
 
   for (let rowIdx = rng.topRow; rowIdx <= rng.bottomRow; rowIdx++) {
     for (let cIdx = rng.leftCol; cIdx <= rng.rightCol; cIdx++) {
@@ -1329,7 +1336,7 @@ console.log(gridObject,'gridobject')
                       autoGenerateColumns={false}
                       isReadOnly={true}
                       itemsSource={finalDataResult}
-                      initialized={initializeGrid}
+                      initialized={(s)=>initializeGrid(s,docState=="Error"?false:true,reportIsuueCells)}
                       // ref={this.theGrid}
                    
                       style={{

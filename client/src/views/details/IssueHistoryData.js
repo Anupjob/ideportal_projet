@@ -85,7 +85,7 @@ const IssueHistoryData=()=>
     const compId = useSelector(state => state.companyId)
 const [rowAndColumn,setRowAndColumn]=useState(false)
 const [rowColumnData,setRowColumnData]=useState([])
-
+let details = JSON.parse(localStorage.getItem("Deatails"))
 console.log(rowColumnData,'table')
     useEffect(() => {
       if(compId){
@@ -111,7 +111,8 @@ console.log(rowColumnData,'table')
     };
     let requestBody = {
         company_id: compId,
-        user_id: userId       
+        user_id: userId,
+        fileId:details.history.location.state.doc_id     
       }
       console.log("requestBody of Issue History::::",requestBody)
     axios({
