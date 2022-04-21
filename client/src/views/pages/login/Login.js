@@ -228,13 +228,16 @@ const Login =()=> {
                       <CInputGroup className="mb-4">
                         <TextField id="outlined-basic" disabled={sendOtp} label="Email" variant="outlined" style={{ width: "100%" }} 
                         value={email} 
-                        onChange={e => setEmail(e.target.value)}/>
+                        onChange={e => setEmail(e.target.value)}
+                        onKeyPress={handleClick} 
+                        />
                       </CInputGroup>
                       {sendOtp ? 
                       <CInputGroup className="mb-4">
                         <TextField id="outlined-basic" label="Enter OTP" type="text" variant="outlined" style={{ width: "100%" }}
                           value={password}
                           onChange={e => setPassword(e.target.value)}
+                          onKeyPress={verifyOtpClick}
                         />
                       </CInputGroup> : null}
                       {sendOtp ?

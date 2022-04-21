@@ -607,11 +607,21 @@ const today=new Date()
               </FlexGridColumn>
 
                 <FlexGridColumn
-                binding="finalFileName"
+                columnHeaders
+                binding={"finalFileName"} 
                 header="CSV FILE"
                 cssClass="cell-header"
                 width="4*"
-                style={{ backgroundColor: 'grey' }} />
+                style={{ backgroundColor: 'grey' }} >
+
+<FlexGridCellTemplate cellType="Cell" template={ctx =>
+                  <React.Fragment>
+                    {ctx.item.final_filenames&&ctx.item.final_filenames.length>0 ?
+                      <span>{ctx.item.final_filenames[0]}</span>
+                      : <span>{ctx.item.finalFileName}</span>
+                    }
+                  </React.Fragment>} />
+                </FlexGridColumn>
                <FlexGridColumn
                 binding="validatedOn"
                 header="VALIDATED ON"
