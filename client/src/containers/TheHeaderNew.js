@@ -489,11 +489,11 @@ const TheHeaderNew = (props) => {
                 /></div>              
         </CHeaderNav>
         <CHeaderNav className={classes.right_content}>
-          <CInputGroup>
+          {/* <CInputGroup>
             <i class="fa fa-search" aria-hidden="true" style={{ position: "absolute", zIndex: "11", top: "10px", left: "10px", color: "#999" }}></i>
             <CInput placeholder="Search" aria-label="Search" style={{ paddingLeft: "30px" }} />
 
-          </CInputGroup>
+          </CInputGroup> */}
 
           <CDropdown inNav className="c-header-nav-items mx-3" direction="down">
             <CDropdownToggle className="c-header-nav-link" caret={false}>
