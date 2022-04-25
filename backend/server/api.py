@@ -143,6 +143,9 @@ class userProfileSchema(BaseModel):
 class resolveIssueSchema(BaseModel):
     id: str
 
+class reprocessExtractedSchema(BaseModel):
+    doc_id: str
+
 def download_blob_azure(local_path, complete_file_name):
     print("download_blob_azure", local_path, complete_file_name);
 
@@ -1385,6 +1388,22 @@ async def resolve_issue(incData: resolveIssueSchema = Body(...)):
     # print("update_one result", result)
 
     return {"result": "Error resolved successfully", "err": None}
+
+
+@app.post("/reprocessExtracted", dependencies=[Depends(JWTBearer())])
+async def resolve_issue(incData: reprocessExtractedSchema = Body(...)):
+    print("reprocessExtracted", incData)
+    doc_id = incData.doc_id
+
+    db_mongo = getConn()
+    files_incoming_c = db_mongo.files_incoming
+
+    # result = files_incoming_c.update_one({"_id": ObjectId(doc_id)}, {"$unset": {"errMsg": ""}})
+    result = files_incoming_c.update_one({"_id": ObjectId(doc_id)}, {"$set": {"dataSentTeli": False, "step2Done": False}})
+    # print("update_one result", result)
+
+    return {"result": "document reprocessed successfully", "err": None}
+
 
 @app.get("/provider/{id}", dependencies=[Depends(JWTBearer())], tags=["posts"])
 async def add_post(id: int) -> dict:
