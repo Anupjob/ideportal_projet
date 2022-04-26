@@ -1398,9 +1398,17 @@ async def resolve_issue(incData: reprocessExtractedSchema = Body(...)):
     db_mongo = getConn()
     files_incoming_c = db_mongo.files_incoming
 
-    # result = files_incoming_c.update_one({"_id": ObjectId(doc_id)}, {"$unset": {"errMsg": ""}})
-    result = files_incoming_c.update_one({"_id": ObjectId(doc_id)}, {"$set": {"dataSentTeli": False, "step2Done": False}})
-    # print("update_one result", result)
+    dataSentTeli_exists = files_incoming_c.find_one({"_id": ObjectId(doc_id), "dataSentTeli":{"$exists":True}})
+
+    data_to_update = {"step2Done": False}
+
+    if dataSentTeli_exists:
+        data_to_update["dataSentTeli"] = False
+
+    print("data_to_update", data_to_update)
+
+    result = files_incoming_c.update_one({"_id": ObjectId(doc_id)}, {"$set": data_to_update})
+    # result = files_incoming_c.update_one({"_id": ObjectId(doc_id)}, {"$set": {"dataSentTeli": False, "step2Done": False}})
 
     return {"result": "document reprocessed successfully", "err": None}
 
