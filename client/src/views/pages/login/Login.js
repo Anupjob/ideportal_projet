@@ -229,7 +229,8 @@ const Login =()=> {
                         <TextField id="outlined-basic" disabled={sendOtp} label="Email" variant="outlined" style={{ width: "100%" }} 
                         value={email} 
                         onChange={e => setEmail(e.target.value)}
-                        onKeyPress={handleClick} 
+                        // onKeyPress={handleClick} 
+                        onKeyPress={(e)=>e.key=="Enter"&&handleClick()}
                         />
                       </CInputGroup>
                       {sendOtp ? 
@@ -237,7 +238,8 @@ const Login =()=> {
                         <TextField id="outlined-basic" label="Enter OTP" type="text" variant="outlined" style={{ width: "100%" }}
                           value={password}
                           onChange={e => setPassword(e.target.value)}
-                          onKeyPress={verifyOtpClick}
+                          // onKeyPress={verifyOtpClick}
+                          onKeyPress={(e)=>e.key=="Enter"&&verifyOtpClick()}
                         />
                       </CInputGroup> : null}
                       {sendOtp ?

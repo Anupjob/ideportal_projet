@@ -825,7 +825,39 @@ console.log(issueResolved,'resolved')
     });
 
   }
-
+  const reprocessExtacted=()=>{
+    setIsloader(true)
+    const headers = {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + localStorage.getItem('access_token'),
+      // reqFrom: "ADMIN",
+    };
+    let requestBody = {doc_id:history.location.state && history.location.state.doc_id }
+    console.log("requestBody for validate ::::", requestBody)
+    axios({
+      method: "POST",
+      url: settings.serverUrl + "/reprocessExtracted",
+      data: JSON.stringify(requestBody),
+      headers,
+    }).then((response) => {
+      if (response.data.err) {
+        toast.error(response.data.err, toast_options);
+        setIsloader(false)
+      } else {
+        toast.success(response.data.result, toast_options);
+        setIsloader(false)
+      }
+    }).catch(err => {
+      toast.error(err.message, toast_options);
+      // console.log("Record Issue Error", err)
+      setIsloader(false)
+      if(err.message.includes("403")){
+        localStorage.clear();
+        history.push("/");
+      }
+    });
+  
+  }
   const exportFileToCSV = (csv, fileName) => {
     var fileType = "txt/csv;charset=utf-8";
     if (navigator.msSaveBlob) {
@@ -1270,6 +1302,15 @@ console.log(gridObject,'gridobject')
                           onClick={() => exportCSV()}
                           >
                             Export Data &nbsp;  <i class="fa fa-download" aria-hidden="true"></i>
+                          </Button>
+                        </TableCell>
+                        {/* {history.location.state.status&&history.location.state.docStatus=="EXTRACTED"} */}
+                        <TableCell style={historyIssueBtn}>
+                          <Button style={viewDetailBtn}
+                          //onClick={() => this.props.history.push("/issueHistory")}
+                          onClick={reprocessExtacted}
+                          >
+                            reprocess extracted
                           </Button>
                         </TableCell>
                         {/* {console.log("localStorage.getItem('master') && JSON.parse(localStorage.getItem('master')))==",localStorage.getItem('master') && JSON.parse(localStorage.getItem('master')))} */}
