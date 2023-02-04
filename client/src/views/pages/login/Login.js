@@ -146,6 +146,7 @@ const Login =()=> {
         }
         setIsloader(false)
       }).catch(err => {
+        setIsloader(false)
         toast.error(err.message, {toast_options});
         console.log("Error on Let's Go Click===",err)});
     }

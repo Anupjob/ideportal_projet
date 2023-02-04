@@ -44,15 +44,28 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/$
 // let boxExtraWidth = 5;
 // let boxExtraHeight = 2;
 
+// let pagePadding = 30;
+
+// let xPercentageChange = 0.345;
+
+// let yPercentageChange = 0.39;
+
+// let boxLeftMargin = 13;
+
+// let boxTopMargin = 5;
+
+// let boxExtraWidth = 8;
+
+// let boxExtraHeight = 5;.
 let pagePadding = 30;
 
-let xPercentageChange = 0.43;
+let xPercentageChange = 0.36;
 
-let yPercentageChange = 0.43;
+let yPercentageChange = 0.36;
 
-let boxLeftMargin = 13;
+let boxLeftMargin = 11;
 
-let boxTopMargin = 5;
+let boxTopMargin = -1;
 
 let boxExtraWidth = 8;
 
@@ -68,8 +81,10 @@ const pdfContentView = {
   display: 'table',
   backgroundColor: 'white',
   //boxShadow: '0px 4px 32px 1px #00000029',
- width:"50%",
+//  width:"50%",
+// minWidth: 700,
   //  width: "90%"
+  // position:'relative'
 }
 const carousel_arrow_right= {
   color: "rgb(255, 255, 255)",
@@ -89,7 +104,7 @@ const responsive = {
   superLargeDesktop: {
     // the naming can be any, depends on you.
     breakpoint: { max: 4000, min: 3000 },
-    items: 5
+    items: 5,
   },
   desktop: {
     breakpoint: { max: 3000, min: 1024 },
@@ -251,7 +266,7 @@ class PdfViewGoogleAzure extends React.Component {
           }
           
           let base64Data = response.data.result.base64Str
-          this.setState({ pdfImage: base64Data, totalPages: response.data.result.noOfPages, sliderData: sliderDataArr })
+          this.setState({ pdfImage: base64Data, totalPages: response.data.result.noOfPages, sliderData: sliderDataArr})
         }
         this.setState({isLoading: false})
       }).catch(err => {
@@ -391,10 +406,40 @@ class PdfViewGoogleAzure extends React.Component {
 <div className={classes.report_block}>
                   <h4 className={classes.report_title} onClick={() => this.sliderClick()}>PDF VIEWER <i class="fa fa-chevron-down" aria-hidden="true"></i>
                   </h4>
-                  {this.state.Toggle &&
-                    <div style={{ width: "400px", padding: "20px 50px", position: "fixed", right: "20px", background: '#8349bf', boxShadow: "0px 4px 6px rgba(0,0,0,0.5)", border: "1px solid #fff", borderRadius: "5px", paddingBottom: "60px" }}>
+              
+                    <div style={{ width: "400px", padding: "20px 50px", position: "fixed", right: "20px", background: '#8349bf', boxShadow: "0px 4px 6px rgba(0,0,0,0.5)", border: "1px solid #fff", borderRadius: "5px", paddingBottom: "60px" , display:!this.state.Toggle&&'none'}}>
 
                       <Carousel responsive={responsive} focusOnSelect={true} ref={el => (this.Carousel = el)}
+                      arrows={true}
+                       controls={true}
+                      afterChange={(previousSlide,{ currentSlide, onMove }) =>{
+                        console.log("afterChange currentSlide",currentSlide,onMove)
+                        let newPageNum = currentSlide+1;
+                        if(newPageNum>=1 && newPageNum <= this.state.sliderData.length){
+                          this.setState({pageNum: newPageNum})
+                            this.getPdfImageRotate()
+                            // this.getPdfViewData()
+                            this.setState({azureTableVisible: false, googleVisionVisible: false, googleTableVisible: false ,
+                              finalDataResult:[],
+                              azureDataResults:[],selectedRadioOption:"" ,Toggle:!this.state.Toggle})
+                             
+                        }
+                      }}
+                      // beforeChange={(nextSlide,{ currentSlide, onMove }) =>{
+                      //   console.log("afterChange currentSlide",currentSlide,onMove)
+                      //   let newPageNum = this.state.pageNum-1;
+                      //   if(newPageNum<=1){
+                      //     this.setState({pageNum: newPageNum}, ()=>{
+                      //       this.getPdfImageRotate()
+                      //       // this.getPdfViewData()
+                      //       this.setState({Toggle:!this.state.Toggle})
+                      //       this.setState({azureTableVisible: false, googleVisionVisible: false, googleTableVisible: false ,
+                      //         finalDataResult:[],
+                      //         azureDataResults:[],selectedRadioOption:"" })
+
+                      //     })
+                      //   }
+                      // }}
                         customButtonGroup={<div className="carousel-button-group" style={{position: "absolute",  zIndex: "1", bottom: "12px", right: "40px"}}>
  
                   <div style={{ color: "#fff", textAlign: "right", marginTop: "15px" }}>Pages 
@@ -402,6 +447,7 @@ class PdfViewGoogleAzure extends React.Component {
                                       value={this.state.pageNum} 
                                       onChange={(e) => {
                                         let pageToChange = Number(e.target.value)
+                                        console.log('e.target.value::',e.target.value)
                                         if(pageToChange>=1 && pageToChange <= this.state.sliderData.length){
                                           this.Carousel.goToSlide(pageToChange-1);
                                           // this.setState({pageNum: e.target.value})
@@ -419,24 +465,9 @@ class PdfViewGoogleAzure extends React.Component {
                                         display:'inline-block'
                                       }}
                                       /> of {this.state.sliderData.length}</div>
-                        {/* <CButton onClick={() => goToSlide(currentSlide + 4)} > Go to any slide </CButton> */}
                       </div>}
                      
-                        afterChange={(previousSlide, { currentSlide, onMove }) => {
-                          console.log("afterChange currentSlide",currentSlide)
-                          let newPageNum = currentSlide+1;
-                          if(newPageNum>=1 && newPageNum <= this.state.sliderData.length){
-                            this.setState({pageNum: newPageNum}, ()=>{
-                              this.getPdfImageRotate()
-                              // this.getPdfViewData()
-                              this.setState({Toggle:!this.state.Toggle})
-                              this.setState({azureTableVisible: false, googleVisionVisible: false, googleTableVisible: false ,
-                                finalDataResult:[],
-                                azureDataResults:[],selectedRadioOption:"" })
-
-                            })
-                          }
-                        }}
+                        
                         style={{ display: "table" }}
                       >
                         {this.state.sliderData.length > 0 && this.state.sliderData.map((obj, idx) => (
@@ -448,7 +479,7 @@ class PdfViewGoogleAzure extends React.Component {
                       </Carousel>
                      
                     </div>
-                  }
+                 
 
                 </div>
         
@@ -536,17 +567,17 @@ class PdfViewGoogleAzure extends React.Component {
                   {
                     this.state.finalDataResult && Object.keys(this.state.finalDataResult).length > 0 && this.state.finalDataResult.pages[0].blocks.map((blockData, blockIdx) =>
                     <div style={{
-                      // top:(blockData.boundingBox.vertices[0].y * yPercentageChange)+boxTopMargin+pagePadding, 
-                      // left:(blockData.boundingBox.vertices[0].x * xPercentageChange)+boxLeftMargin+pagePadding , 
+                      // top:(blockData.boundingBox.vertices[0].y * yPercentageChange), 
+                      // left:(blockData.boundingBox.vertices[0].x * xPercentageChange), 
                       // width:(blockData.boundingBox.vertices[1].x * xPercentageChange - blockData.boundingBox.vertices[0].x * xPercentageChange)+boxExtraWidth, 
                       // height:(blockData.boundingBox.vertices[2].y * yPercentageChange - blockData.boundingBox.vertices[0].y * yPercentageChange)+boxExtraHeight, 
-                      top:`${((blockData.boundingBox.vertices[0].y * yPercentageChange)+boxTopMargin+pagePadding)/10.2}%`,
+                      top:`${((blockData.boundingBox.vertices[0].y * yPercentageChange)+boxTopMargin+pagePadding)}px`,
 
-                      left:`${((blockData.boundingBox.vertices[0].x * xPercentageChange)+boxLeftMargin+pagePadding)/10}%` ,
+                      left:`${((blockData.boundingBox.vertices[0].x * xPercentageChange)+boxLeftMargin+pagePadding)}px` ,
 
-                      width:`${((blockData.boundingBox.vertices[1].x * xPercentageChange - blockData.boundingBox.vertices[0].x * xPercentageChange)+boxExtraWidth)/10}%`,
+                      width:`${((blockData.boundingBox.vertices[1].x * xPercentageChange - blockData.boundingBox.vertices[0].x * xPercentageChange)+boxExtraWidth)}px`,
 
-                      height:`${((blockData.boundingBox.vertices[2].y * yPercentageChange - blockData.boundingBox.vertices[0].y * yPercentageChange)+boxExtraHeight)/10}%`,
+                      height:`${((blockData.boundingBox.vertices[2].y * yPercentageChange - blockData.boundingBox.vertices[0].y * yPercentageChange)+boxExtraHeight)}px`,
                       border: '0.2px solid #FF0000',
                       position: "absolute"}}>
                         { blockIdx == 0 &&
