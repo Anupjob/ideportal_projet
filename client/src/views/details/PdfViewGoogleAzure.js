@@ -421,6 +421,7 @@ console.log('this.state.Toggle:::',this.state.Toggle)
                        autoPlay={false}
                        infinite={false}
                        ssr={false}
+                       autoPlaySpeed={900000000000}
                       afterChange={(previousSlide,{ currentSlide, onMove }) =>{
                         console.log("afterChange currentSlide",currentSlide)
                         let newPageNum = currentSlide+1;
