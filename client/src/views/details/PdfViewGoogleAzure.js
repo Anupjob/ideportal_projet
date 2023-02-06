@@ -414,11 +414,11 @@ console.log('this.state.Toggle:::',this.state.Toggle)
 <div className={classes.report_block}>
                   <h4 className={classes.report_title} onClick={() => this.sliderClick()}>PDF VIEWER <i class="fa fa-chevron-down" aria-hidden="true"></i>
                   </h4>
-              
+              {this.state?.Toggle&&
                     <div style={{ width: "400px", padding: "20px 50px", position: "fixed", right: "20px", background: '#8349bf', boxShadow: "0px 4px 6px rgba(0,0,0,0.5)", border: "1px solid #fff", borderRadius: "5px", paddingBottom: "60px" , display:this.state?.Toggle==false&&'none'}}>
 
                       <Carousel responsive={responsive} focusOnSelect={true} ref={el => (this.Carousel = el)}
-                      
+                       autoPlay={false}
                       afterChange={(previousSlide,{ currentSlide, onMove }) =>{
                         console.log("afterChange currentSlide",currentSlide,onMove)
                         let newPageNum = currentSlide+1;
@@ -473,7 +473,7 @@ console.log('this.state.Toggle:::',this.state.Toggle)
                       </Carousel>
                      
                     </div>
-                 
+  }
 
                 </div>
         
