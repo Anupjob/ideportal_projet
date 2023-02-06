@@ -389,7 +389,15 @@ class PdfViewGoogleAzure extends React.Component {
   }
   
   sliderClick = () => {
-    this.setState({Toggle:!this.state.Toggle})
+    if(this.state.Toggle===true)
+    {
+
+      this.setState({Toggle:false})
+    }
+    else if(this.state.Toggle===false)
+    {
+      this.setState({Toggle:true})
+    }
   }
   clghangle=()=>{
     console.log(this.state.selectedRadioOption,'slect')
@@ -407,7 +415,7 @@ console.log('this.state.Toggle:::',this.state.Toggle)
                   <h4 className={classes.report_title} onClick={() => this.sliderClick()}>PDF VIEWER <i class="fa fa-chevron-down" aria-hidden="true"></i>
                   </h4>
               
-                    <div style={{ width: "400px", padding: "20px 50px", position: "fixed", right: "20px", background: '#8349bf', boxShadow: "0px 4px 6px rgba(0,0,0,0.5)", border: "1px solid #fff", borderRadius: "5px", paddingBottom: "60px" , display:!this.state?.Toggle&&'none'}}>
+                    <div style={{ width: "400px", padding: "20px 50px", position: "fixed", right: "20px", background: '#8349bf', boxShadow: "0px 4px 6px rgba(0,0,0,0.5)", border: "1px solid #fff", borderRadius: "5px", paddingBottom: "60px" , display:this.state?.Toggle==false&&'none'}}>
 
                       <Carousel responsive={responsive} focusOnSelect={true} ref={el => (this.Carousel = el)}
                       
@@ -420,9 +428,10 @@ console.log('this.state.Toggle:::',this.state.Toggle)
                             // this.getPdfViewData()
                             this.setState({azureTableVisible: false, googleVisionVisible: false, googleTableVisible: false ,
                               finalDataResult:[],
-                              azureDataResults:[],selectedRadioOption:"" ,Toggle:!this.state.Toggle})
-                             
-                        }
+                              azureDataResults:[],selectedRadioOption:"" })
+                              
+                              this.setState({Toggle:false})
+                            }
                       }}
                       
                         customButtonGroup={<div className="carousel-button-group" style={{position: "absolute",  zIndex: "1", bottom: "12px", right: "40px"}}>
