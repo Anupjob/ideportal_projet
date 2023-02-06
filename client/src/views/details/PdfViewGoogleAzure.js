@@ -419,8 +419,10 @@ console.log('this.state.Toggle:::',this.state.Toggle)
 
                       <Carousel responsive={responsive} focusOnSelect={true} ref={el => (this.Carousel = el)}
                        autoPlay={false}
+                       infinite={false}
+                       ssr={false}
                       afterChange={(previousSlide,{ currentSlide, onMove }) =>{
-                        console.log("afterChange currentSlide",currentSlide,onMove)
+                        console.log("afterChange currentSlide",currentSlide)
                         let newPageNum = currentSlide+1;
                         if(newPageNum>=1 && newPageNum <= this.state.sliderData.length){
                           this.setState({pageNum: newPageNum})
