@@ -415,29 +415,16 @@ console.log('this.state.Toggle:::',this.state.Toggle)
                   <h4 className={classes.report_title} onClick={() => this.sliderClick()}>PDF VIEWER <i class="fa fa-chevron-down" aria-hidden="true"></i>
                   </h4>
               
-                    <div style={{ width: "400px", padding: "20px 50px", position: "fixed", right: "20px", background: '#8349bf', boxShadow: "0px 4px 6px rgba(0,0,0,0.5)", border: "1px solid #fff", borderRadius: "5px", paddingBottom: "60px" , display:this.state?.Toggle==false&&'none'}}>
+                    <div style={{ width: "400px", padding: "20px 50px", position: "fixed", right: "20px", background: '#8349bf', boxShadow: "0px 4px 6px rgba(0,0,0,0.5)", border: "1px solid #fff", borderRadius: "5px", paddingBottom: "60px" ,display: this.state?.Toggle===false&&'none' }}>
 
                       <Carousel responsive={responsive} focusOnSelect={true} ref={el => (this.Carousel = el)}
                        autoPlay={false}
                        infinite={false}
                        ssr={false}
-                       autoPlaySpeed={900000000000}
-                      afterChange={(previousSlide,{ currentSlide, onMove }) =>{
-                        console.log("afterChange currentSlide",currentSlide)
-                        let newPageNum = currentSlide+1;
-                        if(newPageNum>=1 && newPageNum <= this.state.sliderData.length){
-                          this.setState({pageNum: newPageNum})
-                            this.getPdfImageRotate()
-                            // this.getPdfViewData()
-                            this.setState({azureTableVisible: false, googleVisionVisible: false, googleTableVisible: false ,
-                              finalDataResult:[],
-                              azureDataResults:[],selectedRadioOption:"" })
-                              
-                              this.setState({Toggle:false})
-                            }
-                      }}
-                      
-                        customButtonGroup={<div className="carousel-button-group" style={{position: "absolute",  zIndex: "1", bottom: "12px", right: "40px"}}>
+                       arrows={true}
+                   
+                     
+                        customButtonGroup={<div className="carousel-button-group" style={{position: "absolute",  zIndex: "1", bottom: "12px", right: "40px",display: this.state?.Toggle===false&&'none' }}>
  
                   <div style={{ color: "#fff", textAlign: "right", marginTop: "15px" }}>Pages 
                                       <CInput type='text' 
@@ -463,15 +450,32 @@ console.log('this.state.Toggle:::',this.state.Toggle)
                                       }}
                                       /> of {this.state.sliderData.length}</div>
                       </div>}
-                     
+                      afterChange={(previousSlide,{ currentSlide, onMove }) =>{
+                        console.log("afterChange currentSlide",currentSlide)
+                        let newPageNum = currentSlide+1;
+                        if(newPageNum>=1 && newPageNum <= this.state.sliderData.length){
+                          this.setState({pageNum: newPageNum})
+                            this.getPdfImageRotate()
+                            // this.getPdfViewData()
+                            this.setState({azureTableVisible: false, googleVisionVisible: false, googleTableVisible: false ,
+                              finalDataResult:[],
+                              azureDataResults:[],selectedRadioOption:"" })
+                              
+                              this.setState({Toggle:false})
+                            }
+                      }}
+                      
                         
-                        style={{ display: "table" }}
+                        style={{ display:"table"}}
                       >
-                        {this.state.sliderData.length > 0 && this.state.sliderData.map((obj, idx) => (
+                        
 
-                          <div style={{ background: idx == this.state.pageNum ? "rgb(5, 162, 210)" : 'none', margin: "5px" }} >
+                        {this.state?.Toggle&&this.state.sliderData.length > 0 && this.state.sliderData.map((obj, idx) => (
+
+                          <div style={{ background: idx == this.state.pageNum ? "rgb(5, 162, 210)" : 'none', margin: "5px",}} >
                             <CImg src={obj} style={{ width: "100%", opacity: idx+1 == this.state.pageNum ? "0.6" : '1' }} /></div>
                         ))}
+                    
 
                       </Carousel>
                      
