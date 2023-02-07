@@ -415,16 +415,11 @@ console.log('this.state.Toggle:::',this.state.Toggle)
                   <h4 className={classes.report_title} onClick={() => this.sliderClick()}>PDF VIEWER <i class="fa fa-chevron-down" aria-hidden="true"></i>
                   </h4>
               
-                    <div style={{ width: "400px", padding: "20px 50px", position: "fixed", right: "20px", background: '#8349bf', boxShadow: "0px 4px 6px rgba(0,0,0,0.5)", border: "1px solid #fff", borderRadius: "5px", paddingBottom: "60px" ,display: this.state?.Toggle===false&&'none' }}>
-
+{this.state.Toggle&&
+                    <div style={{ width: "400px", padding: "20px 50px", position: "fixed", right: "20px", background: '#8349bf', boxShadow: "0px 4px 6px rgba(0,0,0,0.5)", border: "1px solid #fff", borderRadius: "5px", paddingBottom: "60px"  }}>
                       <Carousel responsive={responsive} focusOnSelect={true} ref={el => (this.Carousel = el)}
-                       autoPlay={false}
-                       infinite={false}
-                       ssr={false}
-                       arrows={true}
-                   
-                     
-                        customButtonGroup={<div className="carousel-button-group" style={{position: "absolute",  zIndex: "1", bottom: "12px", right: "40px",display: this.state?.Toggle===false&&'none' }}>
+                      slidesToSlide={this.state.pageNum}
+                     customButtonGroup={<div className="carousel-button-group" style={{position: "absolute",  zIndex: "1", bottom: "12px", right: "40px"}}>
  
                   <div style={{ color: "#fff", textAlign: "right", marginTop: "15px" }}>Pages 
                                       <CInput type='text' 
@@ -470,7 +465,7 @@ console.log('this.state.Toggle:::',this.state.Toggle)
                       >
                         
 
-                        {this.state?.Toggle&&this.state.sliderData.length > 0 && this.state.sliderData.map((obj, idx) => (
+                        {this.state.sliderData.length > 0 && this.state.sliderData.map((obj, idx) => (
 
                           <div style={{ background: idx == this.state.pageNum ? "rgb(5, 162, 210)" : 'none', margin: "5px",}} >
                             <CImg src={obj} style={{ width: "100%", opacity: idx+1 == this.state.pageNum ? "0.6" : '1' }} /></div>
@@ -478,8 +473,8 @@ console.log('this.state.Toggle:::',this.state.Toggle)
                     
 
                       </Carousel>
-                     
                     </div>
+  }
   
 
                 </div>
